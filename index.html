@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Student OS // Ultimate Edition</title>
+    <title>Student OS // Ultimate Fix</title>
     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -98,22 +98,22 @@
         }
         .glass-card:hover { transform: translateY(-5px); border-color: var(--primary); }
 
-        /* --- NEW: SCHEDULE STYLES --- */
+        /* SCHEDULE STYLES */
         .schedule-grid {
             display: grid; grid-template-columns: 80px repeat(5, 1fr); gap: 10px;
-            overflow-x: auto; padding-bottom: 10px;
+            overflow-x: auto; padding-bottom: 10px; min-width: 600px;
         }
         .sch-header { font-weight: 700; color: var(--text-muted); text-align: center; padding: 10px; }
         .sch-time { color: var(--text-muted); font-size: 0.8rem; display: flex; align-items: center; justify-content: center; }
         .sch-cell {
             background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
-            border-radius: 12px; padding: 15px; min-height: 80px; font-size: 0.9rem;
-            cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; text-align: center;
+            border-radius: 12px; padding: 10px; min-height: 80px; font-size: 0.9rem;
+            cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; text-align: center; word-break: break-word;
         }
         .sch-cell:hover { background: rgba(255,255,255,0.08); border-color: var(--primary); }
         .sch-cell.active-day { background: rgba(99, 102, 241, 0.1); border-color: var(--primary); }
 
-        /* --- NEW: FLASHCARD STYLES (3D FLIP) --- */
+        /* FLASHCARD STYLES (Fixed) */
         .flashcard-container { perspective: 1000px; width: 100%; height: 300px; margin-bottom: 20px; cursor: pointer; }
         .flashcard-inner {
             position: relative; width: 100%; height: 100%; text-align: center;
@@ -130,7 +130,7 @@
         .flashcard-back { background: var(--primary); color: white; transform: rotateY(180deg); }
         .fc-controls { display: flex; justify-content: center; gap: 15px; }
 
-        /* --- EXISTING STYLES --- */
+        /* Existing Styles */
         .timer-display {
             font-size: 5rem; font-weight: 800; text-align: center; margin: 10px 0;
             font-variant-numeric: tabular-nums; letter-spacing: -3px;
@@ -216,6 +216,26 @@
         }
         @keyframes laser { 0% {top:0} 50% {top:100%} 100% {top:0} }
 
+        .profile-actions { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+        .pill-btn {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+            color: var(--text-muted); padding: 8px 16px; border-radius: 20px;
+            font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .pill-btn:hover { background: rgba(255,255,255,0.1); color: white; border-color: white; }
+
+        .task-list-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px; background: rgba(255,255,255,0.03); border-radius: 12px; margin-bottom: 10px;
+            border-left: 3px solid transparent; transition: 0.2s;
+        }
+        .task-list-item.verified { border-left-color: var(--success); }
+        .verified-tag { 
+            background: rgba(16, 185, 129, 0.1); color: var(--success); padding: 4px 8px; 
+            border-radius: 6px; font-size: 0.7rem; font-weight: 700; display: flex; gap: 5px; align-items: center;
+        }
+
     </style>
 </head>
 <body>
@@ -287,11 +307,11 @@
                     <div class="flashcard-container" onclick="this.classList.toggle('flipped')">
                         <div class="flashcard-inner">
                             <div class="flashcard-front">
-                                <h2 id="fcQuestion">Hva er hovedstaden i Norge?</h2>
+                                <h2 id="fcQuestion">...</h2>
                                 <p style="color:var(--text-muted); margin-top:10px;">(Trykk for å snu)</p>
                             </div>
                             <div class="flashcard-back">
-                                <h2 id="fcAnswer">Oslo</h2>
+                                <h2 id="fcAnswer">...</h2>
                             </div>
                         </div>
                     </div>
@@ -365,18 +385,22 @@
                     <h2 id="bigName" style="margin:15px 0 5px 0; font-size:1.8rem;">Elev</h2>
                     <div style="color:var(--primary); font-size:0.9rem; font-weight:600; margin-bottom:20px;">STUDENT OS USER</div>
                     
-                    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
-                        <button class="action-btn" style="width:auto; background:rgba(255,255,255,0.05); border:1px solid var(--glass-border);" onclick="editName()"><i class="ph ph-pencil-simple"></i> Navn</button>
-                        <button class="action-btn" style="width:auto; background:rgba(255,255,255,0.05); border:1px solid var(--glass-border);" onclick="resetAvatar()"><i class="ph ph-robot"></i> Robot</button>
+                    <div class="profile-actions">
+                        <button class="pill-btn" onclick="editName()">
+                            <i class="ph ph-pencil-simple"></i> Endre Navn
+                        </button>
+                        <button class="pill-btn" onclick="resetAvatar()">
+                            <i class="ph ph-robot"></i> Generer Robot
+                        </button>
                     </div>
                     
                     <div style="margin-top:40px; text-align:left; border-top:1px solid var(--glass-border); padding-top:20px;">
                         <h3 style="font-size:0.9rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Tema</h3>
                         <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:15px;">
-                            <button onclick="setTheme('')" class="action-btn" style="width:auto; background:#030712; border:1px solid #333;">Standard</button>
-                            <button onclick="setTheme('theme-cyber')" class="action-btn" style="width:auto; background:#000; border:1px solid #00f0ff; color:#00f0ff;">Cyber</button>
-                            <button onclick="setTheme('theme-nature')" class="action-btn" style="width:auto; background:#022c22; border:1px solid #10b981; color:#10b981;">Nature</button>
-                            <button onclick="setTheme('theme-sunset')" class="action-btn" style="width:auto; background:#2a0a18; border:1px solid #f43f5e; color:#f43f5e;">Sunset</button>
+                            <button onclick="setTheme('')" class="pill-btn" style="border-color:#333; background:#030712;">Standard</button>
+                            <button onclick="setTheme('theme-cyber')" class="pill-btn" style="border-color:#00f0ff; color:#00f0ff; background:black;">Cyber</button>
+                            <button onclick="setTheme('theme-nature')" class="pill-btn" style="border-color:#10b981; color:#10b981; background:#022c22;">Nature</button>
+                            <button onclick="setTheme('theme-sunset')" class="pill-btn" style="border-color:#f43f5e; color:#f43f5e; background:#2a0a18;">Sunset</button>
                         </div>
                     </div>
                 </div>
@@ -427,16 +451,19 @@
         notes: "",
         schedule: {}, // { "Mon-08:00": "Matte", ... }
         flashcards: [
-            {q: "Hva er $\\pi$ (pi)?", a: "3.14159..."},
-            {q: "Hovedstad i Frankrike?", a: "Paris"}
+            {q: "Hva er hovedstaden i Norge?", a: "Oslo"},
+            {q: "Hva er 5 * 5?", a: "25"}
         ]
     };
 
-    if(localStorage.getItem('ultimateOS')) {
-        state = {...state, ...JSON.parse(localStorage.getItem('ultimateOS'))};
+    if(localStorage.getItem('ultimateOS_v2')) {
+        state = {...state, ...JSON.parse(localStorage.getItem('ultimateOS_v2'))};
+    } else {
+        // Migration fix for older versions
+        if(!state.flashcards) state.flashcards = [{q: "Hva er $\\pi$?", a: "3.14"}];
     }
 
-    function save() { localStorage.setItem('ultimateOS', JSON.stringify(state)); }
+    function save() { localStorage.setItem('ultimateOS_v2', JSON.stringify(state)); }
 
     // --- INIT ---
     updateGlobalUI();
@@ -464,7 +491,6 @@
         document.getElementById(id).classList.add('active');
         document.querySelectorAll('.nav-btn, .mob-btn').forEach(b => b.classList.remove('active'));
         
-        // Simple index mapping
         const map = {'dashboard':0, 'schedule':1, 'study':2, 'tools':3, 'settings':4};
         if(document.querySelectorAll('.nav-btn')[map[id]]) document.querySelectorAll('.nav-btn')[map[id]].classList.add('active');
         if(document.querySelectorAll('.mob-btn')[map[id]]) document.querySelectorAll('.mob-btn')[map[id]].classList.add('active');
@@ -477,7 +503,7 @@
         
         const times = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00"];
         const days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
-        const today = new Date().toString().split(' ')[0]; // "Mon", "Tue" etc.
+        const today = new Date().toString().split(' ')[0];
 
         times.forEach(t => {
             grid.innerHTML += `<div class="sch-time">${t}</div>`;
@@ -495,20 +521,36 @@
         if(sub) { state.schedule[key] = sub; save(); renderSchedule(); }
     }
 
-    // --- FLASHCARDS LOGIC ---
+    // --- FLASHCARDS LOGIC (FIXED) ---
     let cardIdx = 0;
+    
     function renderCard() {
-        if(state.flashcards.length === 0) return;
+        if(!state.flashcards || state.flashcards.length === 0) {
+            document.getElementById('fcQuestion').innerText = "Ingen kort. Lag nytt!";
+            document.getElementById('fcAnswer').innerText = "Trykk +";
+            return;
+        }
         document.getElementById('fcQuestion').innerText = state.flashcards[cardIdx].q;
         document.getElementById('fcAnswer').innerText = state.flashcards[cardIdx].a;
         document.querySelector('.flashcard-container').classList.remove('flipped');
     }
-    function nextCard() { cardIdx = (cardIdx + 1) % state.flashcards.length; renderCard(); }
-    function prevCard() { cardIdx = (cardIdx - 1 + state.flashcards.length) % state.flashcards.length; renderCard(); }
+    
+    function nextCard() {
+        if(state.flashcards.length === 0) return;
+        cardIdx = (cardIdx + 1) % state.flashcards.length;
+        renderCard();
+    }
+    
+    function prevCard() {
+        if(state.flashcards.length === 0) return;
+        cardIdx = (cardIdx - 1 + state.flashcards.length) % state.flashcards.length;
+        renderCard();
+    }
+    
     function newCard() {
         const q = prompt("Spørsmål:");
         const a = prompt("Svar:");
-        if(q && a) { state.flashcards.push({q, a}); save(); nextCard(); }
+        if(q && a) { state.flashcards.push({q, a}); save(); cardIdx = state.flashcards.length-1; renderCard(); }
     }
 
     // --- ZEN MODE ---
@@ -539,7 +581,7 @@
     function editName() { const n = prompt("Navn:"); if(n) { state.name=n; save(); updateGlobalUI(); } }
     function setTheme(t) { state.theme = t; save(); updateGlobalUI(); }
 
-    // --- AI SCANNER ---
+    // --- AI SCANNER (FIXED BUTTON) ---
     let tempTask = "";
     function startAiFlow() {
         const v = document.getElementById('taskInput').value;
@@ -549,7 +591,9 @@
         document.getElementById('uploadBtn').style.display = 'block';
         document.getElementById('scanView').style.display = 'none';
         document.getElementById('aiConfirm').style.display = 'none';
+        document.getElementById('ai-msg').innerText = `Analyserer mål: "${v}"`;
     }
+    
     document.getElementById('fileIn').addEventListener('change', (e) => {
         if(e.target.files[0]) {
             const r = new FileReader();
@@ -557,15 +601,27 @@
                 document.getElementById('uploadBtn').style.display = 'none';
                 document.getElementById('scanView').style.display = 'block';
                 document.getElementById('scanPreview').src = evt.target.result;
-                setTimeout(() => { document.getElementById('aiConfirm').style.display = 'block'; document.getElementById('ai-msg').innerText = "VERIFISERT."; }, 2000);
+                setTimeout(() => { 
+                    document.getElementById('aiConfirm').style.display = 'block'; 
+                    document.getElementById('ai-msg').innerText = "VERIFISERT."; 
+                    document.getElementById('ai-msg').style.color = "#10b981";
+                }, 1500);
             };
             r.readAsDataURL(e.target.files[0]);
         }
     });
+    
     function finishAi() {
+        if(!tempTask) return;
         state.tasks.push({ txt: tempTask, id: Date.now() });
-        state.xp += 150; save(); updateGlobalUI(); closeAi(); confetti(); document.getElementById('sfx-success').play();
+        state.xp += 150; 
+        save(); 
+        updateGlobalUI(); 
+        closeAi(); 
+        confetti({ particleCount: 150, spread: 100 }); 
+        try { document.getElementById('sfx-success').play(); } catch(e){}
     }
+    
     function closeAi() { document.getElementById('ai-overlay').style.display = 'none'; document.getElementById('taskInput').value = ""; }
     
     function renderTasks() {
@@ -582,7 +638,7 @@
                 tTime--;
                 let m = Math.floor(tTime/60), s = tTime%60;
                 document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
-                if(tTime<=0) { clearInterval(tInt); document.getElementById('sfx-success').play(); tTime=25*60; }
+                if(tTime<=0) { clearInterval(tInt); try{document.getElementById('sfx-success').play();}catch(e){} tTime=25*60; }
             }, 1000);
             document.getElementById('timerBtn').innerText="PAUSE";
         }
