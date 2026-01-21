@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Student OS // New Start</title>
+    <title>Student OS // Clean</title>
     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -36,18 +36,6 @@
             height: 100vh; overflow: hidden;
             transition: background 0.5s ease;
         }
-
-        /* ZEN MODE */
-        body.zen-mode .sidebar, body.zen-mode .mobile-nav, body.zen-mode .logo-area { display: none !important; }
-        body.zen-mode .glass-card:not(.zen-target) { display: none !important; }
-        body.zen-mode .main-view { display: flex; align-items: center; justify-content: center; padding: 0; }
-        body.zen-mode .zen-target { 
-            width: 100%; max-width: 600px; padding: 60px; 
-            background: rgba(0,0,0,0.8); border: 1px solid var(--primary);
-            box-shadow: 0 0 100px var(--primary);
-            transform: scale(1.1);
-        }
-        body.zen-mode .zen-btn i { color: var(--success); text-shadow: 0 0 10px var(--success); }
 
         /* Background */
         .bg-orb {
@@ -106,23 +94,7 @@
             cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; text-align: center; word-break: break-word;
         }
         .sch-cell:hover { background: rgba(255,255,255,0.08); border-color: var(--primary); }
-
-        /* FLASHCARDS */
-        .flashcard-container { perspective: 1000px; width: 100%; height: 300px; margin-bottom: 20px; cursor: pointer; }
-        .flashcard-inner {
-            position: relative; width: 100%; height: 100%; text-align: center;
-            transition: transform 0.6s; transform-style: preserve-3d;
-        }
-        .flashcard-container.flipped .flashcard-inner { transform: rotateY(180deg); }
-        .flashcard-front, .flashcard-back {
-            position: absolute; width: 100%; height: 100%;
-            -webkit-backface-visibility: hidden; backface-visibility: hidden;
-            border-radius: 24px; display: flex; align-items: center; justify-content: center; flex-direction: column;
-            padding: 30px; border: 1px solid var(--primary); box-shadow: 0 0 30px rgba(0,0,0,0.5);
-        }
-        .flashcard-front { background: rgba(10, 10, 20, 0.9); color: var(--text-main); }
-        .flashcard-back { background: var(--primary); color: white; transform: rotateY(180deg); }
-        .fc-controls { display: flex; justify-content: center; gap: 15px; }
+        .sch-cell.active-day { background: rgba(99, 102, 241, 0.1); border-color: var(--primary); }
 
         /* Elements */
         .timer-display {
@@ -130,16 +102,13 @@
             font-variant-numeric: tabular-nums; letter-spacing: -3px;
             background: linear-gradient(180deg, #fff, var(--text-muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-        .zen-btn {
-            position: absolute; top: 20px; right: 20px; background: none; border: none;
-            color: var(--text-muted); font-size: 1.5rem; cursor: pointer; transition: 0.3s;
-        }
         .action-btn {
             width: 100%; padding: 16px; border-radius: 18px; border: none;
             background: var(--primary); color: white; font-weight: 700; font-size: 1rem;
             cursor: pointer; transition: 0.2s; box-shadow: var(--shadow-glow);
         }
-        
+        .action-btn:active { transform: scale(0.95); }
+
         /* Calculator */
         .calc-screen {
             background: #000; color: var(--primary); padding: 20px; border-radius: 18px;
@@ -173,6 +142,14 @@
             font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: 0.2s;
             display: flex; align-items: center; gap: 6px;
         }
+        .pill-btn:hover { background: rgba(255,255,255,0.1); color: white; border-color: white; }
+
+        .task-list-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px; background: rgba(255,255,255,0.03); border-radius: 12px; margin-bottom: 10px;
+            border-left: 3px solid var(--accent); transition: 0.2s; cursor: pointer;
+        }
+        .task-list-item:hover { background: rgba(255,255,255,0.05); transform: translateX(5px); }
 
         /* Mobile */
         .mobile-nav { display: none; }
@@ -191,36 +168,6 @@
             .mob-btn.active { color: var(--primary); }
             .mob-btn i { font-size: 1.5rem; }
         }
-        
-        /* Modal */
-        #ai-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 999;
-            display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px);
-        }
-        .ai-interface {
-            width: 90%; max-width: 450px; background: #0b0f19; border: 1px solid var(--primary);
-            border-radius: 24px; padding: 30px; text-align: center;
-        }
-        .scan-window {
-            width: 100%; height: 250px; background: #000; border-radius: 15px; margin: 20px 0;
-            position: relative; overflow: hidden; border: 1px solid #333; display: none;
-        }
-        .scan-laser {
-            position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: #10b981;
-            box-shadow: 0 0 15px #10b981; animation: laser 2s infinite ease-in-out;
-        }
-        @keyframes laser { 0% {top:0} 50% {top:100%} 100% {top:0} }
-
-        .task-list-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px; background: rgba(255,255,255,0.03); border-radius: 12px; margin-bottom: 10px;
-            border-left: 3px solid transparent; transition: 0.2s;
-        }
-        .task-list-item.verified { border-left-color: var(--success); }
-        .verified-tag { 
-            background: rgba(16, 185, 129, 0.1); color: var(--success); padding: 4px 8px; 
-            border-radius: 6px; font-size: 0.7rem; font-weight: 700; display: flex; gap: 5px; align-items: center;
-        }
     </style>
 </head>
 <body>
@@ -228,7 +175,6 @@
     <div class="bg-orb orb-1"></div>
     <div class="bg-orb orb-2"></div>
     <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
-    <input type="file" id="fileIn" accept="image/*" style="display: none;">
 
     <div class="app-shell">
         
@@ -236,8 +182,8 @@
             <div class="logo-area">STUDENT<span style="color:var(--primary)">OS</span></div>
             <button class="nav-btn active" onclick="nav('dashboard')"><i class="ph ph-squares-four"></i> Oversikt</button>
             <button class="nav-btn" onclick="nav('schedule')"><i class="ph ph-calendar"></i> Timeplan</button>
-            <button class="nav-btn" onclick="nav('study')"><i class="ph ph-cards"></i> Pugging</button>
             <button class="nav-btn" onclick="nav('tools')"><i class="ph ph-calculator"></i> Verktøy</button>
+            <button class="nav-btn" onclick="nav('tasks')"><i class="ph ph-check-square"></i> Oppgaver</button>
             <button class="nav-btn" onclick="nav('settings')"><i class="ph ph-gear"></i> Innstillinger</button>
             
             <div style="margin-top:auto; display:flex; gap:10px; align-items:center; padding:10px; background:rgba(255,255,255,0.05); border-radius:12px;">
@@ -254,24 +200,14 @@
             <section id="dashboard" class="section active">
                 <h1 id="greet" style="font-weight:800; font-size:2rem; margin-bottom:20px;">Velkommen.</h1>
                 <div class="grid-layout">
-                    <div class="glass-card zen-target" style="text-align:center;">
-                        <button class="zen-btn" onclick="toggleZen()" title="Zen Mode"><i class="ph ph-eye"></i></button>
+                    <div class="glass-card" style="text-align:center;">
                         <h3 style="margin:0; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; font-size:0.8rem;">Fokus Status</h3>
                         <div class="timer-display" id="timer">25:00</div>
-                        <button class="action-btn" id="timerBtn" onclick="toggleTimer()">INITIATE FOCUS</button>
+                        <button class="action-btn" id="timerBtn" onclick="toggleTimer()">START ØKT</button>
                     </div>
                     
                     <div class="glass-card">
-                        <h3 style="margin:0 0 15px 0;">Neste Gjøremål</h3>
-                        <div style="display:flex; gap:10px; margin-bottom:15px;">
-                            <input type="text" id="taskInput" style="flex:1; background:rgba(0,0,0,0.3); border:1px solid var(--glass-border); padding:10px; border-radius:10px; color:white;" placeholder="Legg til mål...">
-                            <button class="action-btn" style="width:auto; padding:10px 20px;" onclick="startAiFlow()"><i class="ph ph-scan"></i></button>
-                        </div>
-                        <div id="taskList" style="max-height: 150px; overflow-y: auto;"></div>
-                    </div>
-                    
-                    <div class="glass-card">
-                         <h3 style="margin:0 0 15px 0;">XP Progresjon</h3>
+                        <h3 style="margin:0 0 15px 0;">XP Progresjon</h3>
                         <div style="height:150px;"><canvas id="chart"></canvas></div>
                     </div>
                 </div>
@@ -283,29 +219,6 @@
                     <div class="schedule-grid" id="schGrid"></div>
                 </div>
                 <p style="text-align:center; color:var(--text-muted); margin-top:10px;">Klikk på en time for å endre fag.</p>
-            </section>
-
-            <section id="study" class="section">
-                <h1>Flashcards</h1>
-                <div style="max-width: 500px; margin: 0 auto;">
-                    <div class="flashcard-container" onclick="this.classList.toggle('flipped')">
-                        <div class="flashcard-inner">
-                            <div class="flashcard-front">
-                                <h2 id="fcQuestion">...</h2>
-                                <p style="color:var(--text-muted); margin-top:10px;">(Trykk for å snu)</p>
-                            </div>
-                            <div class="flashcard-back">
-                                <h2 id="fcAnswer">...</h2>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="fc-controls">
-                        <button class="action-btn" style="width:auto;" onclick="prevCard()"><i class="ph ph-caret-left"></i></button>
-                        <button class="action-btn" style="width:auto; background:var(--glass-surface); border:1px solid var(--glass-border);" onclick="newCard()">+ Nytt Kort</button>
-                        <button class="action-btn" style="width:auto;" onclick="nextCard()"><i class="ph ph-caret-right"></i></button>
-                    </div>
-                </div>
             </section>
 
             <section id="tools" class="section">
@@ -342,7 +255,6 @@
                             </div>
                         </div>
                     </div>
-                    
                     <div class="glass-card">
                         <h3>Notater</h3>
                         <textarea id="notes" style="width:100%; height:300px; background:rgba(0,0,0,0.3); border:1px solid var(--glass-border); color:white; padding:15px; border-radius:15px; resize:none;" placeholder="Skriv notater her..."></textarea>
@@ -350,25 +262,31 @@
                 </div>
             </section>
 
+            <section id="tasks" class="section">
+                <h1>Mine Oppgaver</h1>
+                <div class="glass-card" style="max-width:600px;">
+                    <div style="display:flex; gap:10px; margin-bottom:20px;">
+                        <input type="text" id="taskInput" style="flex:1; background:rgba(0,0,0,0.3); border:1px solid var(--glass-border); padding:15px; border-radius:15px; color:white;" placeholder="Hva må gjøres?" onkeypress="if(event.key==='Enter') addTask()">
+                        <button class="action-btn" style="width:auto;" onclick="addTask()">LEGG TIL</button>
+                    </div>
+                    <div id="taskList"></div>
+                </div>
+            </section>
+
             <section id="settings" class="section">
                 <h1>Profil Dashboard</h1>
                 <div class="glass-card" style="text-align:center; padding-top:40px; overflow:visible;">
-                    
                     <div style="height:110px; background:linear-gradient(to right bottom, var(--primary), var(--accent)); position:absolute; top:0; left:0; width:100%; opacity:0.8;"></div>
-                    
                     <div class="avatar-container" onclick="triggerAvatarUpload()" style="margin-top:10px;">
                         <img id="bigAv" class="avatar-lg" src="">
                         <div class="edit-badge"><i class="ph ph-camera"></i></div>
                     </div>
-                    
                     <h2 id="bigName" style="margin:15px 0 5px 0; font-size:1.8rem;">Elev</h2>
                     <div style="color:var(--primary); font-size:0.9rem; font-weight:600; margin-bottom:20px;">STUDENT OS USER</div>
-                    
                     <div class="profile-actions">
                         <button class="pill-btn" onclick="editName()"><i class="ph ph-pencil-simple"></i> Endre Navn</button>
                         <button class="pill-btn" onclick="resetAvatar()"><i class="ph ph-robot"></i> Generer Robot</button>
                     </div>
-                    
                     <div style="margin-top:40px; text-align:left; border-top:1px solid var(--glass-border); padding-top:20px;">
                         <h3 style="font-size:0.9rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Tema</h3>
                         <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:15px;">
@@ -386,39 +304,17 @@
         <nav class="mobile-nav">
             <button class="mob-btn active" onclick="nav('dashboard')"><i class="ph ph-squares-four"></i><span>Hjem</span></button>
             <button class="mob-btn" onclick="nav('schedule')"><i class="ph ph-calendar"></i><span>Plan</span></button>
-            <button class="mob-btn" onclick="nav('study')"><i class="ph ph-cards"></i><span>Pugg</span></button>
             <button class="mob-btn" onclick="nav('tools')"><i class="ph ph-calculator"></i><span>Lab</span></button>
+            <button class="mob-btn" onclick="nav('tasks')"><i class="ph ph-check-square"></i><span>Mål</span></button>
             <button class="mob-btn" onclick="nav('settings')"><i class="ph ph-user"></i><span>Meg</span></button>
         </nav>
 
     </div>
 
-    <div id="ai-overlay">
-        <div class="ai-interface">
-            <h2 style="margin:0 0 20px 0; color:var(--primary);">AI VERIFISERING</h2>
-            <p id="ai-msg" style="color:var(--text-muted);">Venter på bevis...</p>
-            
-            <label id="uploadBtn" style="display:block; padding:30px; border:2px dashed var(--glass-border); border-radius:15px; cursor:pointer; margin:20px 0;">
-                <i class="ph ph-upload-simple" style="font-size:2rem; color:var(--accent);"></i>
-                <div style="margin-top:10px; font-weight:700;">Last opp bilde</div>
-                <input type="file" id="fileIn" hidden accept="image/*">
-            </label>
-
-            <div id="scanView" class="scan-window">
-                <div class="scan-laser"></div>
-                <img id="scanPreview" class="scan-img">
-            </div>
-
-            <button id="aiConfirm" class="action-btn" style="display:none;" onclick="finishAi()">BEKREFT</button>
-            <button onclick="closeAi()" style="background:transparent; border:none; color:var(--text-muted); margin-top:15px; cursor:pointer;">AVBRYT</button>
-        </div>
-    </div>
-
     <audio id="sfx-success" src="https://assets.mixkit.co/sfx/preview/mixkit-positive-notification-951.mp3"></audio>
 
 <script>
-    // --- APP CORE (NEW ID FOR FRESH START) ---
-    // Change ID to "StudentOS_Clean" to force browser to ignore old broken data
+    // --- APP CORE (CLEAN ID) ---
     let state = {
         name: "Student",
         theme: "",
@@ -426,28 +322,18 @@
         avatar: "std1",
         tasks: [],
         notes: "",
-        schedule: {},
-        flashcards: [
-            {q: "Hva er hovedstaden i Norge?", a: "Oslo"},
-            {q: "Hva er 5 * 5?", a: "25"}
-        ]
+        schedule: {}
     };
 
-    if(localStorage.getItem('StudentOS_Clean')) {
-        const saved = JSON.parse(localStorage.getItem('StudentOS_Clean'));
-        state = {...state, ...saved};
-        // Auto-repair if flashcards array is missing
-        if(!state.flashcards) {
-            state.flashcards = [{q: "Hva er hovedstaden i Norge?", a: "Oslo"}];
-        }
+    if(localStorage.getItem('StudentOS_FinalClean')) {
+        state = {...state, ...JSON.parse(localStorage.getItem('StudentOS_FinalClean'))};
     }
 
-    function save() { localStorage.setItem('StudentOS_Clean', JSON.stringify(state)); }
+    function save() { localStorage.setItem('StudentOS_FinalClean', JSON.stringify(state)); }
 
     // --- INIT ---
     updateGlobalUI();
     renderSchedule();
-    renderCard();
     document.getElementById('notes').value = state.notes;
     document.getElementById('notes').addEventListener('input', (e) => { state.notes = e.target.value; save(); });
 
@@ -470,7 +356,7 @@
         document.getElementById(id).classList.add('active');
         document.querySelectorAll('.nav-btn, .mob-btn').forEach(b => b.classList.remove('active'));
         
-        const map = {'dashboard':0, 'schedule':1, 'study':2, 'tools':3, 'settings':4};
+        const map = {'dashboard':0, 'schedule':1, 'tools':2, 'tasks':3, 'settings':4};
         if(document.querySelectorAll('.nav-btn')[map[id]]) document.querySelectorAll('.nav-btn')[map[id]].classList.add('active');
         if(document.querySelectorAll('.mob-btn')[map[id]]) document.querySelectorAll('.mob-btn')[map[id]].classList.add('active');
     }
@@ -495,52 +381,7 @@
     }
     function editSch(key) { const sub = prompt("Fag:"); if(sub) { state.schedule[key] = sub; save(); renderSchedule(); } }
 
-    // --- FLASHCARDS (ROBUST FIX) ---
-    let cardIdx = 0;
-    
-    function renderCard() {
-        // Fix: Ensure we have cards
-        if(!state.flashcards || state.flashcards.length === 0) {
-            document.getElementById('fcQuestion').innerText = "Ingen kort.";
-            document.getElementById('fcAnswer').innerText = "Trykk +";
-            return;
-        }
-        // Fix: Ensure index is valid
-        if(cardIdx < 0) cardIdx = 0;
-        if(cardIdx >= state.flashcards.length) cardIdx = 0;
-        
-        document.getElementById('fcQuestion').innerText = state.flashcards[cardIdx].q;
-        document.getElementById('fcAnswer').innerText = state.flashcards[cardIdx].a;
-        document.querySelector('.flashcard-container').classList.remove('flipped');
-    }
-    
-    function nextCard() {
-        if(!state.flashcards.length) return;
-        cardIdx++;
-        if(cardIdx >= state.flashcards.length) cardIdx = 0;
-        renderCard();
-    }
-    
-    function prevCard() {
-        if(!state.flashcards.length) return;
-        cardIdx--;
-        if(cardIdx < 0) cardIdx = state.flashcards.length - 1;
-        renderCard();
-    }
-    
-    function newCard() {
-        const q = prompt("Spørsmål:");
-        const a = prompt("Svar:");
-        if(q && a) { 
-            state.flashcards.push({q, a}); 
-            save(); 
-            cardIdx = state.flashcards.length - 1; 
-            renderCard(); 
-        }
-    }
-
-    // --- ZEN & CALC ---
-    function toggleZen() { document.body.classList.toggle('zen-mode'); }
+    // --- CALCULATOR ---
     let expression = "";
     function add(v) { expression += v; document.getElementById('calcDisp').innerText = expression; }
     function cls() { expression = ""; document.getElementById('calcDisp').innerText = "0"; }
@@ -565,54 +406,32 @@
     function editName() { const n = prompt("Navn:"); if(n) { state.name=n; save(); updateGlobalUI(); } }
     function setTheme(t) { state.theme = t; save(); updateGlobalUI(); }
 
-    // --- AI SCANNER (FIXED) ---
-    let tempTask = "";
-    function startAiFlow() {
-        const v = document.getElementById('taskInput').value;
-        if(!v) return;
-        tempTask = v;
-        document.getElementById('ai-overlay').style.display = 'flex';
-        document.getElementById('uploadBtn').style.display = 'block';
-        document.getElementById('scanView').style.display = 'none';
-        document.getElementById('aiConfirm').style.display = 'none';
-        document.getElementById('ai-msg').innerText = `Analyserer: "${v}"`;
-        document.getElementById('ai-msg').style.color = "var(--text-muted)";
+    // --- SIMPLE TASKS ---
+    function addTask() {
+        const val = document.getElementById('taskInput').value;
+        if(!val) return;
+        state.tasks.push({ txt: val, id: Date.now() });
+        state.xp += 50; 
+        save();
+        updateGlobalUI();
+        document.getElementById('taskInput').value = "";
+        try { confetti({ particleCount: 100, spread: 70 }); } catch(e){}
     }
-    
-    document.getElementById('fileIn').addEventListener('change', (e) => {
-        if(e.target.files[0]) {
-            const r = new FileReader();
-            r.onload = (evt) => {
-                document.getElementById('uploadBtn').style.display = 'none';
-                document.getElementById('scanView').style.display = 'block';
-                document.getElementById('scanPreview').src = evt.target.result;
-                // Wait for scan animation
-                setTimeout(() => { 
-                    document.getElementById('aiConfirm').style.display = 'block'; 
-                    document.getElementById('ai-msg').innerText = "VERIFISERT."; 
-                    document.getElementById('ai-msg').style.color = "#10b981";
-                }, 1500);
-            };
-            r.readAsDataURL(e.target.files[0]);
-        }
-    });
-    
-    function finishAi() {
-        if(!tempTask) return;
-        state.tasks.push({ txt: tempTask, id: Date.now() });
-        state.xp += 150; 
-        save(); 
-        updateGlobalUI(); 
-        closeAi(); 
-        try { confetti({ particleCount: 150, spread: 100 }); } catch(e){}
-        try { document.getElementById('sfx-success').play(); } catch(e){}
+
+    function removeTask(id) {
+        state.tasks = state.tasks.filter(t => t.id !== id);
+        save();
+        renderTasks();
     }
-    
-    function closeAi() { document.getElementById('ai-overlay').style.display = 'none'; document.getElementById('taskInput').value = ""; }
     
     function renderTasks() {
         const l = document.getElementById('taskList'); l.innerHTML = "";
-        state.tasks.forEach(t => { l.innerHTML += `<div class="task-list-item verified"><span style="font-weight:600">${t.txt}</span><span class="verified-tag"><i class="ph ph-check-circle"></i> AI</span></div>`; });
+        state.tasks.forEach(t => { 
+            l.innerHTML += `<div class="task-list-item" onclick="removeTask(${t.id})">
+                <span style="font-weight:600">${t.txt}</span>
+                <span class="verified-tag" style="background:rgba(255,255,255,0.1);color:#fff;">Ferdig</span>
+            </div>`; 
+        });
     }
 
     // --- TIMER ---
@@ -631,7 +450,6 @@
         tRun = !tRun;
     }
 
-    // Chart
     new Chart(document.getElementById('chart'), {
         type: 'line',
         data: { labels: ['M','T','O','T','F','L','S'], datasets: [{ label:'XP', data:[100, 450, 300, 600, 400, 550, 800], borderColor:'#6366f1', borderWidth:3, tension:0.4 }] },
