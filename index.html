@@ -8,7 +8,9 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;700;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"> <style>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
         /* --- DESIGN SYSTEM --- */
         :root {
             --bg-color: #030712;
@@ -35,73 +37,62 @@
             transition: background 0.5s ease;
         }
 
-        /* --- ADVANCED BACKGROUND CANVAS --- */
+        /* --- BACKGROUND --- */
         #neural-canvas {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 0; pointer-events: none;
         }
 
-        /* --- WELCOME SCREEN (BOOT SEQUENCE) --- */
+        /* --- ADVANCED BOOT SCREEN --- */
         #welcome-screen {
             position: fixed; inset: 0; background: #000; z-index: 20000;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end;
+            padding: 50px;
             transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
+            font-family: 'JetBrains Mono', monospace;
         }
-        #welcome-screen.hidden { opacity: 0; pointer-events: none; transform: scale(1.1); }
+        #welcome-screen.hidden { opacity: 0; pointer-events: none; transform: scale(1.1); filter: blur(10px); }
 
-        .boot-text {
-            font-family: 'JetBrains Mono', monospace; color: var(--primary);
-            font-size: 0.9rem; margin-bottom: 30px; min-height: 1.2em;
-            text-shadow: 0 0 10px var(--primary);
+        .terminal-window {
+            width: 100%; max-width: 600px; height: 300px;
+            overflow: hidden; position: relative; margin-bottom: 20px;
+        }
+        
+        .terminal-log {
+            color: var(--primary); font-size: 0.85rem; line-height: 1.6;
+            text-shadow: 0 0 5px var(--primary);
+        }
+
+        .progress-container {
+            width: 100%; max-width: 600px; height: 4px; background: rgba(255,255,255,0.1);
+            margin-bottom: 40px; position: relative; overflow: hidden;
+        }
+        .progress-bar {
+            width: 0%; height: 100%; background: var(--primary);
+            box-shadow: 0 0 20px var(--primary);
+            transition: width 0.1s linear;
+        }
+
+        .center-btn-container {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 20001; text-align: center;
         }
 
         .enter-btn {
-            background: rgba(0,0,0,0.5);
-            border: 1px solid var(--primary);
-            color: white;
-            padding: 20px 50px;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 1.2rem;
-            font-weight: 800;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            transition: 0.3s;
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
-            opacity: 0; /* Hidden initially */
-            transform: translateY(20px);
+            background: rgba(0,0,0,0.8); border: 1px solid var(--primary); color: white;
+            padding: 20px 60px; font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.2rem; font-weight: 800; letter-spacing: 4px; text-transform: uppercase;
+            cursor: pointer; position: relative; overflow: hidden; transition: 0.3s;
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.3); opacity: 0; transform: scale(0.9);
+            backdrop-filter: blur(10px);
         }
-        
-        .enter-btn::before {
-            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: 0.5s;
-        }
-        
-        .enter-btn:hover {
-            background: var(--primary);
-            box-shadow: 0 0 50px var(--primary);
-            text-shadow: 0 0 10px white;
-        }
-        
-        .enter-btn:hover::before { left: 100%; }
-        
-        .btn-decor {
-            position: absolute; width: 4px; height: 4px; background: white;
-            transition: 0.3s;
-        }
-        .bd-tl { top: 0; left: 0; } .bd-tr { top: 0; right: 0; }
-        .bd-bl { bottom: 0; left: 0; } .bd-br { bottom: 0; right: 0; }
-
-        .enter-btn.visible { opacity: 1; transform: translateY(0); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-
+        .enter-btn.visible { opacity: 1; transform: scale(1); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .enter-btn:hover { background: var(--primary); box-shadow: 0 0 60px var(--primary); text-shadow: 0 0 10px white; }
 
         /* --- APP LAYOUT --- */
         .app-shell { 
             display: flex; height: 100%; width: 100%; position: relative; z-index: 1; 
-            opacity: 0; transition: opacity 1s ease 0.5s; /* Fades in after welcome */
+            opacity: 0; transition: opacity 1s ease 0.5s; 
         }
         .app-shell.visible { opacity: 1; }
 
@@ -260,12 +251,17 @@
     <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
 
     <div id="welcome-screen">
-        <div class="boot-text" id="boot-text"></div>
-        <button class="enter-btn" id="enter-btn" onclick="enterSystem()">
-            <div class="bd-tl btn-decor"></div><div class="bd-tr btn-decor"></div>
-            <div class="bd-bl btn-decor"></div><div class="bd-br btn-decor"></div>
-            INITIALIZE SYSTEM
-        </button>
+        <div class="terminal-window">
+            <div class="terminal-log" id="terminal-log"></div>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="boot-progress"></div>
+        </div>
+        <div class="center-btn-container">
+            <button class="enter-btn" id="enter-btn" onclick="enterSystem()">
+                INITIALIZE SYSTEM
+            </button>
+        </div>
     </div>
 
     <div id="success-animation" class="success-overlay">
@@ -444,44 +440,62 @@
     </div>
 
 <script>
-    // --- BOOT SEQUENCE & WELCOME ---
-    const bootTexts = [
-        "Initializing Neural Interface...",
-        "Loading Core Modules...",
-        "Establishing Secure Connection...",
-        "System Ready."
+    // --- ADVANCED BOOT SEQUENCE ---
+    const bootLines = [
+        "BIOS DATE 01/21/2026 20:12:00 VER 1.0.4",
+        "CPU: NEURAL QUANTUM PROCESSOR - 128 CORES",
+        "DETECTING PRIMARY DRIVES... SUCCESS",
+        "LOADING KERNEL...",
+        "MOUNTING FILE SYSTEM [RW]... DONE",
+        "INITIALIZING GRAPHICS ENGINE... DONE",
+        "CONNECTING TO NEURAL NET...",
+        "ENCRYPTING USER DATA STREAM...",
+        "SYSTEM OPTIMIZATION: 100%",
+        "ACCESS GRANTED."
     ];
-    let bootIdx = 0;
     
-    function runBootSequence() {
-        const textEl = document.getElementById('boot-text');
+    let isAudioInitialized = false;
+
+    async function runBootSequence() {
+        const log = document.getElementById('terminal-log');
+        const bar = document.getElementById('boot-progress');
         const btn = document.getElementById('enter-btn');
         
-        const interval = setInterval(() => {
-            if (bootIdx < bootTexts.length) {
-                textEl.innerText = "> " + bootTexts[bootIdx];
-                bootIdx++;
-            } else {
-                clearInterval(interval);
-                setTimeout(() => { btn.classList.add('visible'); }, 200);
-            }
-        }, 600);
+        for (let i = 0; i < bootLines.length; i++) {
+            const div = document.createElement('div');
+            div.innerText = "> " + bootLines[i];
+            log.appendChild(div);
+            
+            // Scroll bottom
+            log.parentElement.scrollTop = log.parentElement.scrollHeight;
+            
+            // Update bar
+            const pct = ((i + 1) / bootLines.length) * 100;
+            bar.style.width = pct + "%";
+            
+            // Random delay for realism
+            await new Promise(r => setTimeout(r, Math.random() * 300 + 100));
+        }
+        
+        // Show Button
+        setTimeout(() => {
+            btn.classList.add('visible');
+        }, 500);
     }
     
     function enterSystem() {
-        // Resume Audio Context (Critical for sound to work)
+        // Init Audio
         if(audioCtx.state === 'suspended') audioCtx.resume();
+        isAudioInitialized = true;
         
-        // Hide Welcome Screen
+        // Hide Welcome
         document.getElementById('welcome-screen').classList.add('hidden');
         // Show App
         document.getElementById('app-shell').classList.add('visible');
         
-        // Play Startup Sound (Simulated via synth)
         playSuccessSound();
     }
     
-    // Start boot when page loads
     window.onload = runBootSequence;
 
 
@@ -509,7 +523,6 @@
             if(this.y < 0 || this.y > h) this.vy *= -1;
         }
         draw() {
-            // Get color dynamically from CSS
             const style = getComputedStyle(document.body);
             const color = style.getPropertyValue('--primary').trim();
             ctx.fillStyle = color;
@@ -520,7 +533,6 @@
 
     for(let i=0; i<80; i++) particles.push(new Node());
 
-    // Mouse Interaction
     let mouse = { x: -1000, y: -1000 };
     window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
 
@@ -532,31 +544,19 @@
 
         particles.forEach(p => {
             p.update(); p.draw();
-            
-            // Connect close particles
             particles.forEach(p2 => {
                 const dx = p.x - p2.x; const dy = p.y - p2.y;
                 const dist = Math.sqrt(dx*dx + dy*dy);
                 if(dist < 120) {
-                    ctx.beginPath();
-                    ctx.strokeStyle = color;
-                    ctx.globalAlpha = 1 - (dist / 120);
-                    ctx.lineWidth = 0.5;
-                    ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y);
-                    ctx.stroke();
+                    ctx.beginPath(); ctx.strokeStyle = color; ctx.globalAlpha = 1 - (dist / 120);
+                    ctx.lineWidth = 0.5; ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
                 }
             });
-
-            // Connect to mouse
             const dxM = mouse.x - p.x; const dyM = mouse.y - p.y;
             const distM = Math.sqrt(dxM*dxM + dyM*dyM);
             if(distM < 180) {
-                ctx.beginPath();
-                ctx.strokeStyle = accent;
-                ctx.globalAlpha = 1 - (distM / 180);
-                ctx.lineWidth = 0.8;
-                ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y);
-                ctx.stroke();
+                ctx.beginPath(); ctx.strokeStyle = accent; ctx.globalAlpha = 1 - (distM / 180);
+                ctx.lineWidth = 0.8; ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
             }
         });
         requestAnimationFrame(animateNeural);
@@ -567,6 +567,41 @@
     // --- AUDIO SYNTHESIZER ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     
+    // 1. Mechanical Keyboard Sound
+    function playKeySound() {
+        if (!isAudioInitialized) return;
+        const t = audioCtx.currentTime;
+        
+        // "Thock" body
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.frequency.setValueAtTime(100 + Math.random()*50, t);
+        osc.frequency.exponentialRampToValueAtTime(50, t + 0.05);
+        gain.gain.setValueAtTime(0.1, t);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.05);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(t); osc.stop(t + 0.05);
+
+        // "Click" noise
+        const bufferSize = audioCtx.sampleRate * 0.05; 
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for(let i=0; i<bufferSize; i++) data[i] = Math.random() * 2 - 1;
+        
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+        const noiseGain = audioCtx.createGain();
+        noiseGain.gain.value = 0.05;
+        noise.connect(noiseGain); noiseGain.connect(audioCtx.destination);
+        noise.start(t);
+    }
+
+    // Global Key Listener
+    document.addEventListener('keydown', () => {
+        playKeySound();
+    });
+
+    // 2. Success Sound
     function playSuccessSound() {
         const t = audioCtx.currentTime;
         const osc = audioCtx.createOscillator();
@@ -580,7 +615,7 @@
         osc.start(t); osc.stop(t + 1);
     }
 
-    // Breath Sound
+    // 3. Breath Sound
     let breathOsc, breathGain;
     function startBreathSound() {
         if(breathOsc) return;
@@ -606,7 +641,7 @@
         if(breathOsc) { breathOsc.stop(); breathOsc.disconnect(); breathOsc = null; }
     }
 
-    // Noise Generator
+    // 4. Noise Generator
     let noiseNode = null;
     function toggleNoise(type) {
         if (noiseNode) {
@@ -635,8 +670,8 @@
 
     // --- APP CORE ---
     let state = { name: "Student", theme: "", xp: 0, avatar: "std1", tasks: [], notes: "", schedule: {} };
-    if(localStorage.getItem('StudentOS_Final')) { state = {...state, ...JSON.parse(localStorage.getItem('StudentOS_Final'))}; }
-    function save() { localStorage.setItem('StudentOS_Final', JSON.stringify(state)); }
+    if(localStorage.getItem('StudentOS_Finalv2')) { state = {...state, ...JSON.parse(localStorage.getItem('StudentOS_Finalv2'))}; }
+    function save() { localStorage.setItem('StudentOS_Finalv2', JSON.stringify(state)); }
 
     // --- INIT ---
     updateGlobalUI(); renderSchedule();
