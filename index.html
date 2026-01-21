@@ -3,342 +3,308 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZenState Pro // Younas Edition</title>
+    <title>ZenState OS // Younas Elite</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #05070a;
-            --glass: rgba(255, 255, 255, 0.03);
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.3);
+            --bg: #030712;
+            --card: rgba(17, 24, 39, 0.7);
             --border: rgba(255, 255, 255, 0.08);
-            --accent: #a855f7;
-            --accent-glow: rgba(168, 85, 247, 0.4);
-            --text: #e2e8f0;
-            --success: #22c55e;
+            --text-main: #f9fafb;
+            --text-dim: #9ca3af;
         }
 
         body {
             margin: 0;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
+            background: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            background-image: radial-gradient(circle at 50% -20%, #1e1b4b, var(--bg));
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.15) 0%, transparent 40%);
         }
 
-        .dashboard {
+        .os-container {
             width: 95%;
-            max-width: 1100px;
+            max-width: 1200px;
+            height: 85vh;
             display: grid;
-            grid-template-columns: 350px 1fr;
+            grid-template-columns: 280px 1fr 300px;
             gap: 20px;
-            padding: 20px;
         }
 
-        @media (max-width: 850px) { .dashboard { grid-template-columns: 1fr; } }
+        @media (max-width: 1100px) {
+            .os-container { grid-template-columns: 1fr; height: auto; padding: 20px; }
+        }
 
-        .glass-panel {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
+        .panel {
+            background: var(--card);
+            backdrop-filter: blur(25px);
             border: 1px solid var(--border);
-            border-radius: 28px;
-            padding: 30px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-        }
-
-        /* Progress Bar Section */
-        .user-stats {
-            margin-bottom: 20px;
+            border-radius: 32px;
+            padding: 24px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
-        .progress-container {
-            width: 100%;
-            height: 8px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        #progress-fill {
-            width: 30%;
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent), var(--success));
-            transition: width 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        /* Timer UI */
-        .timer-circle {
-            text-align: center;
-            padding: 40px 0;
-        }
-
-        #time {
-            font-size: 5rem;
-            font-weight: 800;
-            letter-spacing: -2px;
-            margin: 10px 0;
-            text-shadow: 0 0 20px var(--accent-glow);
-        }
-
-        .timer-modes {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .mode-btn {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 6px 15px;
+        /* Sidebar Stats */
+        .stat-card {
+            background: rgba(255,255,255,0.03);
+            padding: 15px;
             border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-
-        .mode-btn.active {
-            background: var(--accent);
-            border-color: var(--accent);
-        }
-
-        /* Task List */
-        .task-input-group {
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-        #taskInput {
-            width: 100%;
-            background: rgba(0,0,0,0.2);
+            margin-bottom: 12px;
             border: 1px solid var(--border);
-            padding: 15px 20px;
-            border-radius: 15px;
-            color: white;
-            font-size: 1rem;
-            box-sizing: border-box;
         }
+
+        .stat-val { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
+        .stat-label { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; }
+
+        /* Main Focus Area */
+        .timer-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .greeting { font-size: 1.5rem; font-weight: 300; margin-bottom: 5px; }
+        .timer-display {
+            font-size: 8rem;
+            font-weight: 800;
+            letter-spacing: -5px;
+            margin: 20px 0;
+            background: linear-gradient(to bottom, #fff, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 30px var(--primary-glow));
+        }
+
+        /* Buttons & Interactions */
+        .main-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 18px 45px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 25px var(--primary-glow);
+        }
+
+        .main-btn:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 15px 35px var(--primary-glow); }
+        .main-btn:active { transform: scale(0.98); }
+
+        /* Task Center */
+        .task-scroll { overflow-y: auto; flex-grow: 1; padding-right: 5px; }
+        .task-scroll::-webkit-scrollbar { width: 4px; }
+        .task-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+        .task-input {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
+            padding: 14px;
+            border-radius: 16px;
+            color: white;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            outline: none;
+            transition: 0.3s;
+        }
+        .task-input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
 
         .task-item {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            padding: 16px;
+            border-radius: 18px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: rgba(255,255,255,0.03);
-            margin-bottom: 10px;
-            padding: 15px 20px;
-            border-radius: 15px;
-            border-left: 4px solid var(--accent);
-            animation: fadeIn 0.4s ease;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .task-item:hover { background: rgba(255,255,255,0.06); }
+
+        /* Audio Mixer */
+        .mixer-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        input[type=range] {
+            accent-color: var(--primary);
+            width: 100px;
+        }
 
-        .task-text { flex-grow: 1; margin-right: 15px; }
-        
-        .complete-btn {
-            background: var(--success);
-            border: none;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: black;
+        .badge {
+            background: var(--primary-glow);
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.7rem;
             font-weight: bold;
         }
 
-        /* Quote Box */
-        .quote-box {
-            font-style: italic;
-            color: #94a3b8;
-            font-size: 0.9rem;
-            margin-top: 40px;
-            border-top: 1px solid var(--border);
-            padding-top: 20px;
-        }
-
-        .action-btn {
-            width: 100%;
-            padding: 15px;
-            border-radius: 15px;
-            border: none;
-            background: var(--accent);
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 15px var(--accent-glow);
-        }
     </style>
 </head>
 <body>
 
-    <div class="dashboard">
-        <div class="glass-panel">
-            <div class="user-stats">
-                <div style="display: flex; justify-content: space-between;">
-                    <span>Fokus Nivå</span>
-                    <span id="level-text">LVL 1</span>
-                </div>
-                <div class="progress-container">
-                    <div id="progress-fill"></div>
-                </div>
+    <div class="os-container">
+        <div class="panel">
+            <h3 style="margin: 0 0 20px 0;">Oversikt</h3>
+            <div class="stat-card">
+                <div class="stat-label">Fullførte økter</div>
+                <div class="stat-val" id="sessionCount">0</div>
             </div>
-
-            <div class="timer-circle">
-                <div class="timer-modes">
-                    <button class="mode-btn active" onclick="setTimer(25)">Fokus</button>
-                    <button class="mode-btn" onclick="setTimer(5)">Pause</button>
-                </div>
-                <div id="time">25:00</div>
-                <button class="action-btn" id="timerControl">START ØKT</button>
+            <div class="stat-card">
+                <div class="stat-label">Fokus XP</div>
+                <div class="stat-val" id="xpText">0</div>
             </div>
-
-            <div class="quote-box">
-                <p id="quote">"Gjør i dag det du vil takke deg selv for i morgen."</p>
+            <div class="stat-card">
+                <div class="stat-label">Dagens humør</div>
+                <div class="stat-val">Focused</div>
+            </div>
+            
+            <div style="margin-top: auto;">
+                <h4 class="stat-label">Soundscape Mixer</h4>
+                <div class="mixer-item">
+                    <span>Brown Noise</span>
+                    <input type="checkbox" id="noiseToggle">
+                </div>
+                <div class="mixer-item">
+                    <span>Rainfall</span>
+                    <input type="range" value="50">
+                </div>
             </div>
         </div>
 
-        <div class="glass-panel">
-            <h2 style="margin-top:0">Dagens Oppdrag</h2>
-            <div class="task-input-group">
-                <input type="text" id="taskInput" placeholder="Skriv et mål og trykk Enter...">
+        <div class="panel timer-section">
+            <div class="greeting" id="greeting">God kveld, Younas</div>
+            <div class="badge">DEEP WORK MODE ACTIVE</div>
+            <div class="timer-display" id="time">25:00</div>
+            <button class="main-btn" id="timerBtn">START SESSION</button>
+            <div style="margin-top: 30px; color: var(--text-dim); font-size: 0.9rem;">
+                Trykk for å starte din 25-minutters fokus-blokk.
             </div>
-            
-            <div id="taskList">
+        </div>
+
+        <div class="panel">
+            <h3 style="margin: 0 0 20px 0;">Målsetninger</h3>
+            <input type="text" class="task-input" id="taskInput" placeholder="+ Legg til ny oppgave">
+            <div class="task-scroll" id="taskList">
                 </div>
+            <div style="padding-top: 15px; text-align: center;">
+                <span class="stat-label" id="taskStatus">Ingen aktive mål</span>
+            </div>
         </div>
     </div>
 
     <script>
-        // Data & State
-        let timeLeft = 25 * 60;
-        let isRunning = false;
-        let timerLoop = null;
+        // State Management
+        let time = 25 * 60;
+        let running = false;
+        let timer = null;
+        let sessions = 0;
         let xp = 0;
 
-        // Elementer
-        const timeDisplay = document.getElementById('time');
-        const timerControl = document.getElementById('timerControl');
-        const taskInput = document.getElementById('taskInput');
-        const taskList = document.getElementById('taskList');
-        const progressFill = document.getElementById('progress-fill');
+        // Dynamic Greeting
+        const hour = new Date().getHours();
+        const greet = hour < 12 ? "God morgen" : hour < 18 ? "God dag" : "God kveld";
+        document.getElementById('greeting').textContent = `${greet}, Younas`;
 
-        // Initialisering
-        loadTasks();
+        // Timer Logic
+        const timeEl = document.getElementById('time');
+        const btnEl = document.getElementById('timerBtn');
 
-        // Timer funksjoner
-        function setTimer(minutes) {
-            clearInterval(timerLoop);
-            isRunning = false;
-            timeLeft = minutes * 60;
-            timerControl.textContent = "START ØKT";
-            updateTimerDisplay();
-            document.querySelectorAll('.mode-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.textContent.toLowerCase().includes(minutes === 25 ? 'fokus' : 'pause'));
-            });
+        function updateTime() {
+            const m = Math.floor(time / 60);
+            const s = time % 60;
+            timeEl.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
         }
 
-        function updateTimerDisplay() {
-            const m = Math.floor(timeLeft / 60);
-            const s = timeLeft % 60;
-            timeDisplay.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        }
-
-        timerControl.onclick = () => {
-            if (isRunning) {
-                clearInterval(timerLoop);
-                timerControl.textContent = "FORTSETT";
+        btnEl.onclick = () => {
+            if (running) {
+                clearInterval(timer);
+                btnEl.textContent = "CONTINUE SESSION";
             } else {
-                timerLoop = setInterval(() => {
-                    timeLeft--;
-                    updateTimerDisplay();
-                    if (timeLeft <= 0) {
-                        clearInterval(timerLoop);
-                        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                timer = setInterval(() => {
+                    time--;
+                    updateTime();
+                    if (time <= 0) {
+                        clearInterval(timer);
+                        completeSession();
                     }
                 }, 1000);
-                timerControl.textContent = "PAUSE";
+                btnEl.textContent = "PAUSE";
             }
-            isRunning = !isRunning;
+            running = !running;
         };
 
-        // Oppgave-håndtering (Løsning av mål)
-        taskInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && taskInput.value.trim() !== "") {
-                addTask(taskInput.value);
-                taskInput.value = "";
-            }
-        });
-
-        function addTask(text) {
-            const id = Date.now();
-            const task = { id, text };
-            saveTask(task);
-            renderTask(task);
+        function completeSession() {
+            sessions++;
+            xp += 100;
+            document.getElementById('sessionCount').textContent = sessions;
+            document.getElementById('xpText').textContent = xp;
+            confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 }, colors: ['#6366f1', '#a855f7'] });
+            time = 25 * 60;
+            updateTime();
+            btnEl.textContent = "START NEW SESSION";
         }
 
-        function renderTask(task) {
+        // Task Logic
+        const input = document.getElementById('taskInput');
+        const list = document.getElementById('taskList');
+
+        input.onkeypress = (e) => {
+            if (e.key === 'Enter' && input.value.trim() !== "") {
+                createTask(input.value);
+                input.value = "";
+            }
+        };
+
+        function createTask(txt) {
             const div = document.createElement('div');
             div.className = 'task-item';
-            div.id = `task-${task.id}`;
-            div.innerHTML = `
-                <span class="task-text">${task.text}</span>
-                <button class="complete-btn" onclick="resolveTask(${task.id})">✓</button>
-            `;
-            taskList.prepend(div);
+            div.innerHTML = `<span>${txt}</span><div style="color:var(--primary)">◎</div>`;
+            div.onclick = () => {
+                div.style.transform = "scale(0.9) opacity(0)";
+                setTimeout(() => {
+                    div.remove();
+                    xp += 10;
+                    document.getElementById('xpText').textContent = xp;
+                    updateTaskStatus();
+                }, 200);
+            };
+            list.prepend(div);
+            updateTaskStatus();
         }
 
-        function resolveTask(id) {
-            const element = document.getElementById(`task-${id}`);
-            element.style.transform = "translateX(50px)";
-            element.style.opacity = "0";
-            
-            setTimeout(() => {
-                element.remove();
-                removeTaskFromStorage(id);
-                gainXP(20);
-                
-                // Konfetti for hver løste oppgave
-                confetti({
-                    particleCount: 40,
-                    velocity: 30,
-                    spread: 360,
-                    origin: { x: Math.random(), y: Math.random() - 0.2 }
-                });
-            }, 300);
+        function updateTaskStatus() {
+            const count = list.children.length;
+            document.getElementById('taskStatus').textContent = count > 0 ? `${count} mål gjenstår` : "Ingen aktive mål";
         }
 
-        function gainXP(amount) {
-            xp += amount;
-            if (xp >= 100) xp = 0; // Reset for demo
-            progressFill.style.width = xp + "%";
-            document.getElementById('level-text').textContent = xp >= 80 ? "LVL 2" : "LVL 1";
-        }
-
-        // Storage
-        function saveTask(task) {
-            const tasks = JSON.parse(localStorage.getItem('zenTasks') || '[]');
-            tasks.push(task);
-            localStorage.setItem('zenTasks', JSON.stringify(tasks));
-        }
-
-        function loadTasks() {
-            const tasks = JSON.parse(localStorage.getItem('zenTasks') || '[]');
-            tasks.forEach(renderTask);
-        }
-
-        function removeTaskFromStorage(id) {
-            let tasks = JSON.parse(localStorage.getItem('zenTasks') || '[]');
-            tasks = tasks.filter(t => t.id !== id);
-            localStorage.setItem('zenTasks', JSON.stringify(tasks));
-        }
+        // Soundscape Simulation
+        document.getElementById('noiseToggle').onchange = (e) => {
+            // Her kan du koble til ekte lydfiler. 
+            // For denne filen simulerer vi bare interaksjonen.
+            console.log("Audio focus mode:", e.target.checked);
+        };
     </script>
 </body>
 </html>
