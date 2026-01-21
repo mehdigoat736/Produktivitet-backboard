@@ -3,279 +3,342 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZenState // Productivity</title>
+    <title>ZenState Pro // Younas Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            --bg: #0f172a;
-            --glass: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.1);
-            --accent: #8b5cf6; /* Violet */
-            --text: #f8fafc;
+            --bg: #05070a;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+            --accent: #a855f7;
+            --accent-glow: rgba(168, 85, 247, 0.4);
+            --text: #e2e8f0;
+            --success: #22c55e;
         }
 
         body {
             margin: 0;
-            padding: 0;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: radial-gradient(circle at top right, #1e1b4b, #0f172a);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
             color: var(--text);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% -20%, #1e1b4b, var(--bg));
         }
 
-        /* Bakgrunns-animasjon */
-        .blob {
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            background: linear-gradient(135deg, var(--accent), #3b82f6);
-            filter: blur(80px);
-            border-radius: 50%;
-            z-index: -1;
-            opacity: 0.15;
-            animation: move 20s infinite alternate;
-        }
-
-        @keyframes move {
-            from { transform: translate(-20%, -20%); }
-            to { transform: translate(20%, 20%); }
-        }
-
-        .container {
-            width: 90%;
-            max-width: 1000px;
+        .dashboard {
+            width: 95%;
+            max-width: 1100px;
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            padding: 40px;
+            grid-template-columns: 350px 1fr;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        @media (max-width: 850px) { .dashboard { grid-template-columns: 1fr; } }
+
+        .glass-panel {
             background: var(--glass);
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
             border: 1px solid var(--border);
-            border-radius: 32px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
         }
 
-        @media (max-width: 768px) {
-            .container { grid-template-columns: 1fr; padding: 20px; }
+        /* Progress Bar Section */
+        .user-stats {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
-        /* Widgets */
-        .widget {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 25px;
-            border-radius: 24px;
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #progress-fill {
+            width: 30%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--success));
+            transition: width 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Timer UI */
+        .timer-circle {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        #time {
+            font-size: 5rem;
+            font-weight: 800;
+            letter-spacing: -2px;
+            margin: 10px 0;
+            text-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .timer-modes {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .mode-btn {
+            background: transparent;
             border: 1px solid var(--border);
-            transition: transform 0.3s ease, border 0.3s ease;
+            color: var(--text);
+            padding: 6px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
         }
 
-        .widget:hover {
-            transform: translateY(-5px);
+        .mode-btn.active {
+            background: var(--accent);
             border-color: var(--accent);
         }
 
-        h2 {
-            margin: 0 0 20px 0;
-            font-size: 1.2rem;
-            font-weight: 500;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: #94a3b8;
-        }
-
-        /* Pomodoro Timer */
-        .timer-display {
-            font-size: 4rem;
-            font-weight: 800;
-            text-align: center;
-            margin: 10px 0;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .controls {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .btn {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border);
-        }
-
         /* Task List */
-        .task-input {
-            width: 100%;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--border);
-            padding: 12px;
-            border-radius: 10px;
-            color: white;
-            outline: none;
-            box-sizing: border-box;
+        .task-input-group {
+            position: relative;
+            margin-bottom: 20px;
         }
 
-        .task-list {
-            list-style: none;
-            padding: 0;
-            margin-top: 20px;
+        #taskInput {
+            width: 100%;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--border);
+            padding: 15px 20px;
+            border-radius: 15px;
+            color: white;
+            font-size: 1rem;
+            box-sizing: border-box;
         }
 
         .task-item {
             display: flex;
             align-items: center;
-            padding: 10px;
-            background: rgba(255,255,255,0.02);
-            margin-bottom: 8px;
-            border-radius: 8px;
-            animation: slideIn 0.3s ease-out;
+            justify-content: space-between;
+            background: rgba(255,255,255,0.03);
+            margin-bottom: 10px;
+            padding: 15px 20px;
+            border-radius: 15px;
+            border-left: 4px solid var(--accent);
+            animation: fadeIn 0.4s ease;
         }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-10px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Music Player */
-        .audio-card {
+        .task-text { flex-grow: 1; margin-right: 15px; }
+        
+        .complete-btn {
+            background: var(--success);
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-top: 15px;
+            justify-content: center;
+            color: black;
+            font-weight: bold;
         }
 
-        .visualizer {
-            display: flex;
-            gap: 3px;
-            height: 20px;
-            align-items: center;
+        /* Quote Box */
+        .quote-box {
+            font-style: italic;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 40px;
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
         }
 
-        .bar {
-            width: 3px;
+        .action-btn {
+            width: 100%;
+            padding: 15px;
+            border-radius: 15px;
+            border: none;
             background: var(--accent);
-            border-radius: 10px;
-        }
-
-        .playing .bar {
-            animation: bounce 0.8s infinite ease-in-out;
-        }
-
-        @keyframes bounce {
-            0%, 100% { height: 5px; }
-            50% { height: 20px; }
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px var(--accent-glow);
         }
     </style>
 </head>
 <body>
 
-    <div class="blob"></div>
+    <div class="dashboard">
+        <div class="glass-panel">
+            <div class="user-stats">
+                <div style="display: flex; justify-content: space-between;">
+                    <span>Fokus Nivå</span>
+                    <span id="level-text">LVL 1</span>
+                </div>
+                <div class="progress-container">
+                    <div id="progress-fill"></div>
+                </div>
+            </div>
 
-    <div class="container">
-        <div class="widget">
-            <h2>Focus Timer</h2>
-            <div class="timer-display" id="time">25:00</div>
-            <div class="controls">
-                <button class="btn" id="startBtn">Fokus</button>
-                <button class="btn btn-outline" id="resetBtn">Nullstill</button>
+            <div class="timer-circle">
+                <div class="timer-modes">
+                    <button class="mode-btn active" onclick="setTimer(25)">Fokus</button>
+                    <button class="mode-btn" onclick="setTimer(5)">Pause</button>
+                </div>
+                <div id="time">25:00</div>
+                <button class="action-btn" id="timerControl">START ØKT</button>
+            </div>
+
+            <div class="quote-box">
+                <p id="quote">"Gjør i dag det du vil takke deg selv for i morgen."</p>
             </div>
         </div>
 
-        <div class="widget">
-            <h2>Ambient Sound</h2>
-            <div class="audio-card" id="player">
-                <button class="btn btn-outline" id="playMusic" style="width: 50px; height: 50px; border-radius: 50%; padding:0">▶</button>
-                <div>
-                    <div style="font-weight: bold;">Lofi Focus</div>
-                    <div style="font-size: 0.8rem; color: #94a3b8;">Deep work ambience</div>
-                </div>
-                <div class="visualizer" id="viz">
-                    <div class="bar" style="animation-delay: 0.1s"></div>
-                    <div class="bar" style="animation-delay: 0.2s"></div>
-                    <div class="bar" style="animation-delay: 0.3s"></div>
-                </div>
+        <div class="glass-panel">
+            <h2 style="margin-top:0">Dagens Oppdrag</h2>
+            <div class="task-input-group">
+                <input type="text" id="taskInput" placeholder="Skriv et mål og trykk Enter...">
             </div>
-        </div>
-
-        <div class="widget" style="grid-column: span 2;">
-            <h2>Dagens Mål</h2>
-            <input type="text" class="task-input" id="taskInput" placeholder="Hva vil du oppnå nå?">
-            <ul class="task-list" id="taskList">
-                </ul>
+            
+            <div id="taskList">
+                </div>
         </div>
     </div>
 
     <script>
-        // Pomodoro Logikk
+        // Data & State
         let timeLeft = 25 * 60;
-        let timerId = null;
+        let isRunning = false;
+        let timerLoop = null;
+        let xp = 0;
 
+        // Elementer
         const timeDisplay = document.getElementById('time');
-        const startBtn = document.getElementById('startBtn');
-
-        function updateDisplay() {
-            const mins = Math.floor(timeLeft / 60);
-            const secs = timeLeft % 60;
-            timeDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        }
-
-        startBtn.onclick = () => {
-            if (timerId) {
-                clearInterval(timerId);
-                timerId = null;
-                startBtn.textContent = 'Fokus';
-            } else {
-                timerId = setInterval(() => {
-                    timeLeft--;
-                    updateDisplay();
-                    if (timeLeft <= 0) clearInterval(timerId);
-                }, 1000);
-                startBtn.textContent = 'Pause';
-            }
-        };
-
-        document.getElementById('resetBtn').onclick = () => {
-            clearInterval(timerId);
-            timerId = null;
-            timeLeft = 25 * 60;
-            updateDisplay();
-            startBtn.textContent = 'Fokus';
-        };
-
-        // Task Logikk
+        const timerControl = document.getElementById('timerControl');
         const taskInput = document.getElementById('taskInput');
         const taskList = document.getElementById('taskList');
+        const progressFill = document.getElementById('progress-fill');
 
+        // Initialisering
+        loadTasks();
+
+        // Timer funksjoner
+        function setTimer(minutes) {
+            clearInterval(timerLoop);
+            isRunning = false;
+            timeLeft = minutes * 60;
+            timerControl.textContent = "START ØKT";
+            updateTimerDisplay();
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent.toLowerCase().includes(minutes === 25 ? 'fokus' : 'pause'));
+            });
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(timeLeft / 60);
+            const s = timeLeft % 60;
+            timeDisplay.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        timerControl.onclick = () => {
+            if (isRunning) {
+                clearInterval(timerLoop);
+                timerControl.textContent = "FORTSETT";
+            } else {
+                timerLoop = setInterval(() => {
+                    timeLeft--;
+                    updateTimerDisplay();
+                    if (timeLeft <= 0) {
+                        clearInterval(timerLoop);
+                        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                    }
+                }, 1000);
+                timerControl.textContent = "PAUSE";
+            }
+            isRunning = !isRunning;
+        };
+
+        // Oppgave-håndtering (Løsning av mål)
         taskInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && taskInput.value.trim() !== "") {
-                const li = document.createElement('li');
-                li.className = 'task-item';
-                li.innerHTML = `<input type="checkbox" style="margin-right: 15px;"> ${taskInput.value}`;
-                taskList.appendChild(li);
+                addTask(taskInput.value);
                 taskInput.value = "";
             }
         });
 
-        // Musikk Simulasjon (Animasjon)
-        const playBtn = document.getElementById('playMusic');
-        const player = document.getElementById('player');
-        playBtn.onclick = () => {
-            player.classList.toggle('playing');
-            playBtn.textContent = player.classList.contains('playing') ? '⏸' : '▶';
-        };
+        function addTask(text) {
+            const id = Date.now();
+            const task = { id, text };
+            saveTask(task);
+            renderTask(task);
+        }
+
+        function renderTask(task) {
+            const div = document.createElement('div');
+            div.className = 'task-item';
+            div.id = `task-${task.id}`;
+            div.innerHTML = `
+                <span class="task-text">${task.text}</span>
+                <button class="complete-btn" onclick="resolveTask(${task.id})">✓</button>
+            `;
+            taskList.prepend(div);
+        }
+
+        function resolveTask(id) {
+            const element = document.getElementById(`task-${id}`);
+            element.style.transform = "translateX(50px)";
+            element.style.opacity = "0";
+            
+            setTimeout(() => {
+                element.remove();
+                removeTaskFromStorage(id);
+                gainXP(20);
+                
+                // Konfetti for hver løste oppgave
+                confetti({
+                    particleCount: 40,
+                    velocity: 30,
+                    spread: 360,
+                    origin: { x: Math.random(), y: Math.random() - 0.2 }
+                });
+            }, 300);
+        }
+
+        function gainXP(amount) {
+            xp += amount;
+            if (xp >= 100) xp = 0; // Reset for demo
+            progressFill.style.width = xp + "%";
+            document.getElementById('level-text').textContent = xp >= 80 ? "LVL 2" : "LVL 1";
+        }
+
+        // Storage
+        function saveTask(task) {
+            const tasks = JSON.parse(localStorage.getItem('zenTasks') || '[]');
+            tasks.push(task);
+            localStorage.setItem('zenTasks', JSON.stringify(tasks));
+        }
+
+        function loadTasks() {
+            const tasks = JSON.parse(localStorage.getItem('zenTasks') || '[]');
+            tasks.forEach(renderTask);
+        }
+
+        function removeTaskFromStorage(id) {
+            let tasks = JSON.parse(localStorage.getItem('zenTasks') || '[]');
+            tasks = tasks.filter(t => t.id !== id);
+            localStorage.setItem('zenTasks', JSON.stringify(tasks));
+        }
     </script>
 </body>
 </html>
