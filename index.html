@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZenState // Productivity</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+            --accent: #8b5cf6; /* Violet */
+            --text: #f8fafc;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b, #0f172a);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Bakgrunns-animasjon */
+        .blob {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, var(--accent), #3b82f6);
+            filter: blur(80px);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.15;
+            animation: move 20s infinite alternate;
+        }
+
+        @keyframes move {
+            from { transform: translate(-20%, -20%); }
+            to { transform: translate(20%, 20%); }
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            padding: 40px;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--border);
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .container { grid-template-columns: 1fr; padding: 20px; }
+        }
+
+        /* Widgets */
+        .widget {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 25px;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            transition: transform 0.3s ease, border 0.3s ease;
+        }
+
+        .widget:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+
+        h2 {
+            margin: 0 0 20px 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #94a3b8;
+        }
+
+        /* Pomodoro Timer */
+        .timer-display {
+            font-size: 4rem;
+            font-weight: 800;
+            text-align: center;
+            margin: 10px 0;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+        }
+
+        /* Task List */
+        .task-input {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 10px;
+            color: white;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .task-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: rgba(255,255,255,0.02);
+            margin-bottom: 8px;
+            border-radius: 8px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Music Player */
+        .audio-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .visualizer {
+            display: flex;
+            gap: 3px;
+            height: 20px;
+            align-items: center;
+        }
+
+        .bar {
+            width: 3px;
+            background: var(--accent);
+            border-radius: 10px;
+        }
+
+        .playing .bar {
+            animation: bounce 0.8s infinite ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { height: 5px; }
+            50% { height: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="blob"></div>
+
+    <div class="container">
+        <div class="widget">
+            <h2>Focus Timer</h2>
+            <div class="timer-display" id="time">25:00</div>
+            <div class="controls">
+                <button class="btn" id="startBtn">Fokus</button>
+                <button class="btn btn-outline" id="resetBtn">Nullstill</button>
+            </div>
+        </div>
+
+        <div class="widget">
+            <h2>Ambient Sound</h2>
+            <div class="audio-card" id="player">
+                <button class="btn btn-outline" id="playMusic" style="width: 50px; height: 50px; border-radius: 50%; padding:0">▶</button>
+                <div>
+                    <div style="font-weight: bold;">Lofi Focus</div>
+                    <div style="font-size: 0.8rem; color: #94a3b8;">Deep work ambience</div>
+                </div>
+                <div class="visualizer" id="viz">
+                    <div class="bar" style="animation-delay: 0.1s"></div>
+                    <div class="bar" style="animation-delay: 0.2s"></div>
+                    <div class="bar" style="animation-delay: 0.3s"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="widget" style="grid-column: span 2;">
+            <h2>Dagens Mål</h2>
+            <input type="text" class="task-input" id="taskInput" placeholder="Hva vil du oppnå nå?">
+            <ul class="task-list" id="taskList">
+                </ul>
+        </div>
+    </div>
+
+    <script>
+        // Pomodoro Logikk
+        let timeLeft = 25 * 60;
+        let timerId = null;
+
+        const timeDisplay = document.getElementById('time');
+        const startBtn = document.getElementById('startBtn');
+
+        function updateDisplay() {
+            const mins = Math.floor(timeLeft / 60);
+            const secs = timeLeft % 60;
+            timeDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        startBtn.onclick = () => {
+            if (timerId) {
+                clearInterval(timerId);
+                timerId = null;
+                startBtn.textContent = 'Fokus';
+            } else {
+                timerId = setInterval(() => {
+                    timeLeft--;
+                    updateDisplay();
+                    if (timeLeft <= 0) clearInterval(timerId);
+                }, 1000);
+                startBtn.textContent = 'Pause';
+            }
+        };
+
+        document.getElementById('resetBtn').onclick = () => {
+            clearInterval(timerId);
+            timerId = null;
+            timeLeft = 25 * 60;
+            updateDisplay();
+            startBtn.textContent = 'Fokus';
+        };
+
+        // Task Logikk
+        const taskInput = document.getElementById('taskInput');
+        const taskList = document.getElementById('taskList');
+
+        taskInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && taskInput.value.trim() !== "") {
+                const li = document.createElement('li');
+                li.className = 'task-item';
+                li.innerHTML = `<input type="checkbox" style="margin-right: 15px;"> ${taskInput.value}`;
+                taskList.appendChild(li);
+                taskInput.value = "";
+            }
+        });
+
+        // Musikk Simulasjon (Animasjon)
+        const playBtn = document.getElementById('playMusic');
+        const player = document.getElementById('player');
+        playBtn.onclick = () => {
+            player.classList.toggle('playing');
+            playBtn.textContent = player.classList.contains('playing') ? '⏸' : '▶';
+        };
+    </script>
+</body>
+</html>
