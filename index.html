@@ -7,9 +7,10 @@
     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet"> <style>
+    
+    <style>
         /* --- DESIGN SYSTEM --- */
         :root {
             --bg-color: #030712;
@@ -42,7 +43,7 @@
             z-index: 0; pointer-events: none;
         }
 
-        /* --- BOOT & LOGIN SCREEN --- */
+        /* --- BOOT SCREEN --- */
         #welcome-screen {
             position: fixed; inset: 0; background: #000; z-index: 20000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -51,15 +52,8 @@
         }
         #welcome-screen.hidden { opacity: 0; pointer-events: none; transform: scale(1.1); filter: blur(10px); }
 
-        .terminal-window {
-            width: 100%; max-width: 600px; height: 200px;
-            overflow: hidden; position: relative; margin-bottom: 20px; text-align: left;
-        }
-        
-        .terminal-log {
-            color: var(--primary); font-size: 0.85rem; line-height: 1.6;
-            text-shadow: 0 0 5px var(--primary); padding: 20px;
-        }
+        .terminal-window { width: 100%; max-width: 600px; height: 200px; overflow: hidden; position: relative; margin-bottom: 20px; text-align: left; }
+        .terminal-log { color: var(--primary); font-size: 0.85rem; line-height: 1.6; text-shadow: 0 0 5px var(--primary); padding: 20px; }
 
         .boot-btn {
             background: rgba(0,0,0,0.8); border: 1px solid var(--primary); color: white;
@@ -72,89 +66,96 @@
         .boot-btn.visible { opacity: 1; transform: translateY(0); display: block; }
         .boot-btn:hover { background: var(--primary); box-shadow: 0 0 60px var(--primary); text-shadow: 0 0 10px white; }
 
-        /* --- SETUP / LOGIN PANEL --- */
+        /* --- SETUP PANEL --- */
         #setup-panel {
             display: none; flex-direction: column; align-items: center; gap: 20px;
             background: rgba(10, 10, 15, 0.8); padding: 40px; border: 1px solid var(--glass-border);
             border-radius: 20px; backdrop-filter: blur(20px);
-            box-shadow: 0 0 50px rgba(99, 102, 241, 0.2);
-            animation: fadeIn 0.5s ease;
+            box-shadow: 0 0 50px rgba(99, 102, 241, 0.2); animation: fadeIn 0.5s ease;
         }
         @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
 
-        .setup-avatar {
-            width: 100px; height: 100px; border-radius: 50%; background: #111;
-            border: 2px dashed var(--primary); display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.3s; overflow: hidden;
-        }
+        .setup-avatar { width: 100px; height: 100px; border-radius: 50%; background: #111; border: 2px dashed var(--primary); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; overflow: hidden; }
         .setup-avatar:hover { background: rgba(99, 102, 241, 0.1); box-shadow: 0 0 20px var(--primary); }
         .setup-avatar img { width: 100%; height: 100%; object-fit: cover; }
-
-        .setup-input {
-            background: transparent; border: none; border-bottom: 2px solid var(--glass-border);
-            color: white; font-family: 'JetBrains Mono', monospace; font-size: 1.5rem;
-            text-align: center; padding: 10px; width: 250px; outline: none; transition: 0.3s;
-        }
+        .setup-input { background: transparent; border: none; border-bottom: 2px solid var(--glass-border); color: white; font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; text-align: center; padding: 10px; width: 250px; outline: none; transition: 0.3s; }
         .setup-input:focus { border-color: var(--primary); text-shadow: 0 0 10px var(--primary); }
 
-        /* --- TOUR OVERLAY (NEW) --- */
+        /* --- NEW TOUR OVERLAY (TACTICAL HUD) --- */
         #tour-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 15000;
-            display: none; opacity: 0; transition: opacity 0.5s;
-            cursor: pointer; backdrop-filter: blur(4px);
+            position: fixed; inset: 0; background: rgba(3, 7, 18, 0.85); z-index: 15000;
+            display: none; opacity: 0; transition: opacity 0.5s; cursor: pointer;
+            backdrop-filter: blur(5px);
         }
         #tour-overlay.active { display: block; opacity: 1; }
 
-        .tour-tooltip {
-            position: absolute; color: white; font-family: 'Caveat', cursive;
-            font-size: 1.5rem; text-align: center; pointer-events: none;
-            animation: floatTour 3s infinite ease-in-out;
+        .hud-item {
+            position: absolute; display: flex; align-items: flex-start; gap: 15px;
+            opacity: 0; transform: translateX(-20px);
+            animation: hudSlideIn 0.5s forwards ease-out;
         }
-        .tour-arrow { font-size: 3rem; color: var(--primary); display: block; }
-        .tour-text { text-shadow: 0 0 10px black; font-weight: 700; }
+        /* Delays for cascading effect */
+        .hud-item:nth-child(2) { animation-delay: 0.1s; }
+        .hud-item:nth-child(3) { animation-delay: 0.2s; }
+        .hud-item:nth-child(4) { animation-delay: 0.3s; }
+        .hud-item:nth-child(5) { animation-delay: 0.4s; }
 
-        /* Specific Positions */
-        #tour-nav { top: 150px; left: 290px; text-align: left; }
-        #tour-nav .tour-arrow { transform: rotate(180deg) translateX(10px); display: inline-block; }
+        .hud-line-container {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100%; width: 50px;
+        }
+        .hud-dot { width: 8px; height: 8px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 10px var(--primary); }
+        .hud-line { width: 2px; height: 100%; background: linear-gradient(to bottom, var(--primary), transparent); opacity: 0.5; }
         
-        #tour-timer { top: 15%; left: 55%; transform: translateX(-50%); }
-        #tour-timer .tour-arrow { transform: rotate(90deg); margin-top: 10px; }
+        /* Connecting line specific for sidebar items */
+        .hud-connector { 
+            position: absolute; left: -60px; top: 15px; width: 60px; height: 1px; 
+            background: linear-gradient(90deg, transparent, var(--primary)); 
+        }
 
-        #tour-tasks { bottom: 150px; right: 20%; }
-        #tour-tasks .tour-arrow { transform: rotate(0deg); margin-bottom: 5px; }
+        .hud-card {
+            background: rgba(20, 20, 30, 0.9); border: 1px solid var(--primary);
+            padding: 15px 20px; border-radius: 4px; max-width: 300px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        /* Corner decorations for tech look */
+        .hud-card::before { content:''; position:absolute; top:-1px; left:-1px; width:10px; height:10px; border-top:2px solid white; border-left:2px solid white; }
+        .hud-card::after { content:''; position:absolute; bottom:-1px; right:-1px; width:10px; height:10px; border-bottom:2px solid white; border-right:2px solid white; }
 
+        .hud-title {
+            color: var(--primary); font-family: 'JetBrains Mono', monospace; font-weight: 700;
+            font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 5px; text-transform: uppercase;
+        }
+        .hud-desc {
+            color: var(--text-muted); font-size: 0.85rem; line-height: 1.4; margin: 0;
+        }
+
+        /* Positioning */
+        #hud-nav { top: 120px; left: 320px; }
+        #hud-timer { top: 20%; right: 20%; transform: none; }
+        #hud-tasks { bottom: 150px; left: 320px; }
+        
         .tour-center-msg {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 1.5rem;
-            text-transform: uppercase; letter-spacing: 3px; color: rgba(255,255,255,0.8);
-            animation: pulseText 2s infinite; pointer-events: none; text-align: center;
+            text-align: center; width: 100%; pointer-events: none;
         }
-        @keyframes pulseText { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
-        @keyframes floatTour { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .tour-center-text {
+            font-family: 'JetBrains Mono', monospace; color: white; background: var(--primary);
+            padding: 10px 20px; display: inline-block; font-weight: 700; letter-spacing: 2px;
+            animation: pulseBtn 1.5s infinite;
+        }
+        @keyframes pulseBtn { 0% { opacity:1; } 50% { opacity:0.5; } 100% { opacity:1; } }
+        @keyframes hudSlideIn { to { opacity: 1; transform: translateX(0); } }
 
 
         /* --- APP LAYOUT --- */
-        .app-shell { 
-            display: flex; height: 100%; width: 100%; position: relative; z-index: 1; 
-            opacity: 0; transition: opacity 1s ease 0.5s; 
-        }
+        .app-shell { display: flex; height: 100%; width: 100%; position: relative; z-index: 1; opacity: 0; transition: opacity 1s ease 0.5s; }
         .app-shell.visible { opacity: 1; }
 
-        .sidebar {
-            width: 280px; background: rgba(5, 5, 10, 0.5); backdrop-filter: blur(30px);
-            border-right: 1px solid var(--glass-border); padding: 30px;
-            display: flex; flex-direction: column; gap: 10px;
-        }
-        .logo-area {
-            font-size: 1.5rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 30px;
-            background: linear-gradient(to right, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .nav-btn {
-            background: transparent; border: none; color: var(--text-muted);
-            padding: 15px; border-radius: 16px; cursor: pointer; text-align: left;
-            font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 15px;
-            transition: all 0.3s;
-        }
+        .sidebar { width: 280px; background: rgba(5, 5, 10, 0.5); backdrop-filter: blur(30px); border-right: 1px solid var(--glass-border); padding: 30px; display: flex; flex-direction: column; gap: 10px; }
+        .logo-area { font-size: 1.5rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 30px; background: linear-gradient(to right, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .nav-btn { background: transparent; border: none; color: var(--text-muted); padding: 15px; border-radius: 16px; cursor: pointer; text-align: left; font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 15px; transition: all 0.3s; }
         .nav-btn:hover { background: rgba(255,255,255,0.05); color: #fff; transform: translateX(5px); }
         .nav-btn.active { background: var(--primary); color: #fff; box-shadow: 0 0 25px rgba(99, 102, 241, 0.3); border: 1px solid rgba(255,255,255,0.1); }
         .nav-btn i { font-size: 1.4rem; }
@@ -165,49 +166,25 @@
         @keyframes slideIn { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 
         .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
-        .glass-card {
-            background: var(--glass-surface); border: 1px solid var(--glass-border);
-            border-radius: 24px; padding: 25px; backdrop-filter: blur(15px);
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6);
-            transition: transform 0.3s; position: relative; overflow: visible;
-        }
+        .glass-card { background: var(--glass-surface); border: 1px solid var(--glass-border); border-radius: 24px; padding: 25px; backdrop-filter: blur(15px); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6); transition: transform 0.3s; position: relative; overflow: visible; }
 
         /* Sound Mixer */
         .sound-mixer { display: flex; gap: 12px; margin-top: 15px; justify-content: center; }
-        .sound-btn {
-            width: 55px; height: 55px; border-radius: 16px; border: 1px solid var(--glass-border);
-            background: rgba(255,255,255,0.03); color: var(--text-muted); cursor: pointer;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: 0.3s; font-size: 1.2rem;
-        }
+        .sound-btn { width: 55px; height: 55px; border-radius: 16px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.03); color: var(--text-muted); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; font-size: 1.2rem; }
         .sound-btn:hover { background: rgba(255,255,255,0.1); color: white; transform: translateY(-3px); }
-        .sound-btn.active { 
-            background: rgba(99, 102, 241, 0.2); color: var(--primary); 
-            border-color: var(--primary); box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
-        }
+        .sound-btn.active { background: rgba(99, 102, 241, 0.2); color: var(--primary); border-color: var(--primary); box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); }
         .sound-label { font-size: 0.6rem; margin-top: 4px; font-weight: 700; text-transform: uppercase; }
 
         /* Schedule */
-        .schedule-grid {
-            display: grid; grid-template-columns: 80px repeat(5, 1fr); gap: 10px;
-            overflow-x: auto; padding-bottom: 10px; min-width: 600px;
-        }
+        .schedule-grid { display: grid; grid-template-columns: 80px repeat(5, 1fr); gap: 10px; overflow-x: auto; padding-bottom: 10px; min-width: 600px; }
         .sch-header { font-weight: 700; color: var(--text-muted); text-align: center; padding: 10px; }
         .sch-time { color: var(--text-muted); font-size: 0.8rem; display: flex; align-items: center; justify-content: center; }
-        .sch-cell {
-            background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
-            border-radius: 12px; padding: 10px; min-height: 80px; font-size: 0.9rem;
-            cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; text-align: center; word-break: break-word;
-        }
+        .sch-cell { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; padding: 10px; min-height: 80px; font-size: 0.9rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; text-align: center; word-break: break-word; }
         .sch-cell:hover { background: rgba(255,255,255,0.08); border-color: var(--primary); }
         .sch-cell.active-day { background: rgba(99, 102, 241, 0.1); border-color: var(--primary); }
 
         /* Overlay */
-        #breath-overlay {
-            position: fixed; inset: 0; background: #000; z-index: 10000;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            opacity: 0; transition: opacity 1s ease;
-        }
+        #breath-overlay { position: fixed; inset: 0; background: #000; z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 1s ease; }
         #breath-overlay.active { opacity: 1; display: flex; }
         .breath-circle-container { position: relative; width: 350px; height: 350px; display: flex; align-items: center; justify-content: center; margin-bottom: 40px; }
         .breath-circle { width: 100px; height: 100px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 80px var(--primary); border: 2px solid #fff; }
@@ -217,12 +194,7 @@
         @keyframes inhale { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(3.5); opacity: 1; } }
         @keyframes exhale { 0% { transform: scale(3.5); opacity: 1; } 100% { transform: scale(1); opacity: 0.5; } }
 
-        .success-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            pointer-events: none; z-index: 9999; opacity: 0; transition: opacity 0.3s;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
-        }
+        .success-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; z-index: 9999; opacity: 0; transition: opacity 0.3s; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); }
         .success-content { text-align: center; transform: scale(0.8); opacity: 0; }
         .success-icon { font-size: 8rem; color: var(--success); text-shadow: 0 0 80px var(--success); margin-bottom: 20px; filter: drop-shadow(0 0 20px var(--success)); }
         .success-text { font-size: 4rem; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 4px; text-shadow: 0 0 40px var(--success); }
@@ -231,13 +203,7 @@
         @keyframes popInSuccess { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
         /* Timer */
-        .timer-display { 
-            font-size: 5.5rem; font-weight: 800; text-align: center; margin: 20px 0; 
-            font-variant-numeric: tabular-nums; letter-spacing: -4px; 
-            background: linear-gradient(180deg, #fff, var(--text-muted)); 
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
-            filter: drop-shadow(0 0 20px rgba(255,255,255,0.1));
-        }
+        .timer-display { font-size: 5.5rem; font-weight: 800; text-align: center; margin: 20px 0; font-variant-numeric: tabular-nums; letter-spacing: -4px; background: linear-gradient(180deg, #fff, var(--text-muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 20px rgba(255,255,255,0.1)); }
         .time-controls { display: flex; gap: 8px; justify-content: center; margin-bottom: 25px; }
         .time-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-muted); padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; cursor: pointer; transition: 0.2s; font-weight: 600; }
         .time-btn:hover { background: rgba(255,255,255,0.1); color: white; }
@@ -263,8 +229,6 @@
             .mob-btn { background: none; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 0.7rem; font-weight: 600; }
             .mob-btn.active { color: var(--primary); }
             .mob-btn i { font-size: 1.5rem; }
-            
-            /* Hide Tour on Mobile to avoid clutter */
             #tour-overlay { display: none !important; }
         }
         
@@ -307,21 +271,31 @@
     </div>
 
     <div id="tour-overlay" onclick="endTour()">
-        <div class="tour-center-msg">Trykk hvor som helst for å starte</div>
+        <div class="tour-center-msg">
+            <div class="tour-center-text">KLIKK FOR Å STARTE</div>
+        </div>
         
-        <div class="tour-tooltip" id="tour-nav">
-            <span class="tour-arrow"><i class="ph ph-arrow-left"></i></span>
-            <div class="tour-text">Navigasjon</div>
+        <div class="hud-item" id="hud-nav">
+            <div class="hud-connector"></div>
+            <div class="hud-card">
+                <div class="hud-title">NAVIGASJON</div>
+                <p class="hud-desc">Oversikt over systemet. Bytt mellom Dashboard, Timeplan og Verktøy.</p>
+            </div>
         </div>
 
-        <div class="tour-tooltip" id="tour-timer">
-            <div class="tour-text">Fokus & Pust</div>
-            <span class="tour-arrow"><i class="ph ph-arrow-down"></i></span>
+        <div class="hud-item" id="hud-timer">
+            <div class="hud-card">
+                <div class="hud-title">FOKUS KJERNE</div>
+                <p class="hud-desc">Start arbeidsøkter. Systemet aktiverer automatisk Puste-modus hvert minutt.</p>
+            </div>
         </div>
 
-        <div class="tour-tooltip" id="tour-tasks">
-            <div class="tour-text">Oppgaver & Lyd</div>
-            <span class="tour-arrow"><i class="ph ph-arrow-down-right"></i></span>
+        <div class="hud-item" id="hud-tasks">
+            <div class="hud-connector"></div>
+            <div class="hud-card">
+                <div class="hud-title">OPPGAVE SENTRAL</div>
+                <p class="hud-desc">Registrer mål. Fullfør for å få XP og seiers-animasjon.</p>
+            </div>
         </div>
     </div>
 
@@ -551,7 +525,7 @@
         document.getElementById('welcome-screen').classList.add('hidden');
         document.getElementById('app-shell').classList.add('visible');
         
-        // Show Tour after small delay
+        // Show Tour
         setTimeout(() => {
             document.getElementById('tour-overlay').classList.add('active');
         }, 1000);
@@ -561,7 +535,7 @@
 
     function endTour() {
         document.getElementById('tour-overlay').classList.remove('active');
-        playKeySound(); // Feedback
+        playKeySound();
     }
 
     document.getElementById('setupAvatarUpload').addEventListener('change', (e) => {
@@ -651,7 +625,7 @@
     // --- AUDIO SYNTHESIZER ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     
-    // 1. ASMR / Thock Key Sound
+    // 1. ASMR Key Sound
     function playKeySound() {
         if (!isAudioInitialized) return;
         const t = audioCtx.currentTime;
@@ -663,8 +637,7 @@
         osc.type = 'triangle';
         
         const filter = audioCtx.createBiquadFilter();
-        filter.type = "lowpass";
-        filter.frequency.value = 800;
+        filter.type = "lowpass"; filter.frequency.value = 800;
 
         gain.gain.setValueAtTime(0.15, t);
         gain.gain.exponentialRampToValueAtTime(0.01, t + 0.08);
@@ -759,8 +732,8 @@
 
     // --- APP CORE ---
     let state = { name: "Student", theme: "", xp: 0, avatar: "std1", tasks: [], notes: "", schedule: {} };
-    if(localStorage.getItem('StudentOS_Finalv4')) { state = {...state, ...JSON.parse(localStorage.getItem('StudentOS_Finalv4'))}; }
-    function save() { localStorage.setItem('StudentOS_Finalv4', JSON.stringify(state)); }
+    if(localStorage.getItem('StudentOS_Finalv5')) { state = {...state, ...JSON.parse(localStorage.getItem('StudentOS_Finalv5'))}; }
+    function save() { localStorage.setItem('StudentOS_Finalv5', JSON.stringify(state)); }
 
     // --- INIT ---
     updateGlobalUI(); renderSchedule();
