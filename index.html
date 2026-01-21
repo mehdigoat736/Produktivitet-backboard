@@ -3,470 +3,541 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Student OS // AI Edition</title>
+    <title>Student OS // Future Edition</title>
     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;700;800&display=swap" rel="stylesheet">
     
     <style>
-        /* --- CORE VARIABLES --- */
+        /* --- FUTURE DESIGN SYSTEM --- */
         :root {
-            --bg: #0f172a;
-            --sidebar-bg: rgba(15, 23, 42, 0.6);
-            --card-bg: rgba(30, 41, 59, 0.4);
-            --border: rgba(255, 255, 255, 0.08);
-            --primary: #8b5cf6;
-            --accent: #38bdf8;
-            --text: #f8fafc;
-            --text-dim: #94a3b8;
+            --bg-color: #030712;
+            --glass-surface: rgba(17, 24, 39, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --primary: #6366f1; /* Indigo */
+            --accent: #ec4899;  /* Pink */
             --success: #10b981;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
         }
 
         /* Themes */
-        body.theme-nature { --bg: #022c22; --sidebar-bg: rgba(2, 44, 34, 0.6); --primary: #10b981; --accent: #a7f3d0; }
-        body.theme-energy { --bg: #431407; --sidebar-bg: rgba(67, 20, 7, 0.6); --primary: #f97316; --accent: #fde047; }
-        body.theme-midnight { --bg: #000; --sidebar-bg: #111; --card-bg: #111; --border: #333; --primary: #6366f1; }
+        body.theme-cyber { --bg-color: #050505; --primary: #00f0ff; --accent: #ff003c; --shadow-glow: 0 0 20px rgba(0, 240, 255, 0.4); }
+        body.theme-nature { --bg-color: #022c22; --primary: #34d399; --accent: #facc15; --shadow-glow: 0 0 20px rgba(52, 211, 153, 0.3); }
+        body.theme-sunset { --bg-color: #2a0a18; --primary: #f43f5e; --accent: #fb923c; --shadow-glow: 0 0 20px rgba(244, 63, 94, 0.3); }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
         
         body {
-            margin: 0; font-family: 'Outfit', sans-serif;
-            background-color: var(--bg); color: var(--text);
+            margin: 0; font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-color); color: var(--text-main);
             height: 100vh; overflow: hidden;
-            transition: background 0.4s ease;
+            transition: background 0.5s ease;
         }
+
+        /* Animated Background Blobs */
+        .bg-orb {
+            position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; z-index: -1;
+            animation: float 10s infinite ease-in-out;
+        }
+        .orb-1 { width: 300px; height: 300px; background: var(--primary); top: -50px; left: -50px; }
+        .orb-2 { width: 400px; height: 400px; background: var(--accent); bottom: -100px; right: -100px; animation-delay: -5s; }
+        @keyframes float { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(30px, 50px); } }
 
         /* --- LAYOUT --- */
-        .app-layout { display: flex; height: 100%; width: 100%; }
+        .app-shell { display: flex; height: 100%; width: 100%; position: relative; z-index: 1; }
 
-        /* Sidebar (Desktop) */
+        /* Sidebar (PC) */
         .sidebar {
-            width: 260px; background: var(--sidebar-bg);
-            backdrop-filter: blur(20px); border-right: 1px solid var(--border);
-            padding: 25px; display: flex; flex-direction: column; gap: 8px;
-            z-index: 10;
+            width: 280px; background: rgba(0,0,0,0.2); backdrop-filter: blur(25px);
+            border-right: 1px solid var(--glass-border); padding: 30px;
+            display: flex; flex-direction: column; gap: 10px;
         }
         
-        /* Mobile Nav (Hidden by default) */
-        .mobile-nav { display: none; }
-
-        .nav-item {
-            background: transparent; border: none; color: var(--text-dim);
-            padding: 14px; border-radius: 12px; cursor: pointer;
-            text-align: left; font-size: 0.95rem; font-weight: 600;
-            display: flex; align-items: center; gap: 12px; transition: 0.2s;
+        .logo-area {
+            font-size: 1.5rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 30px;
+            background: linear-gradient(to right, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-        .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
-        .nav-item.active { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        .nav-item i { font-size: 1.3rem; }
+
+        .nav-btn {
+            background: transparent; border: none; color: var(--text-muted);
+            padding: 15px; border-radius: 16px; cursor: pointer; text-align: left;
+            font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 15px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.05); color: #fff; transform: translateX(5px); }
+        .nav-btn.active { 
+            background: var(--primary); color: #fff; 
+            box-shadow: var(--shadow-glow);
+        }
+        .nav-btn i { font-size: 1.4rem; }
 
         /* Main Content */
-        .content-area { flex: 1; overflow-y: auto; padding: 30px; position: relative; }
-        .section { display: none; animation: fadeUp 0.4s ease; }
+        .main-view { flex: 1; overflow-y: auto; padding: 40px; position: relative; }
+        
+        /* Sections & Animation */
+        .section { display: none; animation: slideIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .section.active { display: block; }
-        @keyframes fadeUp { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
-        /* --- CARDS & GRID --- */
-        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        
-        .card {
-            background: var(--card-bg); border: 1px solid var(--border);
-            border-radius: 20px; padding: 25px; backdrop-filter: blur(10px);
+        /* Cards */
+        .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
+        .glass-card {
+            background: var(--glass-surface); border: 1px solid var(--glass-border);
+            border-radius: 24px; padding: 25px; backdrop-filter: blur(15px);
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
+            transition: transform 0.3s; position: relative; overflow: hidden;
+        }
+        .glass-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+
+        /* --- DASHBOARD WIDGETS --- */
+        .timer-display {
+            font-size: 5rem; font-weight: 800; text-align: center; margin: 10px 0;
+            font-variant-numeric: tabular-nums; letter-spacing: -3px;
+            background: linear-gradient(180deg, #fff, var(--text-muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
-        .btn {
-            background: var(--primary); color: white; border: none; width: 100%;
-            padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer;
-            transition: transform 0.2s; font-size: 0.9rem;
+        .action-btn {
+            width: 100%; padding: 16px; border-radius: 18px; border: none;
+            background: var(--primary); color: white; font-weight: 700; font-size: 1rem;
+            cursor: pointer; transition: 0.2s; box-shadow: var(--shadow-glow);
         }
-        .btn:active { transform: scale(0.97); }
+        .action-btn:active { transform: scale(0.95); }
 
-        /* --- SETTINGS: PROFILE DESIGN --- */
-        .profile-header {
-            position: relative; height: 120px;
-            background: linear-gradient(to right, var(--primary), var(--accent));
-            border-radius: 20px 20px 0 0; margin: -25px -25px 50px -25px;
+        /* --- CALCULATOR 2.0 (THE REQUESTED FEATURE) --- */
+        .calc-wrapper { display: flex; flex-direction: column; gap: 15px; }
+        .calc-screen {
+            background: #000; color: var(--primary); padding: 20px; border-radius: 18px;
+            text-align: right; font-family: 'Courier New', monospace; font-size: 2rem;
+            border: 1px solid var(--glass-border); min-height: 80px; overflow-x: auto;
+            display: flex; align-items: center; justify-content: flex-end;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
         }
-        .profile-avatar-large {
-            width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--bg);
-            position: absolute; bottom: -40px; left: 25px; background: #000;
-            cursor: pointer; transition: transform 0.3s;
+        .calc-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
         }
-        .profile-avatar-large:hover { transform: scale(1.05) rotate(5deg); }
-        
-        .theme-swatches { display: flex; gap: 15px; margin-top: 15px; }
-        .swatch {
-            width: 45px; height: 45px; border-radius: 50%; cursor: pointer;
-            border: 2px solid transparent; transition: 0.2s; position: relative;
+        .calc-key {
+            padding: 18px; border-radius: 14px; border: none; font-size: 1.1rem; font-weight: 600;
+            background: rgba(255,255,255,0.05); color: var(--text-main); cursor: pointer;
+            transition: 0.1s; box-shadow: 0 4px 0 rgba(0,0,0,0.3);
         }
-        .swatch.active { border-color: white; transform: scale(1.1); }
-        .swatch::after { content:''; position:absolute; inset:0; border-radius:50%; border:1px solid rgba(255,255,255,0.1); }
+        .calc-key:active { transform: translateY(4px); box-shadow: none; }
+        .calc-key.op { background: rgba(99, 102, 241, 0.15); color: var(--primary); }
+        .calc-key.sci { font-size: 0.9rem; color: var(--accent); }
+        .calc-key.equals { background: var(--primary); color: white; grid-column: span 1; }
+        .calc-key.clear { color: #ef4444; }
 
         /* --- AI MODAL --- */
-        #ai-modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px);
-            z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px;
+        #ai-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 999;
+            display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px);
         }
-        .ai-box {
-            background: #0f172a; border: 1px solid var(--primary); width: 100%; max-width: 400px;
-            border-radius: 24px; padding: 30px; text-align: center; position: relative; overflow: hidden;
-            box-shadow: 0 0 50px rgba(139, 92, 246, 0.2); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        .ai-interface {
+            width: 90%; max-width: 450px; background: #0b0f19; border: 1px solid var(--primary);
+            border-radius: 24px; padding: 2px; position: relative; overflow: hidden;
+            box-shadow: 0 0 100px rgba(99, 102, 241, 0.2);
         }
-        @keyframes popIn { from{transform:scale(0.9); opacity:0;} to{transform:scale(1); opacity:1;} }
+        .ai-content { background: #0b0f19; border-radius: 22px; padding: 30px; text-align: center; }
+        
+        .scan-window {
+            width: 100%; height: 250px; background: #000; border-radius: 15px; margin: 20px 0;
+            position: relative; overflow: hidden; border: 1px solid #333;
+        }
+        .scan-img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
+        .scan-laser {
+            position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: #10b981;
+            box-shadow: 0 0 15px #10b981; animation: laser 2s infinite ease-in-out;
+        }
+        @keyframes laser { 0% {top:0} 50% {top:100%} 100% {top:0} }
 
-        /* Scanning Effect */
-        .scan-container {
-            width: 100%; height: 200px; background: #000; border-radius: 12px;
-            margin: 20px 0; position: relative; overflow: hidden; display: none; border: 1px solid #333;
-        }
-        .scan-img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
-        .laser-line {
-            position: absolute; top: 0; left: 0; width: 100%; height: 2px;
-            background: #10b981; box-shadow: 0 0 10px #10b981, 0 0 20px #10b981;
-            animation: scan 2s infinite linear;
-        }
-        @keyframes scan { 0% {top:0;} 50% {top:100%;} 100% {top:0;} }
-
-        .upload-area {
-            border: 2px dashed var(--border); border-radius: 15px; padding: 30px;
-            cursor: pointer; transition: 0.2s; margin-top: 20px;
-        }
-        .upload-area:hover { border-color: var(--primary); background: rgba(139, 92, 246, 0.1); }
-
-        /* --- TASK LIST STYLE --- */
-        .task-item {
-            background: rgba(255,255,255,0.03); padding: 12px 15px; border-radius: 12px;
-            margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;
-            border: 1px solid transparent; transition: 0.2s;
-        }
-        .task-item:hover { background: rgba(255,255,255,0.06); }
-        .ai-badge { 
-            font-size: 0.7rem; background: rgba(16, 185, 129, 0.15); color: #10b981; 
-            padding: 3px 8px; border-radius: 6px; display: flex; align-items: center; gap: 4px;
+        .terminal-log {
+            font-family: monospace; color: #10b981; font-size: 0.8rem; text-align: left;
+            height: 60px; overflow: hidden; background: rgba(0,0,0,0.5); padding: 10px;
+            border-radius: 8px; margin-top: 10px; display: none;
         }
 
-        /* --- RESPONSIVE MOBILE --- */
+        /* --- MOBILE NAV --- */
+        .mobile-nav { display: none; }
         @media (max-width: 768px) {
             .sidebar { display: none; }
-            .content-area { padding: 15px; padding-bottom: 100px; }
+            .main-view { padding: 20px; padding-bottom: 100px; }
             .mobile-nav {
-                position: fixed; bottom: 0; left: 0; width: 100%;
-                background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px);
-                border-top: 1px solid var(--border); display: flex; justify-content: space-around;
-                padding: 12px; z-index: 50;
+                position: fixed; bottom: 0; width: 100%; background: rgba(3, 7, 18, 0.95);
+                backdrop-filter: blur(20px); border-top: 1px solid var(--glass-border);
+                display: flex; justify-content: space-around; padding: 15px; z-index: 100;
             }
             .mob-btn {
-                background: none; border: none; color: var(--text-dim);
-                display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 0.75rem;
+                background: none; border: none; color: var(--text-muted); display: flex;
+                flex-direction: column; align-items: center; gap: 5px; font-size: 0.7rem; font-weight: 600;
             }
             .mob-btn.active { color: var(--primary); }
             .mob-btn i { font-size: 1.5rem; }
-            .grid-3 { grid-template-columns: 1fr; }
         }
         
-        /* Modern Input */
-        .glass-input {
-            width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border);
-            padding: 15px; border-radius: 12px; color: white; margin-bottom: 10px;
+        /* Task & Profile Styles */
+        .task-list-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px; background: rgba(255,255,255,0.03); border-radius: 12px; margin-bottom: 10px;
+            border-left: 3px solid transparent; transition: 0.2s;
         }
-        .glass-input:focus { border-color: var(--primary); }
+        .task-list-item.verified { border-left-color: var(--success); }
+        .verified-tag { 
+            background: rgba(16, 185, 129, 0.1); color: var(--success); padding: 4px 8px; 
+            border-radius: 6px; font-size: 0.7rem; font-weight: 700; display: flex; gap: 5px; align-items: center;
+        }
 
+        .avatar-lg {
+            width: 100px; height: 100px; border-radius: 50%; background: #000; 
+            border: 3px solid var(--bg-color); box-shadow: 0 0 30px var(--primary);
+            cursor: pointer; transition: 0.3s;
+        }
+        .avatar-lg:hover { transform: rotate(10deg) scale(1.1); }
     </style>
 </head>
-<body class="">
+<body>
 
-    <div class="app-layout">
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
+    <div class="app-shell">
         
         <aside class="sidebar">
-            <div style="padding: 10px 0; margin-bottom: 20px; font-weight: 900; font-size: 1.2rem; letter-spacing: 1px; color: var(--text);">
-                STUDENT<span style="color:var(--primary)">OS</span>
-            </div>
-            <button class="nav-item active" onclick="nav('dashboard')"><i class="ph ph-squares-four"></i> Oversikt</button>
-            <button class="nav-item" onclick="nav('tasks')"><i class="ph ph-check-square"></i> Oppgaver</button>
-            <button class="nav-item" onclick="nav('settings')"><i class="ph ph-gear"></i> Innstillinger</button>
+            <div class="logo-area">STUDENT<span style="color:var(--primary)">OS</span></div>
+            <button class="nav-btn active" onclick="nav('dashboard')"><i class="ph ph-squares-four"></i> Oversikt</button>
+            <button class="nav-btn" onclick="nav('tools')"><i class="ph ph-calculator"></i> Lab & Verktøy</button>
+            <button class="nav-btn" onclick="nav('tasks')"><i class="ph ph-check-square"></i> Mål & AI</button>
+            <button class="nav-btn" onclick="nav('settings')"><i class="ph ph-gear"></i> Innstillinger</button>
             
-            <div style="margin-top: auto; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 15px; display: flex; gap: 10px; align-items: center;">
-                <img id="miniAvatar" src="" style="width: 35px; height: 35px; border-radius: 50%; background:#000;">
-                <div style="font-size: 0.85rem;">
-                    <div id="miniName" style="font-weight: bold;">Student</div>
-                    <div style="color: var(--accent);">Level <span id="miniLvl">1</span></div>
+            <div style="margin-top:auto; display:flex; gap:10px; align-items:center; padding:10px; background:rgba(255,255,255,0.05); border-radius:12px;">
+                <img id="miniAv" src="" style="width:40px;height:40px;border-radius:50%;background:#000;">
+                <div>
+                    <div id="miniName" style="font-weight:700; font-size:0.9rem;">Elev</div>
+                    <div style="font-size:0.75rem; color:var(--primary);">Online</div>
                 </div>
             </div>
         </aside>
 
-        <main class="content-area">
+        <main class="main-view">
             
             <section id="dashboard" class="section active">
-                <h1 id="welcomeTitle">Hei! 👋</h1>
-                <div class="grid-3">
-                    <div class="card" style="text-align: center;">
-                        <h2 style="margin-top:0"><i class="ph ph-clock"></i> Fokus Økt</h2>
-                        <div style="font-size: 4rem; font-weight: 800; margin: 15px 0; font-variant-numeric: tabular-nums;" id="timer">25:00</div>
-                        <button class="btn" id="timerBtn" onclick="toggleTimer()">START ØKT</button>
+                <h1 id="greet" style="font-weight:800; font-size:2rem; margin-bottom:20px;">Velkommen.</h1>
+                <div class="grid-layout">
+                    <div class="glass-card" style="text-align:center;">
+                        <h3 style="margin:0; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; font-size:0.8rem;">Fokus Status</h3>
+                        <div class="timer-display" id="timer">25:00</div>
+                        <button class="action-btn" id="timerBtn" onclick="toggleTimer()">INITIATE FOCUS</button>
                     </div>
-                    <div class="card">
-                        <h2 style="margin-top:0">Statistikk</h2>
-                        <div style="height: 180px;"><canvas id="chart"></canvas></div>
+                    <div class="glass-card">
+                        <h3 style="margin:0 0 15px 0;">XP Progresjon</h3>
+                        <div style="height:150px;"><canvas id="chart"></canvas></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tools" class="section">
+                <h1 style="margin-bottom:20px;">Vitenskapelig Lab</h1>
+                <div class="grid-layout">
+                    <div class="glass-card" style="max-width: 450px;">
+                        <div class="calc-wrapper">
+                            <div class="calc-screen" id="calcDisp">0</div>
+                            <div class="calc-grid">
+                                <button class="calc-key sci" onclick="add('sin(')">sin</button>
+                                <button class="calc-key sci" onclick="add('cos(')">cos</button>
+                                <button class="calc-key sci" onclick="add('tan(')">tan</button>
+                                <button class="calc-key sci" onclick="add('sqrt(')">√</button>
+                                
+                                <button class="calc-key sci" onclick="add('^')">^</button>
+                                <button class="calc-key sci" onclick="add('(')">(</button>
+                                <button class="calc-key sci" onclick="add(')')">)</button>
+                                <button class="calc-key op" onclick="add('/')">÷</button>
+                                
+                                <button class="calc-key" onclick="add('7')">7</button>
+                                <button class="calc-key" onclick="add('8')">8</button>
+                                <button class="calc-key" onclick="add('9')">9</button>
+                                <button class="calc-key op" onclick="add('*')">×</button>
+                                
+                                <button class="calc-key" onclick="add('4')">4</button>
+                                <button class="calc-key" onclick="add('5')">5</button>
+                                <button class="calc-key" onclick="add('6')">6</button>
+                                <button class="calc-key op" onclick="add('-')">-</button>
+                                
+                                <button class="calc-key" onclick="add('1')">1</button>
+                                <button class="calc-key" onclick="add('2')">2</button>
+                                <button class="calc-key" onclick="add('3')">3</button>
+                                <button class="calc-key op" onclick="add('+')">+</button>
+
+                                <button class="calc-key clear" onclick="cls()">C</button>
+                                <button class="calc-key" onclick="add('0')">0</button>
+                                <button class="calc-key" onclick="add('.')">.</button>
+                                <button class="calc-key equals" onclick="solve()">=</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card">
+                        <h3>Notater</h3>
+                        <textarea id="notes" style="width:100%; height:300px; background:rgba(0,0,0,0.3); border:1px solid var(--glass-border); color:white; padding:15px; border-radius:15px; resize:none;" placeholder="Skriv notater her..."></textarea>
                     </div>
                 </div>
             </section>
 
             <section id="tasks" class="section">
-                <h1>Mine Mål & AI Check</h1>
-                <div class="card">
-                    <input type="text" class="glass-input" id="taskInput" placeholder="Skriv inn nytt læringsmål..." onkeypress="if(event.key==='Enter') initTask()">
-                    <div id="taskList" style="margin-top: 15px;">
-                        </div>
+                <h1>AI Verifisering</h1>
+                <div class="glass-card" style="max-width:600px;">
+                    <div style="display:flex; gap:10px; margin-bottom:20px;">
+                        <input type="text" id="taskInput" style="flex:1; background:rgba(0,0,0,0.3); border:1px solid var(--glass-border); padding:15px; border-radius:15px; color:white;" placeholder="Skriv inn oppgave...">
+                        <button class="action-btn" style="width:auto;" onclick="startAiFlow()">SCAN</button>
+                    </div>
+                    <div id="taskList"></div>
                 </div>
             </section>
 
             <section id="settings" class="section">
-                <h1>Min Profil</h1>
-                
-                <div class="grid-3">
-                    <div class="card" style="grid-column: span 2;">
-                        <div class="profile-header"></div>
-                        <img id="settingAvatar" src="" class="profile-avatar-large" onclick="refreshAvatar()" title="Trykk for ny avatar">
-                        
-                        <div style="margin-top: 50px; display: flex; justify-content: space-between; align-items: flex-end;">
-                            <div style="flex-grow: 1; margin-right: 20px;">
-                                <label style="font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; font-weight: bold;">Visningsnavn</label>
-                                <input type="text" id="nameInput" class="glass-input" style="margin-top: 5px;" onchange="saveName()">
-                            </div>
-                            <div style="text-align: right;">
-                                <div style="font-size: 2rem; font-weight: 800; color: var(--primary);" id="xpTotal">0</div>
-                                <div style="font-size: 0.8rem; color: var(--text-dim);">TOTAL XP</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <h2>Utseende</h2>
-                        <p style="color:var(--text-dim); font-size: 0.9rem;">Velg temaet som passer din læringsstil.</p>
-                        <div class="theme-swatches">
-                            <div class="swatch" style="background: #0f172a;" onclick="changeTheme('')" title="Deep Focus"></div>
-                            <div class="swatch" style="background: #022c22;" onclick="changeTheme('theme-nature')" title="Nature"></div>
-                            <div class="swatch" style="background: #431407;" onclick="changeTheme('theme-energy')" title="Energy"></div>
-                            <div class="swatch" style="background: #000;" onclick="changeTheme('theme-midnight')" title="Midnight"></div>
-                        </div>
+                <h1>Profil Dashboard</h1>
+                <div class="glass-card" style="text-align:center; padding-top:40px;">
+                    <div style="height:100px; background:linear-gradient(to right, var(--primary), var(--accent)); position:absolute; top:0; left:0; width:100%;"></div>
+                    <div style="position:relative;">
+                        <img id="bigAv" class="avatar-lg" src="" onclick="newAvatar()">
+                        <h2 id="bigName" style="margin:10px 0;">Elev</h2>
+                        <button style="background:none; border:1px solid var(--glass-border); color:var(--text-muted); padding:5px 10px; border-radius:20px; cursor:pointer;" onclick="editName()">Endre Navn</button>
                     </div>
                     
-                    <div class="card">
-                        <h2 style="color: #ef4444;">Faresone</h2>
-                        <button class="btn" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;" onclick="resetData()">Slett all data</button>
+                    <div style="margin-top:30px; text-align:left;">
+                        <h3>System Tema</h3>
+                        <div style="display:flex; gap:15px; flex-wrap:wrap;">
+                            <button onclick="setTheme('')" style="padding:15px 25px; border-radius:10px; border:1px solid #333; background:#030712; color:white; cursor:pointer;">Standard</button>
+                            <button onclick="setTheme('theme-cyber')" style="padding:15px 25px; border-radius:10px; border:1px solid #00f0ff; background:#000; color:#00f0ff; cursor:pointer;">Cyberpunk</button>
+                            <button onclick="setTheme('theme-nature')" style="padding:15px 25px; border-radius:10px; border:1px solid #10b981; background:#022c22; color:#10b981; cursor:pointer;">Nature</button>
+                            <button onclick="setTheme('theme-sunset')" style="padding:15px 25px; border-radius:10px; border:1px solid #f43f5e; background:#2a0a18; color:#f43f5e; cursor:pointer;">Sunset</button>
+                        </div>
                     </div>
                 </div>
             </section>
 
         </main>
-
+        
         <nav class="mobile-nav">
             <button class="mob-btn active" onclick="nav('dashboard')"><i class="ph ph-squares-four"></i><span>Hjem</span></button>
+            <button class="mob-btn" onclick="nav('tools')"><i class="ph ph-calculator"></i><span>Lab</span></button>
             <button class="mob-btn" onclick="nav('tasks')"><i class="ph ph-check-square"></i><span>Mål</span></button>
             <button class="mob-btn" onclick="nav('settings')"><i class="ph ph-user"></i><span>Profil</span></button>
         </nav>
+
     </div>
 
-    <div id="ai-modal">
-        <div class="ai-box">
-            <h2 style="color: var(--primary); margin-top:0;">🤖 AI Verifisering</h2>
-            <p id="ai-status" style="color: var(--text-dim);">Systemet krever visuelt bevis.</p>
-            
-            <label class="upload-area" id="uploadArea">
-                <i class="ph ph-camera" style="font-size: 2rem; color: var(--accent);"></i>
-                <div style="margin-top: 10px; font-weight: bold;">Last opp bilde</div>
-                <input type="file" id="fileInput" accept="image/*" style="display: none;">
-            </label>
+    <div id="ai-overlay">
+        <div class="ai-interface">
+            <div class="ai-content">
+                <h2 style="margin:0; color:var(--primary); text-transform:uppercase; letter-spacing:2px;">AI Protocol</h2>
+                <p id="ai-msg" style="color:var(--text-muted); font-size:0.9rem;">Venter på visuelt bevis...</p>
+                
+                <label id="uploadBtn" style="display:block; padding:30px; border:2px dashed var(--glass-border); border-radius:15px; cursor:pointer; margin:20px 0; transition:0.3s;">
+                    <i class="ph ph-upload-simple" style="font-size:2rem; color:var(--accent);"></i>
+                    <div style="margin-top:10px; font-weight:700;">Last opp bilde</div>
+                    <input type="file" id="fileIn" hidden accept="image/*">
+                </label>
 
-            <div class="scan-container" id="scanContainer">
-                <div class="laser-line"></div>
-                <img id="previewImg" class="scan-img">
+                <div id="scanView" style="display:none;">
+                    <div class="scan-window">
+                        <div class="scan-laser"></div>
+                        <img id="scanPreview" class="scan-img">
+                    </div>
+                    <div class="terminal-log" id="terminal"></div>
+                </div>
+
+                <button id="aiConfirm" class="action-btn" style="display:none;" onclick="finishAi()">BEKREFT</button>
+                <button onclick="closeAi()" style="background:transparent; border:none; color:var(--text-muted); margin-top:15px; cursor:pointer;">AVBRYT</button>
             </div>
-
-            <button class="btn" id="confirmBtn" style="display: none; margin-top: 15px;" onclick="finalizeTask()">Bekreft Fullført</button>
-            <button onclick="closeModal()" style="background:none; border:none; color: var(--text-dim); margin-top: 15px; cursor: pointer;">Avbryt</button>
         </div>
     </div>
 
-    <audio id="alarm" src="https://assets.mixkit.co/sfx/preview/mixkit-positive-notification-951.mp3"></audio>
+    <audio id="sfx-success" src="https://assets.mixkit.co/sfx/preview/mixkit-positive-notification-951.mp3"></audio>
 
 <script>
-    // --- STATE ---
-    let app = {
-        name: "Elev",
+    // --- APP CORE ---
+    let state = {
+        name: "Student",
         theme: "",
         xp: 0,
-        avatarSeed: "student123",
-        tasks: []
+        avatar: "std1",
+        tasks: [],
+        notes: ""
     };
 
-    // Load from memory
-    if(localStorage.getItem('studentOS_AI')) {
-        app = {...app, ...JSON.parse(localStorage.getItem('studentOS_AI'))};
+    if(localStorage.getItem('futureOS')) {
+        state = {...state, ...JSON.parse(localStorage.getItem('futureOS'))};
     }
 
-    // --- INIT UI ---
-    updateUI();
-    
-    function updateUI() {
-        document.body.className = app.theme;
+    function save() { localStorage.setItem('futureOS', JSON.stringify(state)); }
+
+    // --- INIT ---
+    updateGlobalUI();
+    document.getElementById('notes').value = state.notes;
+    document.getElementById('notes').addEventListener('input', (e) => { state.notes = e.target.value; save(); });
+
+    function updateGlobalUI() {
+        document.body.className = state.theme;
+        document.getElementById('greet').innerText = `Hei, ${state.name}.`;
+        document.getElementById('miniName').innerText = state.name;
+        document.getElementById('bigName').innerText = state.name;
         
-        // Names
-        document.getElementById('welcomeTitle').innerText = `Hei, ${app.name}! 👋`;
-        document.getElementById('nameInput').value = app.name;
-        document.getElementById('miniName').innerText = app.name;
+        const av = `https://api.dicebear.com/7.x/notionists/svg?seed=${state.avatar}`;
+        document.getElementById('miniAv').src = av;
+        document.getElementById('bigAv').src = av;
         
-        // Avatars
-        const avUrl = `https://api.dicebear.com/7.x/bottts/svg?seed=${app.avatarSeed}`;
-        document.getElementById('miniAvatar').src = avUrl;
-        document.getElementById('settingAvatar').src = avUrl;
-        
-        // Stats
-        document.getElementById('xpTotal').innerText = app.xp;
-        document.getElementById('miniLvl').innerText = Math.floor(app.xp / 500) + 1;
-        
-        // Render Tasks
         renderTasks();
     }
-
-    function save() { localStorage.setItem('studentOS_AI', JSON.stringify(app)); }
 
     // --- NAVIGATION ---
     function nav(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         
-        // Update styling
-        document.querySelectorAll('.nav-item, .mob-btn').forEach(b => b.classList.remove('active'));
-        // Mapping logic (simple index based)
-        const idx = id==='dashboard'?0: id==='tasks'?1: 2;
-        document.querySelectorAll('.nav-item')[idx]?.classList.add('active');
-        document.querySelectorAll('.mob-btn')[idx]?.classList.add('active');
+        // Buttons
+        document.querySelectorAll('.nav-btn, .mob-btn').forEach(b => b.classList.remove('active'));
+        const idx = id==='dashboard'?0 : id==='tools'?1 : id==='tasks'?2 : 3;
+        
+        if(document.querySelectorAll('.nav-btn')[idx]) document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+        if(document.querySelectorAll('.mob-btn')[idx]) document.querySelectorAll('.mob-btn')[idx].classList.add('active');
     }
 
-    // --- SETTINGS LOGIC ---
-    function changeTheme(theme) {
-        app.theme = theme;
-        save();
-        updateUI();
+    // --- CALCULATOR ENGINE 2.0 ---
+    let expression = "";
+    function add(v) { 
+        expression += v; 
+        document.getElementById('calcDisp').innerText = expression; 
     }
-    
-    function refreshAvatar() {
-        app.avatarSeed = Math.random().toString(36);
-        save();
-        updateUI();
+    function cls() { 
+        expression = ""; 
+        document.getElementById('calcDisp').innerText = "0"; 
     }
-    
-    function saveName() {
-        app.name = document.getElementById('nameInput').value;
-        save();
-        updateUI();
-    }
-    
-    function resetData() {
-        if(confirm("Slette alt?")) {
-            localStorage.removeItem('studentOS_AI');
-            location.reload();
+    function solve() {
+        try {
+            // Safe conversion for math functions
+            let safe = expression
+                .replace(/sin/g, 'Math.sin')
+                .replace(/cos/g, 'Math.cos')
+                .replace(/tan/g, 'Math.tan')
+                .replace(/sqrt/g, 'Math.sqrt')
+                .replace(/\^/g, '**');
+            let res = eval(safe);
+            // Limit decimals
+            if(!Number.isInteger(res)) res = res.toFixed(4);
+            document.getElementById('calcDisp').innerText = res;
+            expression = res.toString();
+        } catch(e) {
+            document.getElementById('calcDisp').innerText = "Err";
+            expression = "";
         }
     }
 
-    // --- AI TASK LOGIC ---
-    let pendingTask = "";
-
-    function initTask() {
+    // --- AI SCANNER LOGIC ---
+    let tempTask = "";
+    function startAiFlow() {
         const val = document.getElementById('taskInput').value;
         if(!val) return;
-        pendingTask = val;
-        openModal();
+        tempTask = val;
+        document.getElementById('ai-overlay').style.display = 'flex';
+        // Reset UI
+        document.getElementById('uploadBtn').style.display = 'block';
+        document.getElementById('scanView').style.display = 'none';
+        document.getElementById('aiConfirm').style.display = 'none';
+        document.getElementById('ai-msg').innerText = `Analyserer mål: "${val}"`;
     }
 
-    function openModal() {
-        const m = document.getElementById('ai-modal');
-        m.style.display = 'flex';
-        // Reset state
-        document.getElementById('uploadArea').style.display = 'block';
-        document.getElementById('scanContainer').style.display = 'none';
-        document.getElementById('confirmBtn').style.display = 'none';
-        document.getElementById('ai-status').innerText = `Analyserer mål: "${pendingTask}"`;
-    }
-
-    function closeModal() {
-        document.getElementById('ai-modal').style.display = 'none';
-        document.getElementById('taskInput').value = "";
-    }
-
-    // File Upload Handler
-    document.getElementById('fileInput').addEventListener('change', function(e) {
-        if (e.target.files && e.target.files[0]) {
+    document.getElementById('fileIn').addEventListener('change', (e) => {
+        if(e.target.files[0]) {
             const reader = new FileReader();
-            reader.onload = function(e) {
-                // Show scanning UI
-                document.getElementById('uploadArea').style.display = 'none';
-                const scanCont = document.getElementById('scanContainer');
-                scanCont.style.display = 'block';
-                document.getElementById('previewImg').src = e.target.result;
-                document.getElementById('ai-status').innerText = "AI Scanner bildet...";
+            reader.onload = (evt) => {
+                document.getElementById('uploadBtn').style.display = 'none';
+                document.getElementById('scanView').style.display = 'block';
+                document.getElementById('scanPreview').src = evt.target.result;
                 
-                // Simulate AI processing time
-                setTimeout(() => {
-                    document.getElementById('ai-status').innerText = "✅ Verifisering Vellykket!";
-                    document.getElementById('ai-status').style.color = "var(--success)";
-                    document.getElementById('confirmBtn').style.display = 'inline-block';
-                }, 2500);
+                // Hacker logs
+                const term = document.getElementById('terminal');
+                term.style.display = 'block';
+                const logs = ["Connecting to Neural Net...", "Analyzing pixels...", "Checking patterns...", "Probability match: 99.8%", "VERIFIED."];
+                term.innerHTML = "";
+                
+                let i = 0;
+                let logInt = setInterval(() => {
+                    term.innerHTML += `> ${logs[i]}<br>`;
+                    i++;
+                    if(i >= logs.length) {
+                        clearInterval(logInt);
+                        document.getElementById('aiConfirm').style.display = 'block';
+                        document.getElementById('ai-msg').innerText = "BEKREFTELSE KLAR.";
+                        document.getElementById('ai-msg').style.color = "var(--success)";
+                    }
+                }, 600);
             }
             reader.readAsDataURL(e.target.files[0]);
         }
     });
 
-    function finalizeTask() {
-        app.tasks.push({ text: pendingTask, id: Date.now() });
-        app.xp += 100; // Reward
+    function finishAi() {
+        state.tasks.push({ txt: tempTask, id: Date.now() });
+        state.xp += 150;
         save();
-        updateUI();
-        closeModal();
-        confetti({ particleCount: 150, spread: 80 });
+        updateGlobalUI();
+        closeAi();
+        confetti({ particleCount: 200, spread: 90 });
+        document.getElementById('sfx-success').play();
+    }
+
+    function closeAi() {
+        document.getElementById('ai-overlay').style.display = 'none';
+        document.getElementById('taskInput').value = "";
     }
 
     function renderTasks() {
         const list = document.getElementById('taskList');
         list.innerHTML = "";
-        app.tasks.forEach(t => {
-            const div = document.createElement('div');
-            div.className = 'task-item';
-            div.innerHTML = `
-                <span style="font-weight:500">${t.text}</span>
-                <span class="ai-badge"><i class="ph ph-check"></i> AI Verified</span>
-            `;
-            list.prepend(div);
+        state.tasks.forEach(t => {
+            list.innerHTML += `
+            <div class="task-list-item verified">
+                <span style="font-weight:600">${t.txt}</span>
+                <span class="verified-tag"><i class="ph ph-check-circle"></i> AI Verified</span>
+            </div>`;
         });
     }
 
-    // --- TIMER ---
-    let tInt, tRun = false, tLeft = 25*60;
+    // --- SETTINGS ---
+    function setTheme(t) { state.theme = t; save(); updateGlobalUI(); }
+    function newAvatar() { state.avatar = Math.random().toString(36); save(); updateGlobalUI(); }
+    function editName() { 
+        const n = prompt("Nytt navn:"); 
+        if(n) { state.name = n; save(); updateGlobalUI(); } 
+    }
+
+    // --- CHART & TIMER ---
+    // Timer
+    let tTime = 25*60, tInt, tRun = false;
     function toggleTimer() {
-        if(tRun) { clearInterval(tInt); document.getElementById('timerBtn').innerText="FORTSETT"; }
+        if(tRun) { clearInterval(tInt); document.getElementById('timerBtn').innerText="START"; }
         else {
             tInt = setInterval(() => {
-                tLeft--;
-                let m = Math.floor(tLeft/60), s = tLeft%60;
+                tTime--;
+                let m = Math.floor(tTime/60), s = tTime%60;
                 document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
-                if(tLeft<=0) { clearInterval(tInt); document.getElementById('alarm').play(); tLeft=25*60; }
+                if(tTime<=0) { clearInterval(tInt); document.getElementById('sfx-success').play(); tTime=25*60; }
             }, 1000);
             document.getElementById('timerBtn').innerText="PAUSE";
         }
         tRun = !tRun;
     }
 
-    // --- CHART ---
+    // Chart
     new Chart(document.getElementById('chart'), {
-        type: 'bar',
+        type: 'line',
         data: {
-            labels: ['M','T','O','T','F'],
-            datasets: [{ label: 'Fokus', data: [3,5,2,8,4], backgroundColor: '#8b5cf6', borderRadius: 5 }]
+            labels: ['M','T','O','T','F','L','S'],
+            datasets: [{ label:'XP', data:[100, 450, 300, 600, 400, 550, 800], borderColor:'#6366f1', borderWidth:3, tension:0.4, pointBackgroundColor:'#fff' }]
         },
-        options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{grid:{display:false}}, y:{display:false}} }
+        options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{display:false}} }
     });
 
 </script>
