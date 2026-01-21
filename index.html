@@ -3,29 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>mehdi.co // Neural Edition</title>
+    <title>mehdi.co // Cyber Edition</title>
     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;700;900&display=swap" rel="stylesheet">
     
     <style>
         /* --- DESIGN SYSTEM --- */
         :root {
-            --bg-color: #030712;
-            --glass-surface: rgba(15, 23, 42, 0.6); /* Litt mørkere for kontrast mot partikler */
-            --glass-border: rgba(255, 255, 255, 0.08);
+            --bg-color: #050505;
+            --glass-surface: rgba(20, 20, 30, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
             --primary: #6366f1;
-            --accent: #ec4899;
+            --accent: #d946ef;
             --success: #10b981;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --breath-color: #a5f3fc;
+            --grid-color: rgba(99, 102, 241, 0.3);
         }
 
-        body.theme-cyber { --bg-color: #050505; --primary: #00f0ff; --accent: #ff003c; --breath-color: #00f0ff; }
-        body.theme-nature { --bg-color: #022c22; --primary: #34d399; --accent: #facc15; --breath-color: #86efac; }
-        body.theme-sunset { --bg-color: #2a0a18; --primary: #f43f5e; --accent: #fb923c; --breath-color: #fb923c; }
+        body.theme-cyber { --primary: #00f0ff; --accent: #ff003c; --grid-color: rgba(0, 240, 255, 0.3); }
+        body.theme-nature { --primary: #34d399; --accent: #facc15; --grid-color: rgba(52, 211, 153, 0.3); }
+        body.theme-sunset { --primary: #f43f5e; --accent: #fb923c; --grid-color: rgba(244, 63, 94, 0.3); }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
         
@@ -36,22 +36,23 @@
             transition: background 0.5s ease;
         }
 
-        /* --- NEURAL PARTICLE BACKGROUND --- */
-        #particle-canvas {
+        /* --- NEW ANIMATED BACKGROUND (CYBER GRID) --- */
+        #bg-canvas {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0; pointer-events: none; /* Lar musen gå gjennom til innholdet */
+            z-index: 0; pointer-events: none;
+            background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15), transparent 80%);
         }
 
         /* Layout */
         .app-shell { display: flex; height: 100%; width: 100%; position: relative; z-index: 1; }
 
         .sidebar {
-            width: 280px; background: rgba(0,0,0,0.4); backdrop-filter: blur(20px);
+            width: 280px; background: rgba(5, 5, 10, 0.6); backdrop-filter: blur(25px);
             border-right: 1px solid var(--glass-border); padding: 30px;
             display: flex; flex-direction: column; gap: 10px;
         }
         .logo-area {
-            font-size: 1.5rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 30px;
+            font-size: 1.5rem; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 30px;
             background: linear-gradient(to right, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
         .nav-btn {
@@ -61,39 +62,36 @@
             transition: all 0.3s;
         }
         .nav-btn:hover { background: rgba(255,255,255,0.05); color: #fff; transform: translateX(5px); }
-        .nav-btn.active { background: var(--primary); color: #fff; box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+        .nav-btn.active { background: var(--primary); color: #fff; box-shadow: 0 0 25px rgba(99, 102, 241, 0.4); border: 1px solid var(--primary); }
         .nav-btn i { font-size: 1.4rem; }
 
         .main-view { flex: 1; overflow-y: auto; padding: 40px; position: relative; }
         .section { display: none; animation: slideIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .section.active { display: block; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
         .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
         .glass-card {
             background: var(--glass-surface); border: 1px solid var(--glass-border);
             border-radius: 24px; padding: 25px; backdrop-filter: blur(15px);
-            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 50px -10px rgba(0,0,0,0.5);
             transition: transform 0.3s; position: relative; overflow: visible;
         }
 
-        /* --- SOUND MIXER (New Feature) --- */
-        .sound-mixer {
-            display: flex; gap: 10px; margin-top: 15px; justify-content: center;
-        }
+        /* --- SOUND MIXER --- */
+        .sound-mixer { display: flex; gap: 12px; margin-top: 15px; justify-content: center; }
         .sound-btn {
-            width: 50px; height: 50px; border-radius: 12px; border: 1px solid var(--glass-border);
+            width: 55px; height: 55px; border-radius: 16px; border: 1px solid var(--glass-border);
             background: rgba(255,255,255,0.03); color: var(--text-muted); cursor: pointer;
-            display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
-            transition: 0.3s;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: 0.3s; font-size: 1.2rem;
         }
-        .sound-btn:hover { background: rgba(255,255,255,0.1); color: white; }
-        .sound-btn.active { background: var(--primary); color: white; box-shadow: 0 0 15px var(--primary); border-color: var(--primary); }
-        .sound-vol {
-            width: 100%; height: 4px; -webkit-appearance: none; background: rgba(255,255,255,0.1);
-            border-radius: 2px; outline: none; margin-top: 5px; display: none;
+        .sound-btn:hover { background: rgba(255,255,255,0.1); color: white; transform: translateY(-3px); }
+        .sound-btn.active { 
+            background: rgba(99, 102, 241, 0.2); color: var(--primary); 
+            border-color: var(--primary); box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
         }
-        .sound-group.active .sound-vol { display: block; }
+        .sound-label { font-size: 0.6rem; margin-top: 4px; font-weight: 700; text-transform: uppercase; }
 
         /* Schedule */
         .schedule-grid {
@@ -117,54 +115,73 @@
             opacity: 0; transition: opacity 1s ease;
         }
         #breath-overlay.active { opacity: 1; display: flex; }
-        .breath-circle-container { position: relative; width: 300px; height: 300px; display: flex; align-items: center; justify-content: center; margin-bottom: 40px; }
-        .breath-circle { width: 100px; height: 100px; border-radius: 50%; background: var(--breath-color); box-shadow: 0 0 60px var(--breath-color); }
-        .breath-text { font-size: 2rem; font-weight: 300; letter-spacing: 4px; color: var(--breath-color); text-transform: uppercase; position: absolute; }
-        .breath-timer { color: var(--text-muted); font-size: 1rem; margin-top: 20px; }
-        .close-breath-btn { margin-top: 40px; background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); padding: 10px 20px; border-radius: 30px; cursor: pointer; transition: 0.3s; }
-        .close-breath-btn:hover { border-color: white; color: white; }
-        @keyframes inhale { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(3); opacity: 1; } }
-        @keyframes exhale { 0% { transform: scale(3); opacity: 1; } 100% { transform: scale(1); opacity: 0.6; } }
+        .breath-circle-container { position: relative; width: 350px; height: 350px; display: flex; align-items: center; justify-content: center; margin-bottom: 40px; }
+        .breath-circle { 
+            width: 100px; height: 100px; border-radius: 50%; 
+            background: var(--primary); box-shadow: 0 0 80px var(--primary); 
+            border: 2px solid #fff;
+        }
+        .breath-text { font-size: 2.5rem; font-weight: 300; letter-spacing: 5px; color: white; text-transform: uppercase; position: absolute; text-shadow: 0 0 20px var(--primary); }
+        .close-breath-btn { margin-top: 40px; background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); padding: 12px 30px; border-radius: 30px; cursor: pointer; transition: 0.3s; font-size: 1rem; }
+        .close-breath-btn:hover { border-color: white; color: white; background: rgba(255,255,255,0.1); }
+        
+        @keyframes inhale { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(3.5); opacity: 1; } }
+        @keyframes exhale { 0% { transform: scale(3.5); opacity: 1; } 100% { transform: scale(1); opacity: 0.5; } }
 
         /* SUCCESS OVERLAY */
         .success-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             pointer-events: none; z-index: 9999; opacity: 0; transition: opacity 0.3s;
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
         }
         .success-content { text-align: center; transform: scale(0.8); opacity: 0; }
-        .success-icon { font-size: 8rem; color: var(--success); text-shadow: 0 0 50px var(--success); margin-bottom: 10px; }
-        .success-text { font-size: 3rem; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 30px var(--primary); }
+        .success-icon { font-size: 8rem; color: var(--success); text-shadow: 0 0 80px var(--success); margin-bottom: 20px; filter: drop-shadow(0 0 20px var(--success)); }
+        .success-text { font-size: 4rem; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 4px; text-shadow: 0 0 40px var(--success); }
         .success-overlay.animate-boom { opacity: 1; }
-        .success-overlay.animate-boom .success-content { animation: popInSuccess 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .success-overlay.animate-boom .success-content { animation: popInSuccess 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
         @keyframes popInSuccess { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
         /* Timer Styles */
-        .timer-display { font-size: 5rem; font-weight: 800; text-align: center; margin: 10px 0; font-variant-numeric: tabular-nums; letter-spacing: -3px; background: linear-gradient(180deg, #fff, var(--text-muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .time-controls { display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; }
-        .time-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-muted); padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; font-weight: 600; }
+        .timer-display { 
+            font-size: 5.5rem; font-weight: 800; text-align: center; margin: 20px 0; 
+            font-variant-numeric: tabular-nums; letter-spacing: -4px; 
+            background: linear-gradient(180deg, #fff, var(--text-muted)); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+            filter: drop-shadow(0 0 20px rgba(255,255,255,0.1));
+        }
+        .time-controls { display: flex; gap: 8px; justify-content: center; margin-bottom: 25px; }
+        .time-btn {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+            color: var(--text-muted); padding: 8px 16px; border-radius: 20px;
+            font-size: 0.9rem; cursor: pointer; transition: 0.2s; font-weight: 600;
+        }
         .time-btn:hover { background: rgba(255,255,255,0.1); color: white; }
-        .time-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-        .action-btn { width: 100%; padding: 16px; border-radius: 18px; border: none; background: var(--primary); color: white; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.2s; box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
-        .action-btn:active { transform: scale(0.95); }
+        .time-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 0 20px var(--primary); }
+        .action-btn { 
+            width: 100%; padding: 18px; border-radius: 20px; border: none; 
+            background: var(--primary); color: white; font-weight: 800; font-size: 1.1rem; letter-spacing: 1px;
+            cursor: pointer; transition: 0.2s; box-shadow: 0 0 30px rgba(99, 102, 241, 0.4); 
+        }
+        .action-btn:active { transform: scale(0.96); }
 
         /* Calc */
         .calc-screen { background: #000; color: var(--primary); padding: 20px; border-radius: 18px; text-align: right; font-family: monospace; font-size: 2rem; border: 1px solid var(--glass-border); margin-bottom: 15px; }
         .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .calc-key { padding: 15px; border-radius: 12px; border: none; font-size: 1.1rem; font-weight: 600; background: rgba(255,255,255,0.05); color: var(--text-main); cursor: pointer; }
+        .calc-key { padding: 15px; border-radius: 12px; border: none; font-size: 1.1rem; font-weight: 600; background: rgba(255,255,255,0.05); color: var(--text-main); cursor: pointer; transition:0.1s; }
+        .calc-key:active { transform: scale(0.95); background: rgba(255,255,255,0.1); }
         .calc-key.op { color: var(--primary); } .calc-key.sci { color: var(--accent); font-size: 0.9rem; }
 
         /* Tasks */
-        .task-list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 12px; margin-bottom: 10px; border-left: 3px solid var(--accent); transition: 0.2s; cursor: pointer; }
-        .verified-tag { background: rgba(255,255,255,0.1); color:#fff; padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; }
+        .task-list-item { display: flex; justify-content: space-between; align-items: center; padding: 18px; background: rgba(255,255,255,0.03); border-radius: 16px; margin-bottom: 10px; border-left: 3px solid var(--accent); transition: 0.2s; cursor: pointer; }
+        .verified-tag { background: rgba(255,255,255,0.1); color:#fff; padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;}
 
         /* Mobile */
         .mobile-nav { display: none; }
         @media (max-width: 768px) {
             .sidebar { display: none; }
             .main-view { padding: 20px; padding-bottom: 100px; }
-            .mobile-nav { position: fixed; bottom: 0; width: 100%; background: rgba(3, 7, 18, 0.95); backdrop-filter: blur(20px); border-top: 1px solid var(--glass-border); display: flex; justify-content: space-around; padding: 15px; z-index: 100; }
+            .mobile-nav { position: fixed; bottom: 0; width: 100%; background: rgba(5, 5, 10, 0.9); backdrop-filter: blur(20px); border-top: 1px solid var(--glass-border); display: flex; justify-content: space-around; padding: 15px; z-index: 100; }
             .mob-btn { background: none; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 0.7rem; font-weight: 600; }
             .mob-btn.active { color: var(--primary); }
             .mob-btn i { font-size: 1.5rem; }
@@ -180,7 +197,7 @@
 </head>
 <body>
 
-    <canvas id="particle-canvas"></canvas>
+    <canvas id="bg-canvas"></canvas>
 
     <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
 
@@ -196,14 +213,9 @@
             <div class="breath-circle" id="breath-circle"></div>
             <div class="breath-text" id="breath-text">PUST INN</div>
         </div>
-        <div class="breath-timer">Rolig musikk spiller...</div>
+        <div class="breath-timer">Rolig musikk genereres...</div>
         <button class="close-breath-btn" onclick="stopBreathing()">Avslutt Pusteøvelse</button>
     </div>
-
-    <audio id="breath-audio" loop src="https://assets.mixkit.co/sfx/preview/mixkit-ethereal-fairy-win-sound-2019.mp3"></audio> 
-    <audio id="sfx-success" src="https://assets.mixkit.co/sfx/preview/mixkit-positive-notification-951.mp3"></audio>
-    <audio id="sound-rain" loop src="https://assets.mixkit.co/sfx/preview/mixkit-light-rain-loop-2393.mp3"></audio>
-    <audio id="sound-keyboard" loop src="https://assets.mixkit.co/sfx/preview/mixkit-typing-on-mechanical-keyboard-1358.mp3"></audio>
 
     <div class="app-shell">
         
@@ -244,16 +256,18 @@
                     </div>
                     
                     <div class="glass-card">
-                        <h3 style="margin:0 0 15px 0;">Lyd Studio</h3>
-                        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:15px;">Skap din egen atmosfære.</p>
+                        <h3 style="margin:0 0 15px 0;">Lyd Generator</h3>
+                        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:15px;">Generert i sanntid.</p>
                         
                         <div class="sound-mixer">
-                            <div class="sound-group" style="text-align:center;">
-                                <button class="sound-btn" onclick="toggleSound('rain', this)" title="Regnvær"><i class="ph ph-cloud-rain"></i></button>
-                            </div>
-                            <div class="sound-group" style="text-align:center;">
-                                <button class="sound-btn" onclick="toggleSound('keyboard', this)" title="Tastatur"><i class="ph ph-keyboard"></i></button>
-                            </div>
+                            <button class="sound-btn" onclick="toggleNoise('pink')" title="Fokus Støy (Regn-aktig)">
+                                <i class="ph ph-waves"></i>
+                                <span class="sound-label">Fokus</span>
+                            </button>
+                            <button class="sound-btn" onclick="toggleNoise('brown')" title="Dyp Støy (Torden-aktig)">
+                                <i class="ph ph-cloud-lightning"></i>
+                                <span class="sound-label">Dyp</span>
+                            </button>
                         </div>
                     </div>
 
@@ -363,84 +377,147 @@
     </div>
 
 <script>
-    // --- PARTICLE BACKGROUND SYSTEM ---
-    const canvas = document.getElementById('particle-canvas');
-    const ctx = canvas.getContext('2d');
-    let width, height;
-    let particles = [];
-
-    // Resize handling
-    function resize() {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    class Particle {
-        constructor() {
-            this.x = Math.random() * width;
-            this.y = Math.random() * height;
-            this.vx = (Math.random() - 0.5) * 0.5;
-            this.vy = (Math.random() - 0.5) * 0.5;
-            this.size = Math.random() * 2;
-        }
-        update() {
-            this.x += this.vx; this.y += this.vy;
-            if(this.x < 0 || this.x > width) this.vx *= -1;
-            if(this.y < 0 || this.y > height) this.vy *= -1;
-        }
-        draw() {
-            ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--primary');
-            ctx.globalAlpha = 0.5;
-            ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
-        }
+    // --- AUDIO SYNTHESIZER (NO FILES NEEDED) ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    // 1. Success Sound (Chime)
+    function playSuccessSound() {
+        const t = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(500, t);
+        osc.frequency.exponentialRampToValueAtTime(1000, t + 0.1);
+        gain.gain.setValueAtTime(0.3, t);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 1);
+        
+        osc.start(t); osc.stop(t + 1);
     }
 
-    // Initialize particles
-    for(let i=0; i<60; i++) particles.push(new Particle());
-
-    // Mouse interaction
-    let mouse = { x: null, y: null };
-    window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
-
-    function animateParticles() {
-        ctx.clearRect(0, 0, width, height);
-        particles.forEach(p => {
-            p.update(); p.draw();
-            // Connect to mouse
-            const dx = mouse.x - p.x; const dy = mouse.y - p.y;
-            const dist = Math.sqrt(dx*dx + dy*dy);
-            if(dist < 150) {
-                ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--primary');
-                ctx.lineWidth = 0.2; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
-            }
-            // Connect to other particles
-            particles.forEach(p2 => {
-                const dx2 = p.x - p2.x; const dy2 = p.y - p2.y;
-                const dist2 = Math.sqrt(dx2*dx2 + dy2*dy2);
-                if(dist2 < 100) {
-                    ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--accent');
-                    ctx.lineWidth = 0.1; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
-                }
-            });
-        });
-        requestAnimationFrame(animateParticles);
+    // 2. Breath Sound (Deep Drone)
+    let breathOsc, breathGain;
+    function startBreathSound() {
+        if(breathOsc) return;
+        breathOsc = audioCtx.createOscillator();
+        breathGain = audioCtx.createGain();
+        breathOsc.connect(breathGain);
+        breathGain.connect(audioCtx.destination);
+        
+        breathOsc.type = 'triangle';
+        breathOsc.frequency.setValueAtTime(100, audioCtx.currentTime);
+        breathGain.gain.setValueAtTime(0, audioCtx.currentTime);
+        
+        breathOsc.start();
+        animateBreathSound();
     }
-    animateParticles();
+    
+    function animateBreathSound() {
+        if(!breathOsc) return;
+        const t = audioCtx.currentTime;
+        // Volume swell matches breathing (4s in, 4s out)
+        breathGain.gain.cancelScheduledValues(t);
+        breathGain.gain.linearRampToValueAtTime(0.2, t + 4);
+        breathGain.gain.linearRampToValueAtTime(0, t + 8);
+        setTimeout(animateBreathSound, 8000);
+    }
 
-
-    // --- SOUND MIXER ---
-    function toggleSound(id, btn) {
-        const audio = document.getElementById('sound-' + id);
-        if(audio.paused) {
-            audio.play();
-            btn.classList.add('active');
-        } else {
-            audio.pause();
-            btn.classList.remove('active');
+    function stopBreathSound() {
+        if(breathOsc) {
+            breathOsc.stop();
+            breathOsc.disconnect();
+            breathOsc = null;
         }
     }
+
+    // 3. Noise Generator (Rain/Brown Noise)
+    let noiseNode = null;
+    function toggleNoise(type) {
+        if (noiseNode) {
+            noiseNode.disconnect();
+            noiseNode = null;
+            document.querySelectorAll('.sound-btn').forEach(b => b.classList.remove('active'));
+            return;
+        }
+        
+        // Ensure AudioContext is active
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+
+        const bufferSize = audioCtx.sampleRate * 2; // 2 seconds buffer
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+
+        for (let i = 0; i < bufferSize; i++) {
+            const white = Math.random() * 2 - 1;
+            data[i] = (lastOut + (0.02 * white)) / 1.02; // Brown/Pink approximation
+            lastOut = data[i];
+            data[i] *= 3.5; 
+        }
+        var lastOut = 0;
+
+        noiseNode = audioCtx.createBufferSource();
+        noiseNode.buffer = buffer;
+        noiseNode.loop = true;
+        const gain = audioCtx.createGain();
+        gain.gain.value = 0.15; // Low volume
+        noiseNode.connect(gain);
+        gain.connect(audioCtx.destination);
+        noiseNode.start();
+        
+        // Update UI
+        const btn = document.querySelector(`.sound-btn[onclick*="${type}"]`);
+        if(btn) btn.classList.add('active');
+    }
+
+
+    // --- BACKGROUND ANIMATION (CYBER GRID) ---
+    const bgCanvas = document.getElementById('bg-canvas');
+    const ctx = bgCanvas.getContext('2d');
+    let w, h;
+
+    function resizeBg() {
+        w = bgCanvas.width = window.innerWidth;
+        h = bgCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeBg);
+    resizeBg();
+
+    let offset = 0;
+    function animateBg() {
+        ctx.clearRect(0, 0, w, h);
+        
+        // Extract color from CSS variable
+        const style = getComputedStyle(document.body);
+        const gridColor = style.getPropertyValue('--grid-color').trim() || 'rgba(99,102,241,0.3)';
+        ctx.strokeStyle = gridColor;
+        ctx.lineWidth = 1;
+
+        // Draw Perspective Grid
+        const horizon = h * 0.4;
+        const gridGap = 40;
+        
+        ctx.beginPath();
+        // Vertical lines
+        for(let x = 0; x <= w; x += gridGap * 2) {
+            ctx.moveTo(x, h);
+            ctx.lineTo(w/2 + (x - w/2) * 0.1, horizon);
+        }
+        // Horizontal moving lines
+        offset = (offset + 0.5) % gridGap;
+        for(let y = horizon; y <= h; y += gridGap * (1 + (y-horizon)/h)) {
+            let actualY = y + offset * ((y-horizon)/h); 
+            if (actualY > h) actualY -= h - horizon; // Wrap
+            
+            ctx.moveTo(0, actualY);
+            ctx.lineTo(w, actualY);
+        }
+        ctx.stroke();
+        
+        requestAnimationFrame(animateBg);
+    }
+    animateBg();
+
 
     // --- APP CORE ---
     let state = {
@@ -453,11 +530,11 @@
         schedule: {}
     };
 
-    if(localStorage.getItem('StudentOS_Neural')) {
-        state = {...state, ...JSON.parse(localStorage.getItem('StudentOS_Neural'))};
+    if(localStorage.getItem('StudentOS_Synth')) {
+        state = {...state, ...JSON.parse(localStorage.getItem('StudentOS_Synth'))};
     }
 
-    function save() { localStorage.setItem('StudentOS_Neural', JSON.stringify(state)); }
+    function save() { localStorage.setItem('StudentOS_Synth', JSON.stringify(state)); }
 
     // --- INIT ---
     updateGlobalUI();
@@ -536,7 +613,7 @@
         overlay.classList.remove('animate-boom');
         void overlay.offsetWidth; 
         overlay.classList.add('animate-boom');
-        try { document.getElementById('sfx-success').play(); } catch(e){}
+        playSuccessSound(); // USING SYNTH
         setTimeout(() => { overlay.classList.remove('animate-boom'); }, 1500);
     }
 
@@ -562,16 +639,15 @@
         });
     }
 
-    // --- BREATHING EXERCISE ---
+    // --- BREATHING EXERCISE LOGIC ---
     let breathInterval;
     const breathOverlay = document.getElementById('breath-overlay');
     const breathCircle = document.getElementById('breath-circle');
     const breathText = document.getElementById('breath-text');
-    const breathAudio = document.getElementById('breath-audio');
 
     function startBreathing() {
         breathOverlay.classList.add('active');
-        try { breathAudio.play(); } catch(e) {}
+        startBreathSound(); // USING SYNTH
         runBreathCycle();
         breathInterval = setInterval(runBreathCycle, 8000); 
     }
@@ -588,12 +664,11 @@
     function stopBreathing() {
         breathOverlay.classList.remove('active');
         clearInterval(breathInterval);
-        breathAudio.pause();
-        breathAudio.currentTime = 0;
+        stopBreathSound(); // STOP SYNTH
         breathCircle.style.animation = "none";
     }
 
-    // --- DYNAMIC TIMER ---
+    // --- DYNAMIC TIMER (EVERY MINUTE PAUSE) ---
     let defaultDuration = 25;
     let tTime = defaultDuration * 60;
     let tInt, tRun = false;
@@ -602,28 +677,37 @@
         clearInterval(tInt); tRun = false;
         document.getElementById('timerBtn').innerText = "START ØKT";
         defaultDuration = mins; tTime = mins * 60;
-        let m = Math.floor(tTime/60); let s = tTime%60;
-        document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
+        updateTimerDisplay();
         document.querySelectorAll('.time-btn').forEach(btn => {
             btn.classList.remove('active');
             if(btn.innerText.includes(mins)) btn.classList.add('active');
         });
     }
 
+    function updateTimerDisplay() {
+        let m = Math.floor(tTime/60); let s = tTime%60;
+        document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
+    }
+
     function toggleTimer() {
+        // Init Audio Context on first interaction
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+
         if(tRun) { 
             clearInterval(tInt); document.getElementById('timerBtn').innerText="FORTSETT"; 
         } else {
             tInt = setInterval(() => {
                 tTime--;
-                let m = Math.floor(tTime/60), s = tTime%60;
-                document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
+                updateTimerDisplay();
+
+                // EVERY MINUTE PAUSE logic
                 if(tTime > 0 && tTime % 60 === 0 && tTime !== (defaultDuration*60)) {
                     clearInterval(tInt); tRun = false;
                     document.getElementById('timerBtn').innerText="FORTSETT";
                     startBreathing();
                     return;
                 }
+
                 if(tTime<=0) { 
                     clearInterval(tInt); tTime = defaultDuration * 60; 
                     triggerSuccessAnimation(); document.getElementById('timerBtn').innerText="START ØKT"; tRun = false;
