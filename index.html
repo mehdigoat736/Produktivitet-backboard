@@ -3,20 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>mehdi.co // App Edition</title>
+    <title>mehdi.co // Motivation Edition</title>
     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"> <style>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
         /* --- DESIGN SYSTEM --- */
         :root {
             --bg-color: #030712;
-            --glass-surface: rgba(15, 23, 42, 0.7);
+            --glass-surface: rgba(15, 23, 42, 0.8);
             --glass-border: rgba(255, 255, 255, 0.08);
             --primary: #6366f1;
             --accent: #ec4899;
             --success: #10b981;
+            --danger: #ef4444;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --breath-color: #a5f3fc;
@@ -41,59 +44,36 @@
             z-index: 0; pointer-events: none;
         }
 
-        /* --- MODERN APP LOGIN SCREEN --- */
+        /* --- MOTIVATION BOOT SCREEN --- */
         #welcome-screen {
-            position: fixed; inset: 0; background: #030712; z-index: 20000;
+            position: fixed; inset: 0; background: #000; z-index: 20000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.8s ease-in-out;
+            transition: opacity 1s ease-in-out;
+            padding: 20px; text-align: center;
         }
         #welcome-screen.hidden { opacity: 0; pointer-events: none; }
 
-        /* Logo Animation */
-        .brand-intro {
-            font-size: 3rem; font-weight: 800; letter-spacing: -1px;
-            background: linear-gradient(to right, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin-bottom: 40px; opacity: 0; transform: scale(0.9);
-            animation: logoFadeIn 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 0.3s;
+        .quote-container {
+            font-size: 1.5rem; font-weight: 300; line-height: 1.5; color: white;
+            max-width: 700px; margin-bottom: 50px; min-height: 100px;
+            font-style: italic; opacity: 0.9;
         }
-        @keyframes logoFadeIn { from{opacity:0; transform:scale(0.9) translateY(20px);} to{opacity:1; transform:scale(1) translateY(0);} }
-
-        /* Login Card */
-        #setup-panel {
-            background: rgba(20, 20, 30, 0.6); border: 1px solid var(--glass-border);
-            padding: 40px; border-radius: 24px; backdrop-filter: blur(20px);
-            width: 90%; max-width: 400px;
-            display: flex; flex-direction: column; align-items: center; gap: 25px;
-            opacity: 0; transform: translateY(30px);
-            animation: cardSlideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 0.8s;
-            box-shadow: 0 20px 50px -10px rgba(0,0,0,0.5);
+        
+        .cursor {
+            display: inline-block; width: 2px; height: 1.2em; background: var(--primary);
+            animation: blink 1s infinite; vertical-align: middle;
         }
-        @keyframes cardSlideUp { from{opacity:0; transform:translateY(30px);} to{opacity:1; transform:translateY(0);} }
-
-        .setup-avatar {
-            width: 90px; height: 90px; border-radius: 50%; background: rgba(255,255,255,0.05);
-            border: 2px solid var(--glass-border); display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.3s; overflow: hidden;
-        }
-        .setup-avatar:hover { border-color: var(--primary); transform: scale(1.05); }
-        .setup-avatar img { width: 100%; height: 100%; object-fit: cover; }
-
-        .input-group { width: 100%; }
-        .setup-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; display: block; font-weight: 600; text-align: left; }
-        .setup-input {
-            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border);
-            color: white; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem;
-            padding: 14px; border-radius: 12px; outline: none; transition: 0.3s;
-        }
-        .setup-input:focus { border-color: var(--primary); background: rgba(99, 102, 241, 0.1); }
+        @keyframes blink { 50% { opacity: 0; } }
 
         .start-btn {
-            width: 100%; padding: 16px; border-radius: 14px; border: none;
-            background: var(--primary); color: white; font-weight: 700; font-size: 1rem;
-            cursor: pointer; transition: 0.2s; box-shadow: 0 10px 30px -10px var(--primary);
+            padding: 15px 40px; border-radius: 30px; border: 1px solid var(--primary);
+            background: rgba(99, 102, 241, 0.1); color: white; font-size: 1rem; font-weight: 600;
+            cursor: pointer; letter-spacing: 2px; text-transform: uppercase;
+            transition: 0.3s; opacity: 0; transform: translateY(20px);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
         }
-        .start-btn:active { transform: scale(0.98); }
-
+        .start-btn.visible { opacity: 1; transform: translateY(0); }
+        .start-btn:hover { background: var(--primary); box-shadow: 0 0 40px var(--primary); }
 
         /* --- APP LAYOUT --- */
         .app-shell { 
@@ -102,7 +82,7 @@
         }
         .app-shell.visible { opacity: 1; }
 
-        .sidebar { width: 280px; background: rgba(5, 5, 10, 0.5); backdrop-filter: blur(30px); border-right: 1px solid var(--glass-border); padding: 30px; display: flex; flex-direction: column; gap: 10px; }
+        .sidebar { width: 280px; background: rgba(5, 5, 10, 0.6); backdrop-filter: blur(30px); border-right: 1px solid var(--glass-border); padding: 30px; display: flex; flex-direction: column; gap: 10px; }
         .logo-area { font-size: 1.5rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 30px; background: linear-gradient(to right, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .nav-btn { background: transparent; border: none; color: var(--text-muted); padding: 15px; border-radius: 16px; cursor: pointer; text-align: left; font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 15px; transition: all 0.3s; }
         .nav-btn:hover { background: rgba(255,255,255,0.05); color: #fff; transform: translateX(5px); }
@@ -117,83 +97,70 @@
         .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
         .glass-card { background: var(--glass-surface); border: 1px solid var(--glass-border); border-radius: 24px; padding: 25px; backdrop-filter: blur(15px); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6); transition: transform 0.3s; position: relative; overflow: visible; }
 
-        /* --- TOUR OVERLAY --- */
-        #tour-overlay {
-            position: fixed; inset: 0; background: rgba(3, 7, 18, 0.85); z-index: 15000;
-            display: none; opacity: 0; transition: opacity 0.5s; cursor: pointer;
-            backdrop-filter: blur(8px);
+        /* --- UPDATED TASK LIST STYLES (FIXED SPACING & X BUTTON) --- */
+        .task-list-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 18px; background: rgba(255,255,255,0.03); border-radius: 16px; margin-bottom: 10px;
+            border-left: 3px solid var(--accent); transition: 0.2s;
+            animation: taskEntry 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        #tour-overlay.active { display: block; opacity: 1; }
-
-        .hud-item {
-            position: absolute; display: none; align-items: flex-start; gap: 15px; 
-            opacity: 0; transform: translateX(-20px);
-        }
-        .hud-item.visible { display: flex; animation: hudSlideIn 0.5s forwards ease-out; }
-        .hud-connector { position: absolute; left: -60px; top: 15px; width: 60px; height: 1px; background: linear-gradient(90deg, transparent, var(--primary)); }
-        .hud-card {
-            background: rgba(20, 20, 30, 0.9); border: 1px solid var(--primary);
-            padding: 15px 20px; border-radius: 8px; max-width: 300px;
-            box-shadow: 0 0 40px rgba(99, 102, 241, 0.2); position: relative;
-        }
-        .hud-title { color: var(--primary); font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 5px; text-transform: uppercase; }
-        .hud-desc { color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin: 0; }
-        #hud-nav { top: 120px; left: 320px; }
-        #hud-timer { top: 20%; right: 20%; transform: none; }
-        #hud-tasks { bottom: 150px; left: 320px; }
-        .tour-center-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 100%; pointer-events: none; }
-        .tour-center-text { font-family: 'Plus Jakarta Sans', sans-serif; color: white; background: var(--primary); padding: 12px 24px; border-radius: 30px; display: inline-block; font-weight: 700; letter-spacing: 1px; animation: pulseBtn 1.5s infinite; transition: 0.2s; box-shadow: 0 5px 20px rgba(99, 102, 241, 0.4); }
-        @keyframes pulseBtn { 0% { opacity:1; transform:scale(1); } 50% { opacity:0.9; transform:scale(0.98); } 100% { opacity:1; transform:scale(1); } }
-        @keyframes hudSlideIn { to { opacity: 1; transform: translateX(0); } }
-
-        /* --- SMART SCHEDULE --- */
-        .schedule-grid { display: grid; grid-template-columns: 80px repeat(5, 1fr); gap: 10px; overflow-x: auto; padding-bottom: 10px; min-width: 600px; }
-        .sch-header { font-weight: 700; color: var(--text-muted); text-align: center; padding: 10px; }
-        .sch-time { color: var(--text-muted); font-size: 0.8rem; display: flex; align-items: center; justify-content: center; }
-        .sch-cell { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; padding: 10px; min-height: 80px; font-size: 0.9rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; text-align: center; word-break: break-word; }
-        .sch-cell:hover { background: rgba(255,255,255,0.08); border-color: var(--primary); }
-        .sch-cell.current-active { background: rgba(99, 102, 241, 0.15); border: 2px solid var(--primary); box-shadow: 0 0 20px var(--primary), inset 0 0 20px rgba(99, 102, 241, 0.2); animation: pulseNeon 2s infinite; z-index: 2; }
-        @keyframes pulseNeon { 0% { box-shadow: 0 0 15px var(--primary); } 50% { box-shadow: 0 0 30px var(--primary); } 100% { box-shadow: 0 0 15px var(--primary); } }
-
-        /* --- SUCCESS & LEVEL UP OVERLAY (IMPROVED LAYOUT) --- */
-        .success-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            pointer-events: none; z-index: 9999; opacity: 0; transition: opacity 0.3s;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(15px);
-        }
+        .task-text { font-weight: 600; font-size: 1rem; flex: 1; margin-right: 15px; }
         
-        /* New Success Card Style */
-        .success-card {
-            background: rgba(20, 20, 30, 0.8); border: 1px solid var(--glass-border);
-            padding: 50px; border-radius: 30px; text-align: center;
-            display: flex; flex-direction: column; align-items: center;
-            box-shadow: 0 20px 60px -10px rgba(0,0,0,0.8);
-            transform: scale(0.8); opacity: 0; min-width: 320px;
+        .task-actions { display: flex; gap: 8px; align-items: center; }
+        
+        .btn-delete {
+            width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--glass-border);
+            background: rgba(239, 68, 68, 0.1); color: var(--danger); cursor: pointer;
+            display: flex; align-items: center; justify-content: center; transition: 0.2s;
+        }
+        .btn-delete:hover { background: var(--danger); color: white; }
+
+        .btn-complete {
+            background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid var(--glass-border);
+            padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer;
+            transition: 0.2s; display: flex; align-items: center; gap: 5px;
+        }
+        .btn-complete:hover { background: var(--success); color: white; }
+
+        @keyframes taskEntry {
+            0% { opacity: 0; transform: translateY(-20px) scale(0.9); }
+            50% { transform: scale(1.02); }
+            100% { opacity: 1; transform: scale(1); }
         }
 
-        .success-icon { font-size: 6rem; color: var(--success); text-shadow: 0 0 40px var(--success); margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--success)); }
-        .success-text { font-size: 2.5rem; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; }
-        .xp-text { font-size: 1.5rem; font-weight: 800; color: var(--accent); margin-bottom: 30px; }
-        
-        /* Improved Bar Spacing */
-        .level-progress-container { width: 100%; height: 12px; background: rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden; position: relative; margin-bottom: 15px; }
-        .level-progress-bar { width: 0%; height: 100%; background: var(--primary); box-shadow: 0 0 15px var(--primary); transition: width 1s cubic-bezier(0.22, 1, 0.36, 1); }
-        .level-text { color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+        /* --- PUSTEØVELSE (FIXED OVERLAP) --- */
+        #breath-overlay {
+            position: fixed; inset: 0; background: #030712; z-index: 99999; /* Highest Z-Index */
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 1s ease;
+        }
+        #breath-overlay.active { opacity: 1; display: flex; }
+        .breath-circle-container { position: relative; width: 350px; height: 350px; display: flex; align-items: center; justify-content: center; margin-bottom: 40px; }
+        .breath-circle { width: 100px; height: 100px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 80px var(--primary); border: 2px solid #fff; }
+        .breath-text { font-size: 2.5rem; font-weight: 300; letter-spacing: 5px; color: white; text-transform: uppercase; position: absolute; text-shadow: 0 0 20px var(--primary); }
+        .close-breath-btn { margin-top: 40px; background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); padding: 12px 30px; border-radius: 30px; cursor: pointer; transition: 0.3s; font-size: 1rem; }
+        .close-breath-btn:hover { border-color: white; color: white; background: rgba(255,255,255,0.1); }
+        @keyframes inhale { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(3.5); opacity: 1; } }
+        @keyframes exhale { 0% { transform: scale(3.5); opacity: 1; } 100% { transform: scale(1); opacity: 0.5; } }
 
+        /* Success & Level Up */
+        .success-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; z-index: 9999; opacity: 0; transition: opacity 0.3s; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); }
+        .success-content { text-align: center; transform: scale(0.8); opacity: 0; display:flex; flex-direction:column; align-items:center; }
+        .success-icon { font-size: 8rem; color: var(--success); text-shadow: 0 0 80px var(--success); margin-bottom: 10px; filter: drop-shadow(0 0 20px var(--success)); }
+        .success-text { font-size: 4rem; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 4px; text-shadow: 0 0 40px var(--success); }
+        .xp-text { font-size: 2.5rem; font-weight: 800; color: var(--accent); margin-top: 10px; animation: floatUp 1s forwards; opacity:0; }
+        .level-progress-container { width: 300px; height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; margin-top: 20px; overflow: hidden; position: relative; }
+        .level-progress-bar { width: 0%; height: 100%; background: var(--primary); box-shadow: 0 0 10px var(--primary); transition: width 1s cubic-bezier(0.22, 1, 0.36, 1); }
+        .level-text { color: var(--text-muted); margin-top: 10px; font-family: 'JetBrains Mono', monospace; }
         .success-overlay.animate-boom { opacity: 1; }
-        .success-overlay.animate-boom .success-card { animation: popInCard 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-        @keyframes popInCard { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-
-        /* Level Up Rays */
-        .levelup-rays {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 100vw; height: 100vh; background: conic-gradient(from 0deg, transparent 0deg, var(--accent) 20deg, transparent 40deg, var(--accent) 60deg, transparent 80deg);
-            opacity: 0.1; animation: rotateRays 10s linear infinite; z-index: -1;
-        }
+        .success-overlay.animate-boom .success-content { animation: popInSuccess 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        .success-overlay.animate-boom .xp-text { animation: floatUp 0.8s 0.2s forwards; }
+        @keyframes popInSuccess { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes floatUp { 0% { transform: translateY(20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+        .levelup-rays { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100vw; height: 100vh; background: conic-gradient(from 0deg, transparent 0deg, var(--accent) 20deg, transparent 40deg, var(--accent) 60deg, transparent 80deg); opacity: 0.1; animation: rotateRays 10s linear infinite; z-index: -1; }
         @keyframes rotateRays { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
 
-        /* Misc */
+        /* Standard Components */
         .timer-display { font-size: 5.5rem; font-weight: 800; text-align: center; margin: 20px 0; font-variant-numeric: tabular-nums; letter-spacing: -4px; background: linear-gradient(180deg, #fff, var(--text-muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 20px rgba(255,255,255,0.1)); }
         .time-controls { display: flex; gap: 8px; justify-content: center; margin-bottom: 25px; }
         .time-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-muted); padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; cursor: pointer; transition: 0.2s; font-weight: 600; }
@@ -206,6 +173,13 @@
         .sound-btn:hover { background: rgba(255,255,255,0.1); color: white; transform: translateY(-3px); }
         .sound-btn.active { background: rgba(99, 102, 241, 0.2); color: var(--primary); border-color: var(--primary); box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); }
         .sound-label { font-size: 0.6rem; margin-top: 4px; font-weight: 700; text-transform: uppercase; }
+        .schedule-grid { display: grid; grid-template-columns: 80px repeat(5, 1fr); gap: 10px; overflow-x: auto; padding-bottom: 10px; min-width: 600px; }
+        .sch-header { font-weight: 700; color: var(--text-muted); text-align: center; padding: 10px; }
+        .sch-time { color: var(--text-muted); font-size: 0.8rem; display: flex; align-items: center; justify-content: center; }
+        .sch-cell { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; padding: 10px; min-height: 80px; font-size: 0.9rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; text-align: center; word-break: break-word; }
+        .sch-cell:hover { background: rgba(255,255,255,0.08); border-color: var(--primary); }
+        .sch-cell.current-active { background: rgba(99, 102, 241, 0.15); border: 2px solid var(--primary); box-shadow: 0 0 20px var(--primary), inset 0 0 20px rgba(99, 102, 241, 0.2); animation: pulseNeon 2s infinite; z-index: 2; }
+        @keyframes pulseNeon { 0% { box-shadow: 0 0 15px var(--primary); } 50% { box-shadow: 0 0 30px var(--primary); } 100% { box-shadow: 0 0 15px var(--primary); } }
         .calc-screen { background: #000; color: var(--primary); padding: 20px; border-radius: 18px; text-align: right; font-family: monospace; font-size: 2rem; border: 1px solid var(--glass-border); margin-bottom: 15px; }
         .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         .calc-key { padding: 15px; border-radius: 12px; border: none; font-size: 1.1rem; font-weight: 600; background: rgba(255,255,255,0.05); color: var(--text-main); cursor: pointer; transition:0.1s; }
@@ -217,6 +191,27 @@
         .profile-actions { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
         .pill-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-muted); padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
         .level-badge { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; padding: 5px 12px; border-radius: 12px; font-weight: 800; font-size: 0.8rem; box-shadow: 0 5px 15px rgba(0,0,0,0.3); margin-top: 5px; }
+
+        /* Mobile Adjustments - FIX FOR TOP BUTTONS */
+        .mobile-nav { display: none; }
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-view { padding: 20px; padding-bottom: 100px; }
+            /* FORCE BOTTOM POSITION AND HIDE ON LARGER SCREENS */
+            .mobile-nav { 
+                display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
+                background: rgba(5, 5, 10, 0.95); backdrop-filter: blur(20px); 
+                border-top: 1px solid var(--glass-border); justify-content: space-around; 
+                padding: 15px; z-index: 10000;
+            }
+            .mob-btn { background: none; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 0.7rem; font-weight: 600; }
+            .mob-btn.active { color: var(--primary); }
+            .mob-btn i { font-size: 1.5rem; }
+        }
+        @media (min-width: 769px) {
+            /* Ensure mobile nav is GONE on desktop/tablet landscape */
+            .mobile-nav { display: none !important; }
+        }
     </style>
 </head>
 <body>
@@ -224,48 +219,20 @@
     <canvas id="neural-canvas"></canvas>
 
     <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
-    <input type="file" id="setupAvatarUpload" accept="image/*" style="display: none;">
 
     <div id="welcome-screen">
-        <div class="brand-intro">mehdi<span style="color:var(--primary)">.co</span></div>
-        
-        <div id="setup-panel">
-            <div class="setup-avatar" onclick="document.getElementById('setupAvatarUpload').click()">
-                <img id="setupAvPreview" src="https://api.dicebear.com/7.x/notionists/svg?seed=student">
-            </div>
-            
-            <div class="input-group">
-                <label class="setup-label">NAVN</label>
-                <input type="text" id="setupName" class="setup-input" placeholder="Ditt navn..." autocomplete="off">
-            </div>
-            
-            <button class="start-btn" onclick="finalizeLogin()">Gå til Dashboard</button>
+        <div id="quote-container" class="quote-container">
+            <span id="typewriter"></span><span class="cursor"></span>
         </div>
-    </div>
-
-    <div id="tour-overlay" onclick="nextTourStep()">
-        <div class="tour-center-msg">
-            <div class="tour-center-text">KLIKK FOR Å STARTE</div>
-        </div>
-        <div class="hud-item" id="hud-nav">
-            <div class="hud-connector"></div>
-            <div class="hud-card"><div class="hud-title">NAVIGASJON</div><p class="hud-desc">Oversikt over systemet. Bytt mellom Dashboard, Timeplan og Verktøy.</p></div>
-        </div>
-        <div class="hud-item" id="hud-timer">
-            <div class="hud-card"><div class="hud-title">FOKUS KJERNE</div><p class="hud-desc">Start arbeidsøkter. Systemet aktiverer automatisk Puste-modus hvert minutt.</p></div>
-        </div>
-        <div class="hud-item" id="hud-tasks">
-            <div class="hud-connector"></div>
-            <div class="hud-card"><div class="hud-title">OPPGAVE SENTRAL</div><p class="hud-desc">Registrer mål. Fullfør for å få XP og seiers-animasjon.</p></div>
-        </div>
+        <button class="start-btn" id="start-btn" onclick="enterSystem()">INITIALIZE SYSTEM</button>
     </div>
 
     <div id="success-animation" class="success-overlay">
-        <div class="levelup-rays"></div> <div class="success-card">
+        <div class="levelup-rays"></div>
+        <div class="success-content">
             <i class="ph ph-check-circle success-icon" id="success-icon"></i>
             <div class="success-text" id="success-main-text">GODT JOBBA!</div>
             <div class="xp-text" id="xp-gain-text">+25 XP</div>
-            
             <div class="level-progress-container">
                 <div class="level-progress-bar" id="xp-bar-overlay"></div>
             </div>
@@ -283,6 +250,7 @@
     </div>
 
     <div class="app-shell" id="app-shell">
+        
         <aside class="sidebar">
             <div class="logo-area">mehdi<span style="color:var(--primary)">.co</span></div>
             <button class="nav-btn active" onclick="nav('dashboard')"><i class="ph ph-squares-four"></i> Oversikt</button>
@@ -290,36 +258,53 @@
             <button class="nav-btn" onclick="nav('tools')"><i class="ph ph-calculator"></i> Verktøy</button>
             <button class="nav-btn" onclick="nav('tasks')"><i class="ph ph-check-square"></i> Oppgaver</button>
             <button class="nav-btn" onclick="nav('settings')"><i class="ph ph-gear"></i> Innstillinger</button>
+            
             <div style="margin-top:auto; display:flex; gap:10px; align-items:center; padding:10px; background:rgba(255,255,255,0.05); border-radius:12px;">
                 <img id="miniAv" src="" style="width:40px;height:40px;border-radius:50%;background:#000;object-fit:cover;">
-                <div><div id="miniName" style="font-weight:700; font-size:0.9rem;">Elev</div><div id="miniLevel" class="level-badge">LVL 1</div></div>
+                <div>
+                    <div id="miniName" style="font-weight:700; font-size:0.9rem;">Elev</div>
+                    <div id="miniLevel" class="level-badge">LVL 1</div>
+                </div>
             </div>
         </aside>
 
         <main class="main-view">
+            
             <section id="dashboard" class="section active">
                 <h1 id="greet" style="font-weight:800; font-size:2rem; margin-bottom:20px;">Velkommen.</h1>
                 <div class="grid-layout">
                     <div class="glass-card" style="text-align:center;">
                         <h3 style="margin:0; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; font-size:0.8rem;">Fokus Status</h3>
                         <div class="timer-display" id="timer">25:00</div>
+                        
                         <div class="time-controls">
                             <button class="time-btn" onclick="setDuration(10)">10m</button>
                             <button class="time-btn active" onclick="setDuration(25)">25m</button>
                             <button class="time-btn" onclick="setDuration(45)">45m</button>
                             <button class="time-btn" onclick="setDuration(60)">60m</button>
                         </div>
+
                         <button class="action-btn" id="timerBtn" onclick="toggleTimer()">START ØKT</button>
                     </div>
+                    
                     <div class="glass-card">
                         <h3 style="margin:0 0 15px 0;">Lyd Generator</h3>
                         <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:15px;">Generert i sanntid.</p>
+                        
                         <div class="sound-mixer">
-                            <button class="sound-btn" onclick="toggleNoise('pink')" title="Fokus Støy"><i class="ph ph-waves"></i><span class="sound-label">Fokus</span></button>
-                            <button class="sound-btn" onclick="toggleNoise('brown')" title="Dyp Støy"><i class="ph ph-cloud-lightning"></i><span class="sound-label">Dyp</span></button>
+                            <button class="sound-btn" onclick="toggleNoise('pink')" title="Fokus Støy">
+                                <i class="ph ph-waves"></i><span class="sound-label">Fokus</span>
+                            </button>
+                            <button class="sound-btn" onclick="toggleNoise('brown')" title="Dyp Støy">
+                                <i class="ph ph-cloud-lightning"></i><span class="sound-label">Dyp</span>
+                            </button>
                         </div>
                     </div>
-                    <div class="glass-card"><h3 style="margin:0 0 15px 0;">Rank & XP</h3><div style="height:150px;"><canvas id="chart"></canvas></div></div>
+
+                    <div class="glass-card">
+                        <h3 style="margin:0 0 15px 0;">Rank & XP</h3>
+                        <div style="height:150px;"><canvas id="chart"></canvas></div>
+                    </div>
                 </div>
             </section>
 
@@ -338,16 +323,37 @@
                         <div class="calc-wrapper">
                             <div class="calc-screen" id="calcDisp">0</div>
                             <div class="calc-grid">
-                                <button class="calc-key sci" onclick="add('sin(')">sin</button><button class="calc-key sci" onclick="add('cos(')">cos</button><button class="calc-key sci" onclick="add('tan(')">tan</button><button class="calc-key sci" onclick="add('sqrt(')">√</button>
-                                <button class="calc-key sci" onclick="add('^')">^</button><button class="calc-key sci" onclick="add('(')">(</button><button class="calc-key sci" onclick="add(')')">)</button><button class="calc-key op" onclick="add('/')">÷</button>
-                                <button class="calc-key" onclick="add('7')">7</button><button class="calc-key" onclick="add('8')">8</button><button class="calc-key" onclick="add('9')">9</button><button class="calc-key op" onclick="add('*')">×</button>
-                                <button class="calc-key" onclick="add('4')">4</button><button class="calc-key" onclick="add('5')">5</button><button class="calc-key" onclick="add('6')">6</button><button class="calc-key op" onclick="add('-')">-</button>
-                                <button class="calc-key" onclick="add('1')">1</button><button class="calc-key" onclick="add('2')">2</button><button class="calc-key" onclick="add('3')">3</button><button class="calc-key op" onclick="add('+')">+</button>
-                                <button class="calc-key clear" style="color:#ef4444;" onclick="cls()">C</button><button class="calc-key" onclick="add('0')">0</button><button class="calc-key" onclick="add('.')">.</button><button class="calc-key equals" style="background:var(--primary); color:white;" onclick="solve()">=</button>
+                                <button class="calc-key sci" onclick="add('sin(')">sin</button>
+                                <button class="calc-key sci" onclick="add('cos(')">cos</button>
+                                <button class="calc-key sci" onclick="add('tan(')">tan</button>
+                                <button class="calc-key sci" onclick="add('sqrt(')">√</button>
+                                <button class="calc-key sci" onclick="add('^')">^</button>
+                                <button class="calc-key sci" onclick="add('(')">(</button>
+                                <button class="calc-key sci" onclick="add(')')">)</button>
+                                <button class="calc-key op" onclick="add('/')">÷</button>
+                                <button class="calc-key" onclick="add('7')">7</button>
+                                <button class="calc-key" onclick="add('8')">8</button>
+                                <button class="calc-key" onclick="add('9')">9</button>
+                                <button class="calc-key op" onclick="add('*')">×</button>
+                                <button class="calc-key" onclick="add('4')">4</button>
+                                <button class="calc-key" onclick="add('5')">5</button>
+                                <button class="calc-key" onclick="add('6')">6</button>
+                                <button class="calc-key op" onclick="add('-')">-</button>
+                                <button class="calc-key" onclick="add('1')">1</button>
+                                <button class="calc-key" onclick="add('2')">2</button>
+                                <button class="calc-key" onclick="add('3')">3</button>
+                                <button class="calc-key op" onclick="add('+')">+</button>
+                                <button class="calc-key clear" style="color:#ef4444;" onclick="cls()">C</button>
+                                <button class="calc-key" onclick="add('0')">0</button>
+                                <button class="calc-key" onclick="add('.')">.</button>
+                                <button class="calc-key equals" style="background:var(--primary); color:white;" onclick="solve()">=</button>
                             </div>
                         </div>
                     </div>
-                    <div class="glass-card"><h3>Notater</h3><textarea id="notes" style="width:100%; height:300px; background:rgba(0,0,0,0.3); border:1px solid var(--glass-border); color:white; padding:15px; border-radius:15px; resize:none;" placeholder="Skriv notater her..."></textarea></div>
+                    <div class="glass-card">
+                        <h3>Notater</h3>
+                        <textarea id="notes" style="width:100%; height:300px; background:rgba(0,0,0,0.3); border:1px solid var(--glass-border); color:white; padding:15px; border-radius:15px; resize:none;" placeholder="Skriv notater her..."></textarea>
+                    </div>
                 </div>
             </section>
 
@@ -366,17 +372,28 @@
                 <h1>Profil Dashboard</h1>
                 <div class="glass-card" style="text-align:center; padding-top:40px; overflow:visible;">
                     <div style="height:110px; background:linear-gradient(to right bottom, var(--primary), var(--accent)); position:absolute; top:0; left:0; width:100%; opacity:0.8;"></div>
-                    <div class="avatar-container" onclick="triggerAvatarUpload()" style="margin-top:10px;"><img id="bigAv" class="avatar-lg" src=""><div class="edit-badge"><i class="ph ph-camera"></i></div></div>
-                    <h2 id="bigName" style="margin:15px 0 5px 0; font-size:1.8rem;">Elev</h2><div style="color:var(--primary); font-size:0.9rem; font-weight:600; margin-bottom:20px;">STUDENT OS USER</div>
-                    <div class="profile-actions"><button class="pill-btn" onclick="editName()"><i class="ph ph-pencil-simple"></i> Endre Navn</button><button class="pill-btn" onclick="resetAvatar()"><i class="ph ph-robot"></i> Generer Robot</button></div>
+                    <div class="avatar-container" onclick="triggerAvatarUpload()" style="margin-top:10px;">
+                        <img id="bigAv" class="avatar-lg" src="">
+                        <div class="edit-badge"><i class="ph ph-camera"></i></div>
+                    </div>
+                    <h2 id="bigName" style="margin:15px 0 5px 0; font-size:1.8rem;">Elev</h2>
+                    <div style="color:var(--primary); font-size:0.9rem; font-weight:600; margin-bottom:20px;">STUDENT OS USER</div>
+                    <div class="profile-actions">
+                        <button class="pill-btn" onclick="editName()"><i class="ph ph-pencil-simple"></i> Endre Navn</button>
+                        <button class="pill-btn" onclick="resetAvatar()"><i class="ph ph-robot"></i> Generer Robot</button>
+                    </div>
                     <div style="margin-top:40px; text-align:left; border-top:1px solid var(--glass-border); padding-top:20px;">
                         <h3 style="font-size:0.9rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Tema</h3>
                         <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:15px;">
-                            <button onclick="setTheme('')" class="pill-btn" style="border-color:#333; background:#030712;">Standard</button><button onclick="setTheme('theme-cyber')" class="pill-btn" style="border-color:#00f0ff; color:#00f0ff; background:black;">Cyber</button><button onclick="setTheme('theme-nature')" class="pill-btn" style="border-color:#10b981; color:#10b981; background:#022c22;">Nature</button><button onclick="setTheme('theme-sunset')" class="pill-btn" style="border-color:#f43f5e; color:#f43f5e; background:#2a0a18;">Sunset</button>
+                            <button onclick="setTheme('')" class="pill-btn" style="border-color:#333; background:#030712;">Standard</button>
+                            <button onclick="setTheme('theme-cyber')" class="pill-btn" style="border-color:#00f0ff; color:#00f0ff; background:black;">Cyber</button>
+                            <button onclick="setTheme('theme-nature')" class="pill-btn" style="border-color:#10b981; color:#10b981; background:#022c22;">Nature</button>
+                            <button onclick="setTheme('theme-sunset')" class="pill-btn" style="border-color:#f43f5e; color:#f43f5e; background:#2a0a18;">Sunset</button>
                         </div>
                     </div>
                 </div>
             </section>
+
         </main>
         
         <nav class="mobile-nav">
@@ -386,62 +403,49 @@
             <button class="mob-btn" onclick="nav('tasks')"><i class="ph ph-check-square"></i><span>Mål</span></button>
             <button class="mob-btn" onclick="nav('settings')"><i class="ph ph-user"></i><span>Meg</span></button>
         </nav>
+
     </div>
 
 <script>
-    // --- APP FLOW ---
+    // --- MOTIVATIONAL INTRO ---
+    const quotes = [
+        "Suksess er summen av små innsatser, gjentatt dag ut og dag inn.",
+        "Tro at du kan, og du er halvveis.",
+        "Fremtiden tilhører de som tror på skjønnheten i drømmene sine.",
+        "Gjør noe i dag som din fremtidige selv vil takke deg for.",
+        "Den beste måten å forutsi fremtiden på er å skape den."
+    ];
+    
     let isAudioInitialized = false;
-    let tourStep = -1;
-    const tourSteps = ['hud-nav', 'hud-timer', 'hud-tasks'];
 
-    function finalizeLogin() {
-        // Resume Audio
+    window.onload = function() {
+        const quote = quotes[Math.floor(Math.random() * quotes.length)];
+        const typewriter = document.getElementById('typewriter');
+        const btn = document.getElementById('start-btn');
+        let i = 0;
+
+        function type() {
+            if (i < quote.length) {
+                typewriter.innerHTML += quote.charAt(i);
+                i++;
+                setTimeout(type, 50); // Speed of typing
+            } else {
+                setTimeout(() => { btn.classList.add('visible'); }, 500);
+            }
+        }
+        type();
+    };
+    
+    function enterSystem() {
         if(audioCtx.state === 'suspended') audioCtx.resume();
         isAudioInitialized = true;
         
-        // Save Name
-        const nameVal = document.getElementById('setupName').value;
-        if(nameVal) state.name = nameVal;
-        save();
-        updateGlobalUI();
-        
-        // Transition
         document.getElementById('welcome-screen').classList.add('hidden');
         document.getElementById('app-shell').classList.add('visible');
-        
-        // Start Tour
-        tourStep = -1;
-        setTimeout(() => { document.getElementById('tour-overlay').classList.add('active'); }, 1000);
         playSuccessSound();
     }
 
-    function nextTourStep() {
-        playKeySound();
-        if (tourStep >= 0 && tourStep < tourSteps.length) {
-            document.getElementById(tourSteps[tourStep]).classList.remove('visible');
-        }
-        tourStep++;
-        if (tourStep < tourSteps.length) {
-            document.getElementById(tourSteps[tourStep]).classList.add('visible');
-            document.querySelector('.tour-center-text').innerText = "TRYKK FOR NESTE";
-        } else {
-            document.getElementById('tour-overlay').classList.remove('active');
-        }
-    }
-
-    document.getElementById('setupAvatarUpload').addEventListener('change', (e) => {
-        if(e.target.files[0]) {
-            const r = new FileReader();
-            r.onload = (evt) => { state.avatar = evt.target.result; updateSetupAvatarPreview(); };
-            r.readAsDataURL(e.target.files[0]);
-        }
-    });
-    function updateSetupAvatarPreview() {
-        let avUrl = state.avatar.startsWith('data:image') ? state.avatar : `https://api.dicebear.com/7.x/notionists/svg?seed=${state.avatar}`;
-        document.getElementById('setupAvPreview').src = avUrl;
-    }
-
-    // --- NEURAL DATA BACKGROUND ---
+    // --- NEURAL DATA BACKGROUND SYSTEM ---
     const canvas = document.getElementById('neural-canvas');
     const ctx = canvas.getContext('2d');
     let w, h; let particles = [];
@@ -475,7 +479,6 @@
     // --- AUDIO SYNTHESIZER ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     
-    // 1. ASMR / Thock Key Sound (Relaxing)
     function playKeySound() {
         if (!isAudioInitialized) return;
         const t = audioCtx.currentTime;
@@ -493,26 +496,19 @@
     }
     document.addEventListener('keydown', () => { playKeySound(); });
 
-    // 2. Level Up Arpeggio
     function playLevelUpSound() {
         if (!isAudioInitialized) return;
         const now = audioCtx.currentTime;
-        const notes = [261.63, 329.63, 392.00, 523.25]; // C E G C
+        const notes = [261.63, 329.63, 392.00, 523.25];
         notes.forEach((freq, i) => {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.type = 'sawtooth';
-            osc.frequency.value = freq;
-            const startTime = now + i * 0.1;
-            gain.gain.setValueAtTime(0, startTime);
-            gain.gain.linearRampToValueAtTime(0.1, startTime + 0.05);
-            gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.5);
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination); osc.type = 'sawtooth'; osc.frequency.value = freq;
+            const startTime = now + i * 0.1; gain.gain.setValueAtTime(0, startTime);
+            gain.gain.linearRampToValueAtTime(0.1, startTime + 0.05); gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.5);
             osc.start(startTime); osc.stop(startTime + 0.5);
         });
     }
 
-    // 3. Success Sound
     function playSuccessSound() {
         const t = audioCtx.currentTime;
         const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
@@ -522,7 +518,6 @@
         osc.start(t); osc.stop(t + 1);
     }
 
-    // 4. Breath Sound & Noise
     let breathOsc, breathGain, noiseNode;
     function startBreathSound() {
         if(breathOsc) return;
@@ -552,8 +547,8 @@
 
     // --- APP CORE ---
     let state = { name: "Student", theme: "", xp: 0, avatar: "std1", tasks: [], notes: "", schedule: {} };
-    if(localStorage.getItem('StudentOS_Finalv8')) { state = {...state, ...JSON.parse(localStorage.getItem('StudentOS_Finalv8'))}; }
-    function save() { localStorage.setItem('StudentOS_Finalv8', JSON.stringify(state)); }
+    if(localStorage.getItem('StudentOS_Finalv10')) { state = {...state, ...JSON.parse(localStorage.getItem('StudentOS_Finalv10'))}; }
+    function save() { localStorage.setItem('StudentOS_Finalv10', JSON.stringify(state)); }
 
     // --- INIT ---
     updateGlobalUI(); renderSchedule();
@@ -583,7 +578,7 @@
         if(document.querySelectorAll('.mob-btn')[map[id]]) document.querySelectorAll('.mob-btn')[map[id]].classList.add('active');
     }
 
-    // Schedule, Calc, Settings... (Same functions)
+    // Schedule
     function renderSchedule() {
         const grid = document.getElementById('schGrid');
         grid.innerHTML = '<div class="sch-header">Tid</div><div class="sch-header">Man</div><div class="sch-header">Tir</div><div class="sch-header">Ons</div><div class="sch-header">Tor</div><div class="sch-header">Fre</div>';
@@ -631,7 +626,11 @@
 
         void overlay.offsetWidth; overlay.classList.add('animate-boom');
         playLevelUpSound();
-        setTimeout(() => { overlay.classList.remove('animate-boom'); document.querySelector('.levelup-rays').style.display = 'none'; }, 3000);
+        
+        setTimeout(() => { 
+            overlay.classList.remove('animate-boom'); 
+            document.querySelector('.levelup-rays').style.display = 'none';
+        }, 3000);
     }
 
     function triggerSuccessAnimation() {
@@ -662,6 +661,13 @@
     }
 
     function removeTask(id) {
+        // DELETE without points
+        state.tasks = state.tasks.filter(t => t.id !== id);
+        save(); renderTasks();
+    }
+
+    function completeTask(id) {
+        // COMPLETE with points
         const oldLevel = Math.floor(state.xp / 100) + 1;
         state.xp += 25; 
         const newLevel = Math.floor(state.xp / 100) + 1;
@@ -676,8 +682,14 @@
     function renderTasks() {
         const l = document.getElementById('taskList'); l.innerHTML = "";
         state.tasks.forEach(t => { 
-            l.innerHTML += `<div class="task-list-item" onclick="removeTask(${t.id})">
-                <span style="font-weight:600">${t.txt}</span><span class="verified-tag">Ferdig</span></div>`; 
+            l.innerHTML += `
+            <div class="task-list-item">
+                <span class="task-text">${t.txt}</span>
+                <div class="task-actions">
+                    <button class="btn-delete" onclick="removeTask(${t.id})"><i class="ph ph-x"></i></button>
+                    <button class="btn-complete" onclick="completeTask(${t.id})"><i class="ph ph-check"></i> Ferdig</button>
+                </div>
+            </div>`; 
         });
     }
 
