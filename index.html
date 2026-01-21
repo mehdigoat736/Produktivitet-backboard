@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Student OS // Clean</title>
+    <title>Student OS // Animated</title>
     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -144,12 +144,32 @@
         }
         .pill-btn:hover { background: rgba(255,255,255,0.1); color: white; border-color: white; }
 
+        /* --- NY KUL TASK ANIMATION --- */
+        @keyframes taskEntry {
+            0% { opacity: 0; transform: translateY(-20px) scale(0.9); }
+            50% { transform: scale(1.02); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes glowFlash {
+            0% { background: rgba(99, 102, 241, 0.4); box-shadow: 0 0 20px var(--primary); }
+            100% { background: rgba(255,255,255,0.03); box-shadow: none; }
+        }
+
         .task-list-item {
             display: flex; justify-content: space-between; align-items: center;
             padding: 15px; background: rgba(255,255,255,0.03); border-radius: 12px; margin-bottom: 10px;
             border-left: 3px solid var(--accent); transition: 0.2s; cursor: pointer;
+            /* Denne linjen gjør at nye oppgaver alltid animeres inn: */
+            animation: taskEntry 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+        
         .task-list-item:hover { background: rgba(255,255,255,0.05); transform: translateX(5px); }
+        
+        /* Klasse som legges til midlertidig når man lager ny oppgave */
+        .new-task-glow {
+            animation: glowFlash 0.8s ease-out;
+        }
 
         /* Mobile */
         .mobile-nav { display: none; }
@@ -314,7 +334,7 @@
     <audio id="sfx-success" src="https://assets.mixkit.co/sfx/preview/mixkit-positive-notification-951.mp3"></audio>
 
 <script>
-    // --- APP CORE (CLEAN ID) ---
+    // --- APP CORE ---
     let state = {
         name: "Student",
         theme: "",
@@ -406,26 +426,43 @@
     function editName() { const n = prompt("Navn:"); if(n) { state.name=n; save(); updateGlobalUI(); } }
     function setTheme(t) { state.theme = t; save(); updateGlobalUI(); }
 
-    // --- SIMPLE TASKS ---
+    // --- ANIMATED TASKS ---
     function addTask() {
         const val = document.getElementById('taskInput').value;
         if(!val) return;
-        state.tasks.push({ txt: val, id: Date.now() });
+        
+        // 1. Add to state
+        state.tasks.unshift({ txt: val, id: Date.now() }); 
         state.xp += 50; 
         save();
-        updateGlobalUI();
+        
+        // 2. Render all tasks
+        renderTasks();
+        
+        // 3. Clear input
         document.getElementById('taskInput').value = "";
-        try { confetti({ particleCount: 100, spread: 70 }); } catch(e){}
+        
+        // 4. Add "Success Flash" to the NEWEST task (the first one)
+        const firstItem = document.getElementById('taskList').firstElementChild;
+        if(firstItem) {
+            firstItem.classList.add('new-task-glow');
+            // Remove class after animation plays so it can be re-used if needed (though unlikely for same item)
+            setTimeout(() => firstItem.classList.remove('new-task-glow'), 800);
+        }
+
+        try { confetti({ particleCount: 100, spread: 70, origin:{y:0.7} }); } catch(e){}
     }
 
     function removeTask(id) {
+        // Simple fade out logic could go here, but for now we just delete
         state.tasks = state.tasks.filter(t => t.id !== id);
         save();
         renderTasks();
     }
     
     function renderTasks() {
-        const l = document.getElementById('taskList'); l.innerHTML = "";
+        const l = document.getElementById('taskList');
+        l.innerHTML = "";
         state.tasks.forEach(t => { 
             l.innerHTML += `<div class="task-list-item" onclick="removeTask(${t.id})">
                 <span style="font-weight:600">${t.txt}</span>
