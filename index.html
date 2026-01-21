@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>mehdi.co // Neural OS</title>
+    <title>mehdi.co // Guided OS</title>
     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;700;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
@@ -81,7 +81,7 @@
         .setup-input { background: transparent; border: none; border-bottom: 2px solid var(--glass-border); color: white; font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; text-align: center; padding: 10px; width: 250px; outline: none; transition: 0.3s; }
         .setup-input:focus { border-color: var(--primary); text-shadow: 0 0 10px var(--primary); }
 
-        /* --- NEW TOUR OVERLAY (TACTICAL HUD) --- */
+        /* --- STEP-BY-STEP TOUR OVERLAY --- */
         #tour-overlay {
             position: fixed; inset: 0; background: rgba(3, 7, 18, 0.85); z-index: 15000;
             display: none; opacity: 0; transition: opacity 0.5s; cursor: pointer;
@@ -90,15 +90,13 @@
         #tour-overlay.active { display: block; opacity: 1; }
 
         .hud-item {
-            position: absolute; display: flex; align-items: flex-start; gap: 15px;
+            position: absolute; display: none; align-items: flex-start; gap: 15px; /* Default hidden */
             opacity: 0; transform: translateX(-20px);
+        }
+        .hud-item.visible {
+            display: flex;
             animation: hudSlideIn 0.5s forwards ease-out;
         }
-        /* Delays for cascading effect */
-        .hud-item:nth-child(2) { animation-delay: 0.1s; }
-        .hud-item:nth-child(3) { animation-delay: 0.2s; }
-        .hud-item:nth-child(4) { animation-delay: 0.3s; }
-        .hud-item:nth-child(5) { animation-delay: 0.4s; }
 
         .hud-line-container {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -106,30 +104,18 @@
         }
         .hud-dot { width: 8px; height: 8px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 10px var(--primary); }
         .hud-line { width: 2px; height: 100%; background: linear-gradient(to bottom, var(--primary), transparent); opacity: 0.5; }
-        
-        /* Connecting line specific for sidebar items */
-        .hud-connector { 
-            position: absolute; left: -60px; top: 15px; width: 60px; height: 1px; 
-            background: linear-gradient(90deg, transparent, var(--primary)); 
-        }
+        .hud-connector { position: absolute; left: -60px; top: 15px; width: 60px; height: 1px; background: linear-gradient(90deg, transparent, var(--primary)); }
 
         .hud-card {
             background: rgba(20, 20, 30, 0.9); border: 1px solid var(--primary);
             padding: 15px 20px; border-radius: 4px; max-width: 300px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
-            position: relative;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5); position: relative;
         }
-        /* Corner decorations for tech look */
         .hud-card::before { content:''; position:absolute; top:-1px; left:-1px; width:10px; height:10px; border-top:2px solid white; border-left:2px solid white; }
         .hud-card::after { content:''; position:absolute; bottom:-1px; right:-1px; width:10px; height:10px; border-bottom:2px solid white; border-right:2px solid white; }
 
-        .hud-title {
-            color: var(--primary); font-family: 'JetBrains Mono', monospace; font-weight: 700;
-            font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 5px; text-transform: uppercase;
-        }
-        .hud-desc {
-            color: var(--text-muted); font-size: 0.85rem; line-height: 1.4; margin: 0;
-        }
+        .hud-title { color: var(--primary); font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 5px; text-transform: uppercase; }
+        .hud-desc { color: var(--text-muted); font-size: 0.85rem; line-height: 1.4; margin: 0; }
 
         /* Positioning */
         #hud-nav { top: 120px; left: 320px; }
@@ -143,7 +129,7 @@
         .tour-center-text {
             font-family: 'JetBrains Mono', monospace; color: white; background: var(--primary);
             padding: 10px 20px; display: inline-block; font-weight: 700; letter-spacing: 2px;
-            animation: pulseBtn 1.5s infinite;
+            animation: pulseBtn 1.5s infinite; transition: 0.2s;
         }
         @keyframes pulseBtn { 0% { opacity:1; } 50% { opacity:0.5; } 100% { opacity:1; } }
         @keyframes hudSlideIn { to { opacity: 1; transform: translateX(0); } }
@@ -270,7 +256,7 @@
         </div>
     </div>
 
-    <div id="tour-overlay" onclick="endTour()">
+    <div id="tour-overlay" onclick="nextTourStep()">
         <div class="tour-center-msg">
             <div class="tour-center-text">KLIKK FOR Å STARTE</div>
         </div>
@@ -286,7 +272,7 @@
         <div class="hud-item" id="hud-timer">
             <div class="hud-card">
                 <div class="hud-title">FOKUS KJERNE</div>
-                <p class="hud-desc">Start arbeidsøkter. Systemet aktiverer automatisk Puste-modus hvert minutt.</p>
+                <p class="hud-desc">Start arbeidsøkter. Systemet aktiverer automatisk Puste-modus hvert minutt for optimalt fokus.</p>
             </div>
         </div>
 
@@ -525,7 +511,8 @@
         document.getElementById('welcome-screen').classList.add('hidden');
         document.getElementById('app-shell').classList.add('visible');
         
-        // Show Tour
+        // RESET & SHOW TOUR
+        tourStep = -1;
         setTimeout(() => {
             document.getElementById('tour-overlay').classList.add('active');
         }, 1000);
@@ -533,9 +520,28 @@
         playSuccessSound();
     }
 
-    function endTour() {
-        document.getElementById('tour-overlay').classList.remove('active');
-        playKeySound();
+    // --- SEQUENTIAL TOUR LOGIC ---
+    let tourStep = -1;
+    const tourSteps = ['hud-nav', 'hud-timer', 'hud-tasks'];
+
+    function nextTourStep() {
+        playKeySound(); // Click sound feedback
+
+        // Hide previous step if it exists
+        if (tourStep >= 0 && tourStep < tourSteps.length) {
+            document.getElementById(tourSteps[tourStep]).classList.remove('visible');
+        }
+
+        tourStep++;
+
+        if (tourStep < tourSteps.length) {
+            // Show next step
+            document.getElementById(tourSteps[tourStep]).classList.add('visible');
+            document.querySelector('.tour-center-text').innerText = "TRYKK FOR NESTE";
+        } else {
+            // End tour
+            document.getElementById('tour-overlay').classList.remove('active');
+        }
     }
 
     document.getElementById('setupAvatarUpload').addEventListener('change', (e) => {
@@ -732,8 +738,8 @@
 
     // --- APP CORE ---
     let state = { name: "Student", theme: "", xp: 0, avatar: "std1", tasks: [], notes: "", schedule: {} };
-    if(localStorage.getItem('StudentOS_Finalv5')) { state = {...state, ...JSON.parse(localStorage.getItem('StudentOS_Finalv5'))}; }
-    function save() { localStorage.setItem('StudentOS_Finalv5', JSON.stringify(state)); }
+    if(localStorage.getItem('StudentOS_Finalv6')) { state = {...state, ...JSON.parse(localStorage.getItem('StudentOS_Finalv6'))}; }
+    function save() { localStorage.setItem('StudentOS_Finalv6', JSON.stringify(state)); }
 
     // --- INIT ---
     updateGlobalUI(); renderSchedule();
