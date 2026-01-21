@@ -9,8 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;700;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    
-    <style>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet"> <style>
         /* --- DESIGN SYSTEM --- */
         :root {
             --bg-color: #030712;
@@ -73,7 +72,7 @@
         .boot-btn.visible { opacity: 1; transform: translateY(0); display: block; }
         .boot-btn:hover { background: var(--primary); box-shadow: 0 0 60px var(--primary); text-shadow: 0 0 10px white; }
 
-        /* --- SETUP / LOGIN PANEL (NEW) --- */
+        /* --- SETUP / LOGIN PANEL --- */
         #setup-panel {
             display: none; flex-direction: column; align-items: center; gap: 20px;
             background: rgba(10, 10, 15, 0.8); padding: 40px; border: 1px solid var(--glass-border);
@@ -97,6 +96,42 @@
             text-align: center; padding: 10px; width: 250px; outline: none; transition: 0.3s;
         }
         .setup-input:focus { border-color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+
+        /* --- TOUR OVERLAY (NEW) --- */
+        #tour-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 15000;
+            display: none; opacity: 0; transition: opacity 0.5s;
+            cursor: pointer; backdrop-filter: blur(4px);
+        }
+        #tour-overlay.active { display: block; opacity: 1; }
+
+        .tour-tooltip {
+            position: absolute; color: white; font-family: 'Caveat', cursive;
+            font-size: 1.5rem; text-align: center; pointer-events: none;
+            animation: floatTour 3s infinite ease-in-out;
+        }
+        .tour-arrow { font-size: 3rem; color: var(--primary); display: block; }
+        .tour-text { text-shadow: 0 0 10px black; font-weight: 700; }
+
+        /* Specific Positions */
+        #tour-nav { top: 150px; left: 290px; text-align: left; }
+        #tour-nav .tour-arrow { transform: rotate(180deg) translateX(10px); display: inline-block; }
+        
+        #tour-timer { top: 15%; left: 55%; transform: translateX(-50%); }
+        #tour-timer .tour-arrow { transform: rotate(90deg); margin-top: 10px; }
+
+        #tour-tasks { bottom: 150px; right: 20%; }
+        #tour-tasks .tour-arrow { transform: rotate(0deg); margin-bottom: 5px; }
+
+        .tour-center-msg {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 1.5rem;
+            text-transform: uppercase; letter-spacing: 3px; color: rgba(255,255,255,0.8);
+            animation: pulseText 2s infinite; pointer-events: none; text-align: center;
+        }
+        @keyframes pulseText { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+        @keyframes floatTour { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
 
         /* --- APP LAYOUT --- */
         .app-shell { 
@@ -228,6 +263,9 @@
             .mob-btn { background: none; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 0.7rem; font-weight: 600; }
             .mob-btn.active { color: var(--primary); }
             .mob-btn i { font-size: 1.5rem; }
+            
+            /* Hide Tour on Mobile to avoid clutter */
+            #tour-overlay { display: none !important; }
         }
         
         /* Avatar & Profile */
@@ -265,6 +303,25 @@
             <input type="text" id="setupName" class="setup-input" placeholder="ENTER NAME" autocomplete="off">
             
             <button class="action-btn" onclick="finalizeLogin()">ACCESS DASHBOARD</button>
+        </div>
+    </div>
+
+    <div id="tour-overlay" onclick="endTour()">
+        <div class="tour-center-msg">Trykk hvor som helst for å starte</div>
+        
+        <div class="tour-tooltip" id="tour-nav">
+            <span class="tour-arrow"><i class="ph ph-arrow-left"></i></span>
+            <div class="tour-text">Navigasjon</div>
+        </div>
+
+        <div class="tour-tooltip" id="tour-timer">
+            <div class="tour-text">Fokus & Pust</div>
+            <span class="tour-arrow"><i class="ph ph-arrow-down"></i></span>
+        </div>
+
+        <div class="tour-tooltip" id="tour-tasks">
+            <div class="tour-text">Oppgaver & Lyd</div>
+            <span class="tour-arrow"><i class="ph ph-arrow-down-right"></i></span>
         </div>
     </div>
 
@@ -325,6 +382,7 @@
                     <div class="glass-card">
                         <h3 style="margin:0 0 15px 0;">Lyd Generator</h3>
                         <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:15px;">Generert i sanntid.</p>
+                        
                         <div class="sound-mixer">
                             <button class="sound-btn" onclick="toggleNoise('pink')" title="Fokus Støy">
                                 <i class="ph ph-waves"></i><span class="sound-label">Fokus</span>
@@ -441,12 +499,7 @@
     </div>
 
 <script>
-    // --- APP CORE ---
-    let state = { name: "Student", theme: "", xp: 0, avatar: "std1", tasks: [], notes: "", schedule: {} };
-    if(localStorage.getItem('StudentOS_Finalv3')) { state = {...state, ...JSON.parse(localStorage.getItem('StudentOS_Finalv3'))}; }
-    function save() { localStorage.setItem('StudentOS_Finalv3', JSON.stringify(state)); }
-
-    // --- BOOT SEQUENCE & WELCOME ---
+    // --- BOOT SEQUENCE ---
     const bootLines = [
         "BIOS DATE 01/21/2026 20:12:00 VER 1.0.4",
         "CPU: NEURAL QUANTUM PROCESSOR - 128 CORES",
@@ -477,17 +530,14 @@
     }
     
     function startSetup() {
-        // Init Audio Context (Critical)
         if(audioCtx.state === 'suspended') audioCtx.resume();
         isAudioInitialized = true;
         playSuccessSound();
 
-        // Hide terminal, Show Setup
         document.getElementById('term-win').style.display = 'none';
         document.getElementById('boot-btn').style.display = 'none';
         document.getElementById('setup-panel').style.display = 'flex';
         
-        // Pre-fill
         document.getElementById('setupName').value = state.name === "Student" ? "" : state.name;
         updateSetupAvatarPreview();
     }
@@ -500,10 +550,20 @@
         
         document.getElementById('welcome-screen').classList.add('hidden');
         document.getElementById('app-shell').classList.add('visible');
+        
+        // Show Tour after small delay
+        setTimeout(() => {
+            document.getElementById('tour-overlay').classList.add('active');
+        }, 1000);
+
         playSuccessSound();
     }
 
-    // Avatar Setup Logic
+    function endTour() {
+        document.getElementById('tour-overlay').classList.remove('active');
+        playKeySound(); // Feedback
+    }
+
     document.getElementById('setupAvatarUpload').addEventListener('change', (e) => {
         if(e.target.files[0]) {
             const r = new FileReader();
@@ -591,19 +651,17 @@
     // --- AUDIO SYNTHESIZER ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     
-    // 1. ASMR / Thock Key Sound (Relaxing)
+    // 1. ASMR / Thock Key Sound
     function playKeySound() {
         if (!isAudioInitialized) return;
         const t = audioCtx.currentTime;
         
-        // Low frequency bump (The "Thock")
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
-        osc.frequency.setValueAtTime(120, t); // Lower pitch = warmer sound
+        osc.frequency.setValueAtTime(120, t);
         osc.frequency.exponentialRampToValueAtTime(60, t + 0.08);
-        osc.type = 'triangle'; // Softer than sine
+        osc.type = 'triangle';
         
-        // Filter to remove harshness
         const filter = audioCtx.createBiquadFilter();
         filter.type = "lowpass";
         filter.frequency.value = 800;
@@ -611,36 +669,25 @@
         gain.gain.setValueAtTime(0.15, t);
         gain.gain.exponentialRampToValueAtTime(0.01, t + 0.08);
         
-        osc.connect(filter);
-        filter.connect(gain);
-        gain.connect(audioCtx.destination);
-        
+        osc.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
         osc.start(t); osc.stop(t + 0.08);
 
-        // Soft noise (Texture)
         const bSize = audioCtx.sampleRate * 0.04; 
         const b = audioCtx.createBuffer(1, bSize, audioCtx.sampleRate);
         const d = b.getChannelData(0);
-        for(let i=0; i<bSize; i++) d[i] = (Math.random() * 2 - 1) * 0.5; // Lower amplitude
+        for(let i=0; i<bSize; i++) d[i] = (Math.random() * 2 - 1) * 0.5;
         
         const noise = audioCtx.createBufferSource();
         noise.buffer = b;
-        
         const nGain = audioCtx.createGain();
         nGain.gain.value = 0.05;
-        
-        // Darker filter for noise
         const nFilter = audioCtx.createBiquadFilter();
-        nFilter.type = "lowpass";
-        nFilter.frequency.value = 400;
+        nFilter.type = "lowpass"; nFilter.frequency.value = 400;
 
-        noise.connect(nFilter);
-        nFilter.connect(nGain);
-        nGain.connect(audioCtx.destination);
+        noise.connect(nFilter); nFilter.connect(nGain); nGain.connect(audioCtx.destination);
         noise.start(t);
     }
 
-    // Global Key Listener
     document.addEventListener('keydown', () => { playKeySound(); });
 
     // 2. Success Sound
@@ -709,6 +756,11 @@
         const btn = document.querySelector(`.sound-btn[onclick*="${type}"]`);
         if(btn) btn.classList.add('active');
     }
+
+    // --- APP CORE ---
+    let state = { name: "Student", theme: "", xp: 0, avatar: "std1", tasks: [], notes: "", schedule: {} };
+    if(localStorage.getItem('StudentOS_Finalv4')) { state = {...state, ...JSON.parse(localStorage.getItem('StudentOS_Finalv4'))}; }
+    function save() { localStorage.setItem('StudentOS_Finalv4', JSON.stringify(state)); }
 
     // --- INIT ---
     updateGlobalUI(); renderSchedule();
