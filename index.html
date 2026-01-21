@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Student OS // Custom Timer</title>
+    <title>Student OS // Godt Jobba Edition</title>
     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -101,11 +101,7 @@
             font-variant-numeric: tabular-nums; letter-spacing: -3px;
             background: linear-gradient(180deg, #fff, var(--text-muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-        
-        /* New Time Selectors */
-        .time-controls {
-            display: flex; gap: 8px; justify-content: center; margin-bottom: 20px;
-        }
+        .time-controls { display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; }
         .time-btn {
             background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
             color: var(--text-muted); padding: 5px 12px; border-radius: 20px;
@@ -156,24 +152,39 @@
         }
         .pill-btn:hover { background: rgba(255,255,255,0.1); color: white; border-color: white; }
 
-        /* SUCCESS ANIMATION (Checkmark Boom) */
+        /* --- GODT JOBBA ANIMATION --- */
         .success-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
             pointer-events: none; z-index: 9999; opacity: 0; transition: opacity 0.3s;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
         }
-        .success-icon { font-size: 8rem; color: var(--success); transform: scale(0); text-shadow: 0 0 50px var(--success); }
+        
+        .success-content { text-align: center; transform: scale(0.8); opacity: 0; }
+        
+        .success-icon { 
+            font-size: 8rem; color: var(--success); 
+            text-shadow: 0 0 50px var(--success); 
+            margin-bottom: 10px;
+        }
+        
+        .success-text {
+            font-size: 3rem; font-weight: 900; color: white;
+            text-transform: uppercase; letter-spacing: 2px;
+            text-shadow: 0 0 30px var(--primary);
+        }
+
         .success-overlay.animate-boom { opacity: 1; }
-        .success-overlay.animate-boom .success-icon { animation: successBoom 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-
-        @keyframes successBoom {
-            0% { transform: scale(0.5); opacity: 0; }
-            40% { transform: scale(1.3); opacity: 1; }
-            60% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(1.8); opacity: 0; }
+        .success-overlay.animate-boom .success-content { 
+            animation: popInSuccess 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; 
         }
 
-        /* TASK ANIMATIONS */
+        @keyframes popInSuccess {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* TASKS */
         @keyframes taskEntry {
             0% { opacity: 0; transform: translateY(-20px) scale(0.9); }
             50% { transform: scale(1.02); }
@@ -219,7 +230,10 @@
     <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
 
     <div id="success-animation" class="success-overlay">
-        <i class="ph ph-check-circle success-icon"></i>
+        <div class="success-content">
+            <i class="ph ph-check-circle success-icon"></i>
+            <div class="success-text">GODT JOBBA!</div>
+        </div>
     </div>
 
     <div class="app-shell">
@@ -366,6 +380,8 @@
 
     </div>
 
+    <audio id="sfx-success" src="https://assets.mixkit.co/sfx/preview/mixkit-positive-notification-951.mp3"></audio>
+
 <script>
     // --- APP CORE ---
     let state = {
@@ -459,13 +475,15 @@
     function editName() { const n = prompt("Navn:"); if(n) { state.name=n; save(); updateGlobalUI(); } }
     function setTheme(t) { state.theme = t; save(); updateGlobalUI(); }
 
-    // --- ANIMATED TASKS ---
+    // --- SUCCESS ANIMATION & TASKS ---
     function triggerSuccessAnimation() {
         const overlay = document.getElementById('success-animation');
         overlay.classList.remove('animate-boom');
-        void overlay.offsetWidth; 
+        void overlay.offsetWidth; // Force reflow
         overlay.classList.add('animate-boom');
-        setTimeout(() => { overlay.classList.remove('animate-boom'); }, 1000);
+        
+        try { document.getElementById('sfx-success').play(); } catch(e){}
+        setTimeout(() => { overlay.classList.remove('animate-boom'); }, 1500);
     }
 
     function addTask() {
@@ -482,13 +500,18 @@
             firstItem.classList.add('new-task-glow');
             setTimeout(() => firstItem.classList.remove('new-task-glow'), 800);
         }
-        triggerSuccessAnimation();
     }
 
     function removeTask(id) {
-        state.tasks = state.tasks.filter(t => t.id !== id);
-        save();
-        renderTasks();
+        // Trigger Success Animation FIRST
+        triggerSuccessAnimation();
+        
+        // Wait a bit, then delete
+        setTimeout(() => {
+            state.tasks = state.tasks.filter(t => t.id !== id);
+            save();
+            renderTasks();
+        }, 1000);
     }
     
     function renderTasks() {
@@ -508,21 +531,14 @@
     let tInt, tRun = false;
 
     function setDuration(mins) {
-        // Reset timer
         clearInterval(tInt);
         tRun = false;
         document.getElementById('timerBtn').innerText = "START ØKT";
-        
-        // Set new time
         defaultDuration = mins;
         tTime = mins * 60;
-        
-        // Update display
         let m = Math.floor(tTime/60);
         let s = tTime%60;
         document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
-        
-        // Update buttons styling
         document.querySelectorAll('.time-btn').forEach(btn => {
             btn.classList.remove('active');
             if(btn.innerText.includes(mins)) btn.classList.add('active');
@@ -540,7 +556,7 @@
                 document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
                 if(tTime<=0) { 
                     clearInterval(tInt); 
-                    tTime = defaultDuration * 60; // Reset to selected time
+                    tTime = defaultDuration * 60; 
                     triggerSuccessAnimation(); 
                 }
             }, 1000);
