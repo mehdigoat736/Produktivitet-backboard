@@ -2,477 +2,464 @@
 <html lang="no">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student OS // Pro Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Student OS Ultimate</title>
     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        /* --- DESIGN SYSTEM --- */
+        /* --- TEMA VARIABLER --- */
         :root {
-            --bg-dark: #0f172a;
-            --bg-darker: #020617;
-            --glass: rgba(30, 41, 59, 0.7);
-            --glass-hover: rgba(51, 65, 85, 0.8);
-            --border: rgba(255, 255, 255, 0.08);
-            --primary: #8b5cf6; /* Violet */
-            --accent: #06b6d4;  /* Cyan */
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.6);
+            --border: rgba(255, 255, 255, 0.1);
+            --primary: #8b5cf6;
+            --accent: #06b6d4;
             --text: #f8fafc;
-            --text-dim: #94a3b8;
-            --success: #10b981;
+            --sidebar-width: 280px;
+            --nav-height: 0px; /* Kun for mobil */
         }
 
-        * { box-sizing: border-box; outline: none; }
+        /* Tema: Nature */
+        body.theme-nature { --bg: #052e16; --primary: #22c55e; --accent: #86efac; --card-bg: rgba(20, 83, 45, 0.6); }
+        /* Tema: Energy */
+        body.theme-energy { --bg: #431407; --primary: #f97316; --accent: #fcd34d; --card-bg: rgba(124, 45, 18, 0.5); }
+        /* Tema: Midnight */
+        body.theme-midnight { --bg: #000000; --primary: #6366f1; --accent: #a855f7; --card-bg: #111; --border: #333; }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
 
         body {
-            margin: 0;
-            font-family: 'Outfit', sans-serif;
-            background-color: var(--bg-darker);
-            color: var(--text);
-            height: 100vh;
-            overflow: hidden;
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.15) 0%, transparent 40%);
+            margin: 0; font-family: 'Outfit', sans-serif;
+            background-color: var(--bg); color: var(--text);
+            height: 100vh; overflow: hidden;
+            transition: background-color 0.5s ease;
         }
 
         /* --- LAYOUT --- */
-        .app-container {
-            display: grid;
-            grid-template-columns: 260px 1fr;
-            height: 100vh;
-            max-width: 1600px;
-            margin: 0 auto;
+        .app-layout {
+            display: flex; height: 100%; width: 100%;
         }
 
-        /* --- SIDEBAR --- */
+        /* --- SIDEBAR (Desktop/Tablet) --- */
         .sidebar {
-            background: rgba(15, 23, 42, 0.5);
+            width: var(--sidebar-width);
+            background: rgba(0,0,0,0.2);
             backdrop-filter: blur(20px);
             border-right: 1px solid var(--border);
-            padding: 30px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .profile-area {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .avatar {
-            width: 80px; height: 80px; border-radius: 20px;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            margin: 0 auto 15px; padding: 2px;
-        }
-        .avatar img { width: 100%; height: 100%; border-radius: 18px; background: #000; }
-
-        .level-badge {
-            background: rgba(255,255,255,0.1); padding: 4px 12px;
-            border-radius: 12px; font-size: 0.75rem; font-weight: 700;
-            color: var(--accent); display: inline-block; margin-top: 5px;
-        }
-
-        .nav-btn {
-            background: transparent; border: none; color: var(--text-dim);
-            padding: 15px; border-radius: 15px; cursor: pointer;
-            text-align: left; font-size: 1rem; font-weight: 500;
-            display: flex; align-items: center; gap: 15px;
+            padding: 30px;
+            display: flex; flex-direction: column; gap: 10px;
             transition: 0.3s;
+            z-index: 10;
         }
-        .nav-btn i { font-size: 1.4rem; }
-        .nav-btn:hover { background: rgba(255,255,255,0.05); color: white; }
-        .nav-btn.active { background: linear-gradient(90deg, rgba(139, 92, 246, 0.2), transparent); color: var(--primary); border-left: 3px solid var(--primary); }
+
+        .user-profile {
+            text-align: center; margin-bottom: 30px;
+            padding-bottom: 20px; border-bottom: 1px solid var(--border);
+        }
+        
+        .avatar-frame {
+            width: 90px; height: 90px; margin: 0 auto 15px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 50%; padding: 3px; cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .avatar-frame:hover { transform: scale(1.05); }
+        .avatar-frame img { width: 100%; height: 100%; border-radius: 50%; background: #000; }
+
+        .nav-item {
+            background: transparent; border: none; color: #94a3b8;
+            padding: 16px; border-radius: 16px; cursor: pointer;
+            text-align: left; font-size: 1rem; font-weight: 600;
+            display: flex; align-items: center; gap: 15px; transition: 0.3s;
+        }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
+        .nav-item.active { 
+            background: var(--primary); color: white; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2); 
+        }
+        .nav-item i { font-size: 1.4rem; }
 
         /* --- MAIN CONTENT --- */
-        .main-content {
-            padding: 40px;
-            overflow-y: auto;
-            position: relative;
+        .content-area {
+            flex: 1; overflow-y: auto; padding: 40px;
+            padding-bottom: 100px; /* Space for mobile nav */
+            scroll-behavior: smooth;
         }
 
-        .section { display: none; animation: fadeIn 0.4s ease; }
+        .section { display: none; animation: fadeUp 0.4s ease; }
         .section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- DASHBOARD WIDGETS --- */
-        .grid-layout {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px;
+        /* --- MOBILE ADAPTATIONS --- */
+        @media (max-width: 768px) {
+            .sidebar { display: none; } /* Skjul sidebar på mobil */
+            .content-area { padding: 20px; padding-bottom: 90px; }
+            
+            /* Bottom Navigation Bar */
+            .mobile-nav {
+                position: fixed; bottom: 0; left: 0; width: 100%;
+                background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px);
+                border-top: 1px solid var(--border);
+                display: flex; justify-content: space-around; padding: 12px;
+                z-index: 100;
+            }
+            .mobile-btn {
+                background: none; border: none; color: #64748b;
+                display: flex; flex-direction: column; align-items: center;
+                gap: 5px; font-size: 0.7rem; font-weight: 600;
+            }
+            .mobile-btn i { font-size: 1.5rem; }
+            .mobile-btn.active { color: var(--primary); }
+            
+            .grid-3 { grid-template-columns: 1fr !important; }
+            .tool-grid { grid-template-columns: 1fr !important; }
         }
 
-        .card {
-            background: var(--glass); backdrop-filter: blur(15px);
-            border: 1px solid var(--border); border-radius: 24px; padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            transition: transform 0.3s ease;
-        }
-        .card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.2); }
-
-        h2 { margin-top: 0; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-
-        /* Timer Styles */
-        .timer-big {
-            font-size: 5rem; font-weight: 800; text-align: center;
-            background: linear-gradient(to right, #fff, var(--accent));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin: 20px 0; font-variant-numeric: tabular-nums;
-        }
-        .btn-primary {
-            background: var(--primary); color: white; border: none; width: 100%;
-            padding: 15px; border-radius: 15px; font-weight: 700; cursor: pointer;
-            box-shadow: 0 5px 20px rgba(139, 92, 246, 0.4); transition: 0.2s;
-        }
-        .btn-primary:active { transform: scale(0.98); }
-
-        /* Task Styles */
-        .task-input {
-            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
-            padding: 12px; border-radius: 12px; color: white; margin-bottom: 15px;
-        }
-        .task-item {
-            background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px;
-            margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;
-            cursor: pointer; transition: 0.2s;
-        }
-        .task-item:hover { background: rgba(255,255,255,0.1); }
-        .verified-badge { font-size: 0.7rem; color: var(--success); background: rgba(16, 185, 129, 0.15); padding: 2px 8px; border-radius: 6px; }
-
-        /* --- TOOLS SECTION --- */
-        .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        /* --- DASHBOARD CARDS --- */
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
         
+        .card {
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 24px; padding: 25px;
+            backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        /* Timer */
+        .timer-display {
+            font-size: 4.5rem; font-weight: 800; text-align: center;
+            background: linear-gradient(to right, #fff, var(--primary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            font-variant-numeric: tabular-nums; margin: 10px 0;
+        }
+
+        /* Buttons */
+        .btn {
+            background: var(--primary); color: white; border: none; width: 100%;
+            padding: 16px; border-radius: 18px; font-weight: 700; font-size: 1rem;
+            cursor: pointer; transition: transform 0.2s;
+        }
+        .btn:active { transform: scale(0.96); }
+
         /* Calculator */
-        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
-        .calc-btn {
-            background: rgba(255,255,255,0.1); border: none; color: white;
-            padding: 15px; border-radius: 10px; font-size: 1.2rem; cursor: pointer;
+        .calc-screen {
+            width: 100%; background: #000; color: var(--accent); font-family: monospace;
+            font-size: 1.8rem; text-align: right; padding: 20px; border-radius: 15px; border: none; margin-bottom: 15px;
         }
-        .calc-btn.op { background: rgba(139, 92, 246, 0.2); color: var(--primary); }
-        .calc-display {
-            width: 100%; background: black; color: var(--accent); font-family: monospace;
-            font-size: 2rem; text-align: right; padding: 15px; border-radius: 10px; border: none;
+        .calc-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .key {
+            padding: 15px; border-radius: 12px; border: none; font-size: 1.2rem; font-weight: bold;
+            background: rgba(255,255,255,0.05); color: white; cursor: pointer;
         }
+        .key.op { color: var(--primary); background: rgba(255,255,255,0.1); }
+        .key.sci { color: var(--accent); font-size: 1rem; }
+        
+        /* Settings / Themes */
+        .theme-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px; }
+        .theme-btn {
+            padding: 20px; border-radius: 15px; border: 2px solid transparent; cursor: pointer;
+            text-align: center; font-weight: bold; color: white;
+        }
+        .theme-btn.active { border-color: white; transform: scale(0.98); }
 
-        /* Notepad */
-        #notepad {
-            width: 100%; height: 300px; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
-            color: #ddd; padding: 20px; border-radius: 15px; resize: none; line-height: 1.6;
+        /* Inputs */
+        input.modern-input {
+            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+            padding: 15px; border-radius: 15px; color: white; margin-bottom: 10px;
         }
-
     </style>
 </head>
-<body>
+<body class="theme-default">
 
-<div class="app-container">
-    
-    <nav class="sidebar">
-        <div class="profile-area">
-            <div class="avatar">
-                <img id="avatarImg" src="" alt="Avatar">
-            </div>
-            <h3 id="usernameDisplay" style="margin:0">Elev</h3>
-            <div class="level-badge" id="levelDisplay">Level 1: Nybegynner</div>
-        </div>
-
-        <button class="nav-btn active" onclick="showSection('dashboard')">
-            <i class="ph ph-squares-four"></i> Dashboard
-        </button>
-        <button class="nav-btn" onclick="showSection('tasks')">
-            <i class="ph ph-check-square"></i> Oppgaver
-        </button>
-        <button class="nav-btn" onclick="showSection('tools')">
-            <i class="ph ph-calculator"></i> Verktøy
-        </button>
-        <button class="nav-btn" onclick="resetProgress()" style="margin-top:auto; color: #ef4444;">
-            <i class="ph ph-trash"></i> Nullstill
-        </button>
-    </nav>
-
-    <main class="main-content">
+    <div class="app-layout">
         
-        <section id="dashboard" class="section active">
-            <h1 style="margin-bottom: 5px;">Velkommen tilbake! 👋</h1>
-            <p style="color: var(--text-dim); margin-bottom: 30px;">Her er dagens oversikt.</p>
-
-            <div class="grid-layout">
-                <div class="card" style="text-align: center;">
-                    <h2><i class="ph ph-clock"></i> Fokus Økt</h2>
-                    <div class="timer-big" id="time">25:00</div>
-                    <button class="btn-primary" id="timerBtn" onclick="toggleTimer()">START FOKUS</button>
-                    <p style="font-size: 0.8rem; margin-top: 15px; opacity: 0.7;">Husk å ta pauser!</p>
+        <aside class="sidebar">
+            <div class="user-profile">
+                <div class="avatar-frame" onclick="changeAvatar()">
+                    <img id="avatarImg" src="" alt="Avatar">
                 </div>
-
-                <div class="card">
-                    <h2><i class="ph ph-chart-bar"></i> Min Aktivitet</h2>
-                    <canvas id="xpChart" height="180"></canvas>
-                </div>
-
-                <div class="card" style="background: linear-gradient(135deg, #1e1b4b, #312e81);">
-                    <h2><i class="ph ph-headphones"></i> LoFi Radio</h2>
-                    <div style="display:flex; align-items:center; justify-content:center; height: 100px; gap: 10px;">
-                        <div class="bar" style="width:5px; height:20px; background:var(--accent); animation: bounce 1s infinite;"></div>
-                        <div class="bar" style="width:5px; height:35px; background:var(--primary); animation: bounce 1.2s infinite;"></div>
-                        <div class="bar" style="width:5px; height:15px; background:white; animation: bounce 0.8s infinite;"></div>
-                    </div>
-                    <button class="btn-primary" style="background:rgba(255,255,255,0.1);" onclick="alert('Spiller LoFi Beats for Studying...')">▶ SPILLELISTE</button>
-                </div>
+                <h3 id="nameDisplay" style="margin:0">Student</h3>
+                <small style="color: var(--accent); cursor: pointer;" onclick="editName()">✎ Endre navn</small>
             </div>
-        </section>
 
-        <section id="tasks" class="section">
-            <h1>Mine Mål</h1>
-            <div class="card" style="max-width: 600px;">
-                <input type="text" class="task-input" id="taskInput" placeholder="Hva skal du lære i dag? Trykk Enter...">
-                <div id="taskList">
+            <button class="nav-item active" onclick="nav('dashboard')">
+                <i class="ph ph-squares-four"></i> Oversikt
+            </button>
+            <button class="nav-item" onclick="nav('tools')">
+                <i class="ph ph-calculator"></i> Verktøy
+            </button>
+            <button class="nav-item" onclick="nav('settings')">
+                <i class="ph ph-gear"></i> Innstillinger
+            </button>
+        </aside>
+
+        <main class="content-area">
+            
+            <section id="dashboard" class="section active">
+                <h1 id="welcomeText">Hei! 👋</h1>
+                
+                <div class="grid-3">
+                    <div class="card" style="text-align: center;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <h2 style="margin:0"><i class="ph ph-clock"></i> Fokus</h2>
+                            <span style="font-size:0.8rem; background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:8px;">+ XP</span>
+                        </div>
+                        <div class="timer-display" id="timer">25:00</div>
+                        <button class="btn" id="timerBtn" onclick="toggleTimer()">START ØKT</button>
                     </div>
-            </div>
-        </section>
 
-        <section id="tools" class="section">
-            <h1>Skoleverktøy</h1>
-            <div class="tool-grid">
-                <div class="card">
-                    <h2><i class="ph ph-calculator"></i> Kalkulator</h2>
-                    <input type="text" class="calc-display" id="calcDisplay" readonly>
-                    <div class="calc-grid">
-                        <button class="calc-btn" onclick="calc('7')">7</button>
-                        <button class="calc-btn" onclick="calc('8')">8</button>
-                        <button class="calc-btn" onclick="calc('9')">9</button>
-                        <button class="calc-btn op" onclick="calc('/')">/</button>
-                        <button class="calc-btn" onclick="calc('4')">4</button>
-                        <button class="calc-btn" onclick="calc('5')">5</button>
-                        <button class="calc-btn" onclick="calc('6')">6</button>
-                        <button class="calc-btn op" onclick="calc('*')">*</button>
-                        <button class="calc-btn" onclick="calc('1')">1</button>
-                        <button class="calc-btn" onclick="calc('2')">2</button>
-                        <button class="calc-btn" onclick="calc('3')">3</button>
-                        <button class="calc-btn op" onclick="calc('-')">-</button>
-                        <button class="calc-btn" onclick="calc('0')">0</button>
-                        <button class="calc-btn" onclick="calc('C')">C</button>
-                        <button class="calc-btn op" onclick="solve()">=</button>
-                        <button class="calc-btn op" onclick="calc('+')">+</button>
+                    <div class="card">
+                        <h2 style="margin:0 0 20px 0;"><i class="ph ph-trend-up"></i> Fremgang</h2>
+                        <div style="height: 180px;">
+                            <canvas id="chart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2 style="margin:0 0 20px 0;"><i class="ph ph-check-circle"></i> Dagens Mål</h2>
+                        <input type="text" class="modern-input" id="quickTask" placeholder="Legg til mål..." onkeypress="if(event.key==='Enter') addTask()">
+                        <div id="taskList" style="max-height: 150px; overflow-y: auto;"></div>
                     </div>
                 </div>
+            </section>
 
-                <div class="card">
-                    <h2><i class="ph ph-notebook"></i> Notatblokk</h2>
-                    <textarea id="notepad" placeholder="Skriv notater her... de lagres automatisk!"></textarea>
+            <section id="tools" class="section">
+                <h1>Verktøy</h1>
+                <div class="grid-3 tool-grid">
+                    
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                            <h2 style="margin:0">Kalkulator</h2>
+                            <button onclick="toggleSci()" style="background:none; border:1px solid var(--border); color:var(--accent); border-radius:8px; padding:5px 10px;">Vitenskapelig</button>
+                        </div>
+                        <input type="text" class="calc-screen" id="calcDisp" readonly>
+                        <div class="calc-keys" id="calcKeys">
+                            </div>
+                    </div>
+
+                    <div class="card">
+                        <h2><i class="ph ph-function"></i> Formelsamling</h2>
+                        <div style="display:flex; flex-direction:column; gap:10px;">
+                            <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:10px;">
+                                <strong>Areal Sirkel:</strong><br> $A = \pi r^2$
+                            </div>
+                            <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:10px;">
+                                <strong>Pytagoras:</strong><br> $a^2 + b^2 = c^2$
+                            </div>
+                            <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:10px;">
+                                <strong>Fart:</strong><br> $v = s / t$
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-    </main>
-</div>
+            <section id="settings" class="section">
+                <h1>Min Profil & Utseende</h1>
+                <div class="grid-3">
+                    <div class="card">
+                        <h2>Endre Tema</h2>
+                        <p style="opacity:0.7">Velg farger som passer humøret ditt.</p>
+                        <div class="theme-grid">
+                            <div class="theme-btn" style="background:#0f172a" onclick="setTheme('')">Deep Focus</div>
+                            <div class="theme-btn" style="background:#052e16" onclick="setTheme('theme-nature')">Nature</div>
+                            <div class="theme-btn" style="background:#431407" onclick="setTheme('theme-energy')">Energy</div>
+                            <div class="theme-btn" style="background:#000000" onclick="setTheme('theme-midnight')">Midnight</div>
+                        </div>
+                    </div>
 
-<audio id="alarm" src="https://assets.mixkit.co/sfx/preview/mixkit-positive-notification-951.mp3"></audio>
+                    <div class="card">
+                        <h2>Profil info</h2>
+                        <p>Klikk på bildet i menyen for å bytte avatar.</p>
+                        <input type="text" class="modern-input" id="nameInput" placeholder="Ditt navn">
+                        <button class="btn" onclick="saveName()">Lagre Navn</button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <nav class="mobile-nav" id="mobileNav" style="display:none;"> <button class="mobile-btn active" onclick="nav('dashboard')">
+                <i class="ph ph-squares-four"></i>
+                <span>Hjem</span>
+            </button>
+            <button class="mobile-btn" onclick="nav('tools')">
+                <i class="ph ph-calculator"></i>
+                <span>Verktøy</span>
+            </button>
+            <button class="mobile-btn" onclick="nav('settings')">
+                <i class="ph ph-user"></i>
+                <span>Profil</span>
+            </button>
+        </nav>
+
+    </div>
+
+    <audio id="alarm" src="https://assets.mixkit.co/sfx/preview/mixkit-positive-notification-951.mp3"></audio>
 
 <script>
-    // --- 1. CONFIG & STATE ---
-    let state = {
+    // --- STATE MANAGEMENT ---
+    let appState = {
+        name: "Student",
+        theme: "",
         xp: 0,
-        level: 1,
-        tasks: [],
-        notes: "",
-        weeklyXP: [100, 350, 200, 500, 300, 150, 0] // Demo data
+        avatarSeed: "student",
+        tasks: []
     };
 
     // Load Data
-    if(localStorage.getItem('studentOS')) {
-        state = {...state, ...JSON.parse(localStorage.getItem('studentOS'))};
+    if(localStorage.getItem('studentOS_v2')) {
+        appState = {...appState, ...JSON.parse(localStorage.getItem('studentOS_v2'))};
     }
 
-    // Avatar Generator (DiceBear API)
-    const seed = Math.floor(Math.random() * 1000);
-    document.getElementById('avatarImg').src = `https://api.dicebear.com/7.x/bottts/svg?seed=${state.xp}`;
+    // --- SETUP UI ---
+    document.body.className = appState.theme;
+    document.getElementById('nameDisplay').innerText = appState.name;
+    document.getElementById('welcomeText').innerText = `Hei, ${appState.name}! 👋`;
+    document.getElementById('avatarImg').src = `https://api.dicebear.com/7.x/bottts/svg?seed=${appState.avatarSeed}`;
+    
+    // Check for mobile to show nav
+    if(window.innerWidth <= 768) document.getElementById('mobileNav').style.display = 'flex';
 
-    // --- 2. NAVIGATION ---
-    function showSection(id) {
+    function saveState() {
+        localStorage.setItem('studentOS_v2', JSON.stringify(appState));
+    }
+
+    // --- NAVIGATION ---
+    function nav(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
+
+        // Update active buttons
+        document.querySelectorAll('.nav-item, .mobile-btn').forEach(b => b.classList.remove('active'));
         
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        // Enkel logikk for aktiv knapp styling
-        if(id === 'dashboard') document.querySelector('.nav-btn:nth-child(2)').classList.add('active');
-        if(id === 'tasks') document.querySelector('.nav-btn:nth-child(3)').classList.add('active');
-        if(id === 'tools') document.querySelector('.nav-btn:nth-child(4)').classList.add('active');
+        // Simple logic to highlight correct buttons
+        const index = id === 'dashboard' ? 0 : id === 'tools' ? 1 : 2;
+        const desktopNavs = document.querySelectorAll('.nav-item');
+        const mobileNavs = document.querySelectorAll('.mobile-btn');
+        
+        if(desktopNavs.length) desktopNavs[index].classList.add('active');
+        if(mobileNavs.length && window.innerWidth <= 768) mobileNavs[index].classList.add('active');
     }
 
-    // --- 3. TIMER LOGIC ---
-    let timerRef = null;
-    let timeLeft = 25 * 60;
-    let isRunning = false;
-    const timeDisplay = document.getElementById('time');
-    const timerBtn = document.getElementById('timerBtn');
-
-    function toggleTimer() {
-        if (isRunning) {
-            clearInterval(timerRef);
-            timerBtn.innerText = "FORTSETT";
-            timerBtn.style.background = "var(--primary)";
-        } else {
-            timerBtn.innerText = "PAUSE";
-            timerBtn.style.background = "#ef4444";
-            timerRef = setInterval(() => {
-                timeLeft--;
-                const m = Math.floor(timeLeft / 60);
-                const s = timeLeft % 60;
-                timeDisplay.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
-                if (timeLeft <= 0) completeSession();
-            }, 1000);
-        }
-        isRunning = !isRunning;
+    // --- PROFILE & THEMES ---
+    function setTheme(themeName) {
+        document.body.className = themeName;
+        appState.theme = themeName;
+        saveState();
     }
 
-    function completeSession() {
-        clearInterval(timerRef);
-        document.getElementById('alarm').play();
-        confetti({ particleCount: 200, spread: 100 });
-        alert("Bra jobba! Du fullførte en økt! +250 XP");
-        addXP(250);
-        timeLeft = 25 * 60;
-        timeDisplay.innerText = "25:00";
-        timerBtn.innerText = "START FOKUS";
-        isRunning = false;
+    function changeAvatar() {
+        appState.avatarSeed = Math.random().toString(36).substring(7);
+        document.getElementById('avatarImg').src = `https://api.dicebear.com/7.x/bottts/svg?seed=${appState.avatarSeed}`;
+        saveState();
     }
 
-    // --- 4. GAMIFICATION (XP & LEVEL) ---
-    function addXP(amount) {
-        state.xp += amount;
-        state.level = Math.floor(state.xp / 1000) + 1;
-        state.weeklyXP[6] += amount; // Legger til i dagens graf
-        save();
-        updateProfile();
-    }
-
-    function updateProfile() {
-        const titles = ["Nybegynner", "Student", "Lærling", "Akademiker", "Master", "Genius"];
-        const title = titles[Math.min(state.level - 1, titles.length - 1)];
-        document.getElementById('levelDisplay').innerText = `Level ${state.level}: ${title} (${state.xp} XP)`;
-        updateChart();
-    }
-
-    // --- 5. TASKS ---
-    const taskInput = document.getElementById('taskInput');
-    const taskList = document.getElementById('taskList');
-
-    // Render saved tasks
-    state.tasks.forEach(t => renderTask(t));
-
-    taskInput.addEventListener('keypress', (e) => {
-        if(e.key === 'Enter' && e.target.value.trim()) {
-            const task = { text: e.target.value, id: Date.now() };
-            state.tasks.push(task);
-            save();
-            renderTask(task);
-            e.target.value = '';
-        }
-    });
-
-    function renderTask(task) {
-        const div = document.createElement('div');
-        div.className = 'task-item';
-        div.innerHTML = `
-            <span>${task.text}</span>
-            <span class="verified-badge">Mål</span>
-        `;
-        div.onclick = () => {
-            div.style.opacity = 0;
-            setTimeout(() => {
-                div.remove();
-                state.tasks = state.tasks.filter(t => t.id !== task.id);
-                addXP(50); // XP for å fullføre oppgave
-                save();
-            }, 300);
-        };
-        taskList.prepend(div);
-    }
-
-    // --- 6. TOOLS (Calc & Notepad) ---
-    // Notepad
-    const notepad = document.getElementById('notepad');
-    notepad.value = state.notes;
-    notepad.addEventListener('input', (e) => {
-        state.notes = e.target.value;
-        save();
-    });
-
-    // Calculator
-    let calcStr = "";
-    function calc(val) {
-        if(val === 'C') { calcStr = ""; }
-        else { calcStr += val; }
-        document.getElementById('calcDisplay').value = calcStr;
-    }
-    function solve() {
-        try {
-            calcStr = eval(calcStr).toString();
-            document.getElementById('calcDisplay').value = calcStr;
-        } catch(e) {
-            document.getElementById('calcDisplay').value = "Error";
-            calcStr = "";
+    function editName() {
+        const newName = prompt("Hva vil du hete?", appState.name);
+        if(newName) {
+            appState.name = newName;
+            document.getElementById('nameDisplay').innerText = newName;
+            document.getElementById('welcomeText').innerText = `Hei, ${newName}! 👋`;
+            saveState();
         }
     }
-
-    // --- 7. SYSTEM FUNCTIONS ---
-    function save() {
-        localStorage.setItem('studentOS', JSON.stringify(state));
-    }
-
-    function resetProgress() {
-        if(confirm("Er du sikker på at du vil slette all fremgang?")) {
-            localStorage.removeItem('studentOS');
-            location.reload();
-        }
-    }
-
-    // --- 8. CHART SETUP ---
-    let chart;
-    function initChart() {
-        const ctx = document.getElementById('xpChart').getContext('2d');
-        chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Man', 'Tir', 'Ons', 'Tor', 'Fre', 'Lør', 'Søn'],
-                datasets: [{
-                    label: 'XP opptjent',
-                    data: state.weeklyXP,
-                    backgroundColor: '#8b5cf6',
-                    borderRadius: 8
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
-                    y: { display: false }
-                }
-            }
-        });
-    }
-
-    function updateChart() {
-        if(chart) {
-            chart.data.datasets[0].data = state.weeklyXP;
-            chart.update();
-        }
-    }
-
-    // Start
-    updateProfile();
-    initChart();
     
-    // Keyframes for animations injected here for simplicity
-    const styleSheet = document.createElement("style");
-    styleSheet.innerText = `
-        @keyframes bounce { 0%, 100% { height: 10px; } 50% { height: 30px; } }
-    `;
-    document.head.appendChild(styleSheet);
+    function saveName() {
+        const val = document.getElementById('nameInput').value;
+        if(val) {
+            appState.name = val;
+            document.getElementById('nameDisplay').innerText = val;
+            saveState();
+            alert("Navn lagret!");
+        }
+    }
+
+    // --- CALCULATOR ENGINE ---
+    let calcMode = 'basic';
+    const keysBasic = ['7','8','9','/','4','5','6','*','1','2','3','-','C','0','=','+'];
+    const keysSci = ['sin','cos','tan','√','(',')','^','%','7','8','9','/','4','5','6','*','1','2','3','-','C','0','=','+'];
+
+    function renderCalc() {
+        const board = document.getElementById('calcKeys');
+        board.innerHTML = '';
+        const keys = calcMode === 'basic' ? keysBasic : keysSci;
+        
+        keys.forEach(k => {
+            const btn = document.createElement('button');
+            btn.className = `key ${['/','*','-','+','='].includes(k) ? 'op' : ''} ${['sin','cos','tan','√','^','%'].includes(k) ? 'sci' : ''}`;
+            btn.innerText = k;
+            btn.onclick = () => handleCalc(k);
+            board.appendChild(btn);
+        });
+        
+        board.style.gridTemplateColumns = calcMode === 'basic' ? 'repeat(4, 1fr)' : 'repeat(4, 1fr)';
+    }
+
+    let expr = "";
+    function handleCalc(val) {
+        const screen = document.getElementById('calcDisp');
+        if(val === 'C') expr = "";
+        else if(val === '=') {
+            try {
+                // Replace sci symbols for JS
+                let safeExpr = expr.replace('√', 'Math.sqrt').replace('^', '**').replace('sin', 'Math.sin').replace('cos', 'Math.cos');
+                expr = eval(safeExpr).toString();
+            } catch { expr = "Error"; }
+        }
+        else if(val === 'sin' || val === 'cos') expr += val + "(";
+        else if(val === '√') expr += "√(";
+        else expr += val;
+        
+        screen.value = expr;
+    }
+
+    function toggleSci() {
+        calcMode = calcMode === 'basic' ? 'sci' : 'basic';
+        renderCalc();
+    }
+    renderCalc();
+
+    // --- TIMER & TASKS (Simplified from prev) ---
+    let timeLeft = 25*60, tRun = false, tInt;
+    function toggleTimer() {
+        if(tRun) { clearInterval(tInt); document.getElementById('timerBtn').innerText="START"; }
+        else {
+            tInt = setInterval(() => {
+                timeLeft--;
+                let m = Math.floor(timeLeft/60), s = timeLeft%60;
+                document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
+                if(timeLeft<=0) { clearInterval(tInt); document.getElementById('alarm').play(); confetti(); timeLeft=25*60; }
+            }, 1000);
+            document.getElementById('timerBtn').innerText="PAUSE";
+        }
+        tRun = !tRun;
+    }
+
+    function addTask() {
+        const val = document.getElementById('quickTask').value;
+        if(!val) return;
+        const d = document.createElement('div');
+        d.innerHTML = `• ${val}`;
+        d.style.padding = "10px";
+        d.style.borderBottom = "1px solid rgba(255,255,255,0.1)";
+        document.getElementById('taskList').prepend(d);
+        document.getElementById('quickTask').value = "";
+    }
+
+    // Chart
+    const ctx = document.getElementById('chart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['M', 'T', 'O', 'T', 'F', 'L', 'S'],
+            datasets: [{ label: 'Fokus', data: [12, 19, 3, 5, 2, 3, 10], borderColor: '#8b5cf6', tension: 0.4 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{display:false}} }
+    });
 
 </script>
 </body>
