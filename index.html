@@ -3,29 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>mehdi.co // Cyber Edition</title>
+    <title>mehdi.co // Ultimate System</title>
     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;700;900&display=swap" rel="stylesheet">
-    
-    <style>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"> <style>
         /* --- DESIGN SYSTEM --- */
         :root {
-            --bg-color: #050505;
-            --glass-surface: rgba(20, 20, 30, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --bg-color: #030712;
+            --glass-surface: rgba(10, 10, 15, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
             --primary: #6366f1;
-            --accent: #d946ef;
+            --accent: #ec4899;
             --success: #10b981;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --grid-color: rgba(99, 102, 241, 0.3);
+            --breath-color: #a5f3fc;
         }
 
-        body.theme-cyber { --primary: #00f0ff; --accent: #ff003c; --grid-color: rgba(0, 240, 255, 0.3); }
-        body.theme-nature { --primary: #34d399; --accent: #facc15; --grid-color: rgba(52, 211, 153, 0.3); }
-        body.theme-sunset { --primary: #f43f5e; --accent: #fb923c; --grid-color: rgba(244, 63, 94, 0.3); }
+        body.theme-cyber { --bg-color: #050505; --primary: #00f0ff; --accent: #ff003c; --breath-color: #00f0ff; }
+        body.theme-nature { --bg-color: #022c22; --primary: #34d399; --accent: #facc15; --breath-color: #86efac; }
+        body.theme-sunset { --bg-color: #2a0a18; --primary: #f43f5e; --accent: #fb923c; --breath-color: #fb923c; }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
         
@@ -36,23 +35,83 @@
             transition: background 0.5s ease;
         }
 
-        /* --- NEW ANIMATED BACKGROUND (CYBER GRID) --- */
-        #bg-canvas {
+        /* --- ADVANCED BACKGROUND CANVAS --- */
+        #neural-canvas {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 0; pointer-events: none;
-            background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15), transparent 80%);
         }
 
-        /* Layout */
-        .app-shell { display: flex; height: 100%; width: 100%; position: relative; z-index: 1; }
+        /* --- WELCOME SCREEN (BOOT SEQUENCE) --- */
+        #welcome-screen {
+            position: fixed; inset: 0; background: #000; z-index: 20000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
+        }
+        #welcome-screen.hidden { opacity: 0; pointer-events: none; transform: scale(1.1); }
+
+        .boot-text {
+            font-family: 'JetBrains Mono', monospace; color: var(--primary);
+            font-size: 0.9rem; margin-bottom: 30px; min-height: 1.2em;
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        .enter-btn {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid var(--primary);
+            color: white;
+            padding: 20px 50px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: 0.3s;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+            opacity: 0; /* Hidden initially */
+            transform: translateY(20px);
+        }
+        
+        .enter-btn::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .enter-btn:hover {
+            background: var(--primary);
+            box-shadow: 0 0 50px var(--primary);
+            text-shadow: 0 0 10px white;
+        }
+        
+        .enter-btn:hover::before { left: 100%; }
+        
+        .btn-decor {
+            position: absolute; width: 4px; height: 4px; background: white;
+            transition: 0.3s;
+        }
+        .bd-tl { top: 0; left: 0; } .bd-tr { top: 0; right: 0; }
+        .bd-bl { bottom: 0; left: 0; } .bd-br { bottom: 0; right: 0; }
+
+        .enter-btn.visible { opacity: 1; transform: translateY(0); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+
+        /* --- APP LAYOUT --- */
+        .app-shell { 
+            display: flex; height: 100%; width: 100%; position: relative; z-index: 1; 
+            opacity: 0; transition: opacity 1s ease 0.5s; /* Fades in after welcome */
+        }
+        .app-shell.visible { opacity: 1; }
 
         .sidebar {
-            width: 280px; background: rgba(5, 5, 10, 0.6); backdrop-filter: blur(25px);
+            width: 280px; background: rgba(5, 5, 10, 0.5); backdrop-filter: blur(30px);
             border-right: 1px solid var(--glass-border); padding: 30px;
             display: flex; flex-direction: column; gap: 10px;
         }
         .logo-area {
-            font-size: 1.5rem; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 30px;
+            font-size: 1.5rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 30px;
             background: linear-gradient(to right, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
         .nav-btn {
@@ -62,19 +121,19 @@
             transition: all 0.3s;
         }
         .nav-btn:hover { background: rgba(255,255,255,0.05); color: #fff; transform: translateX(5px); }
-        .nav-btn.active { background: var(--primary); color: #fff; box-shadow: 0 0 25px rgba(99, 102, 241, 0.4); border: 1px solid var(--primary); }
+        .nav-btn.active { background: var(--primary); color: #fff; box-shadow: 0 0 25px rgba(99, 102, 241, 0.3); border: 1px solid rgba(255,255,255,0.1); }
         .nav-btn i { font-size: 1.4rem; }
 
         .main-view { flex: 1; overflow-y: auto; padding: 40px; position: relative; }
-        .section { display: none; animation: slideIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .section { display: none; animation: slideIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .section.active { display: block; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 
         .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
         .glass-card {
             background: var(--glass-surface); border: 1px solid var(--glass-border);
             border-radius: 24px; padding: 25px; backdrop-filter: blur(15px);
-            box-shadow: 0 20px 50px -10px rgba(0,0,0,0.5);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6);
             transition: transform 0.3s; position: relative; overflow: visible;
         }
 
@@ -124,7 +183,6 @@
         .breath-text { font-size: 2.5rem; font-weight: 300; letter-spacing: 5px; color: white; text-transform: uppercase; position: absolute; text-shadow: 0 0 20px var(--primary); }
         .close-breath-btn { margin-top: 40px; background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); padding: 12px 30px; border-radius: 30px; cursor: pointer; transition: 0.3s; font-size: 1rem; }
         .close-breath-btn:hover { border-color: white; color: white; background: rgba(255,255,255,0.1); }
-        
         @keyframes inhale { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(3.5); opacity: 1; } }
         @keyframes exhale { 0% { transform: scale(3.5); opacity: 1; } 100% { transform: scale(1); opacity: 0.5; } }
 
@@ -197,9 +255,18 @@
 </head>
 <body>
 
-    <canvas id="bg-canvas"></canvas>
+    <canvas id="neural-canvas"></canvas>
 
     <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
+
+    <div id="welcome-screen">
+        <div class="boot-text" id="boot-text"></div>
+        <button class="enter-btn" id="enter-btn" onclick="enterSystem()">
+            <div class="bd-tl btn-decor"></div><div class="bd-tr btn-decor"></div>
+            <div class="bd-bl btn-decor"></div><div class="bd-br btn-decor"></div>
+            INITIALIZE SYSTEM
+        </button>
+    </div>
 
     <div id="success-animation" class="success-overlay">
         <div class="success-content">
@@ -213,11 +280,11 @@
             <div class="breath-circle" id="breath-circle"></div>
             <div class="breath-text" id="breath-text">PUST INN</div>
         </div>
-        <div class="breath-timer">Rolig musikk genereres...</div>
+        <div class="breath-timer">Rolig musikk spiller...</div>
         <button class="close-breath-btn" onclick="stopBreathing()">Avslutt Pusteøvelse</button>
     </div>
 
-    <div class="app-shell">
+    <div class="app-shell" id="app-shell">
         
         <aside class="sidebar">
             <div class="logo-area">mehdi<span style="color:var(--primary)">.co</span></div>
@@ -260,11 +327,11 @@
                         <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:15px;">Generert i sanntid.</p>
                         
                         <div class="sound-mixer">
-                            <button class="sound-btn" onclick="toggleNoise('pink')" title="Fokus Støy (Regn-aktig)">
+                            <button class="sound-btn" onclick="toggleNoise('pink')" title="Fokus Støy">
                                 <i class="ph ph-waves"></i>
                                 <span class="sound-label">Fokus</span>
                             </button>
-                            <button class="sound-btn" onclick="toggleNoise('brown')" title="Dyp Støy (Torden-aktig)">
+                            <button class="sound-btn" onclick="toggleNoise('brown')" title="Dyp Støy">
                                 <i class="ph ph-cloud-lightning"></i>
                                 <span class="sound-label">Dyp</span>
                             </button>
@@ -377,26 +444,143 @@
     </div>
 
 <script>
-    // --- AUDIO SYNTHESIZER (NO FILES NEEDED) ---
+    // --- BOOT SEQUENCE & WELCOME ---
+    const bootTexts = [
+        "Initializing Neural Interface...",
+        "Loading Core Modules...",
+        "Establishing Secure Connection...",
+        "System Ready."
+    ];
+    let bootIdx = 0;
+    
+    function runBootSequence() {
+        const textEl = document.getElementById('boot-text');
+        const btn = document.getElementById('enter-btn');
+        
+        const interval = setInterval(() => {
+            if (bootIdx < bootTexts.length) {
+                textEl.innerText = "> " + bootTexts[bootIdx];
+                bootIdx++;
+            } else {
+                clearInterval(interval);
+                setTimeout(() => { btn.classList.add('visible'); }, 200);
+            }
+        }, 600);
+    }
+    
+    function enterSystem() {
+        // Resume Audio Context (Critical for sound to work)
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+        
+        // Hide Welcome Screen
+        document.getElementById('welcome-screen').classList.add('hidden');
+        // Show App
+        document.getElementById('app-shell').classList.add('visible');
+        
+        // Play Startup Sound (Simulated via synth)
+        playSuccessSound();
+    }
+    
+    // Start boot when page loads
+    window.onload = runBootSequence;
+
+
+    // --- NEURAL DATA BACKGROUND SYSTEM ---
+    const canvas = document.getElementById('neural-canvas');
+    const ctx = canvas.getContext('2d');
+    let w, h;
+    let particles = [];
+
+    function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resize);
+    resize();
+
+    class Node {
+        constructor() {
+            this.x = Math.random() * w;
+            this.y = Math.random() * h;
+            this.vx = (Math.random() - 0.5) * 0.8;
+            this.vy = (Math.random() - 0.5) * 0.8;
+            this.size = Math.random() * 2 + 1;
+        }
+        update() {
+            this.x += this.vx; this.y += this.vy;
+            if(this.x < 0 || this.x > w) this.vx *= -1;
+            if(this.y < 0 || this.y > h) this.vy *= -1;
+        }
+        draw() {
+            // Get color dynamically from CSS
+            const style = getComputedStyle(document.body);
+            const color = style.getPropertyValue('--primary').trim();
+            ctx.fillStyle = color;
+            ctx.globalAlpha = 0.6;
+            ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
+        }
+    }
+
+    for(let i=0; i<80; i++) particles.push(new Node());
+
+    // Mouse Interaction
+    let mouse = { x: -1000, y: -1000 };
+    window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+
+    function animateNeural() {
+        ctx.clearRect(0, 0, w, h);
+        const style = getComputedStyle(document.body);
+        const color = style.getPropertyValue('--primary').trim();
+        const accent = style.getPropertyValue('--accent').trim();
+
+        particles.forEach(p => {
+            p.update(); p.draw();
+            
+            // Connect close particles
+            particles.forEach(p2 => {
+                const dx = p.x - p2.x; const dy = p.y - p2.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if(dist < 120) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = color;
+                    ctx.globalAlpha = 1 - (dist / 120);
+                    ctx.lineWidth = 0.5;
+                    ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y);
+                    ctx.stroke();
+                }
+            });
+
+            // Connect to mouse
+            const dxM = mouse.x - p.x; const dyM = mouse.y - p.y;
+            const distM = Math.sqrt(dxM*dxM + dyM*dyM);
+            if(distM < 180) {
+                ctx.beginPath();
+                ctx.strokeStyle = accent;
+                ctx.globalAlpha = 1 - (distM / 180);
+                ctx.lineWidth = 0.8;
+                ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y);
+                ctx.stroke();
+            }
+        });
+        requestAnimationFrame(animateNeural);
+    }
+    animateNeural();
+
+
+    // --- AUDIO SYNTHESIZER ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     
-    // 1. Success Sound (Chime)
     function playSuccessSound() {
         const t = audioCtx.currentTime;
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.connect(gain); gain.connect(audioCtx.destination);
-        
         osc.type = 'sine';
         osc.frequency.setValueAtTime(500, t);
         osc.frequency.exponentialRampToValueAtTime(1000, t + 0.1);
         gain.gain.setValueAtTime(0.3, t);
         gain.gain.exponentialRampToValueAtTime(0.01, t + 1);
-        
         osc.start(t); osc.stop(t + 1);
     }
 
-    // 2. Breath Sound (Deep Drone)
+    // Breath Sound
     let breathOsc, breathGain;
     function startBreathSound() {
         if(breathOsc) return;
@@ -404,141 +588,58 @@
         breathGain = audioCtx.createGain();
         breathOsc.connect(breathGain);
         breathGain.connect(audioCtx.destination);
-        
         breathOsc.type = 'triangle';
-        breathOsc.frequency.setValueAtTime(100, audioCtx.currentTime);
+        breathOsc.frequency.setValueAtTime(120, audioCtx.currentTime);
         breathGain.gain.setValueAtTime(0, audioCtx.currentTime);
-        
         breathOsc.start();
         animateBreathSound();
     }
-    
     function animateBreathSound() {
         if(!breathOsc) return;
         const t = audioCtx.currentTime;
-        // Volume swell matches breathing (4s in, 4s out)
         breathGain.gain.cancelScheduledValues(t);
-        breathGain.gain.linearRampToValueAtTime(0.2, t + 4);
+        breathGain.gain.linearRampToValueAtTime(0.15, t + 4);
         breathGain.gain.linearRampToValueAtTime(0, t + 8);
         setTimeout(animateBreathSound, 8000);
     }
-
     function stopBreathSound() {
-        if(breathOsc) {
-            breathOsc.stop();
-            breathOsc.disconnect();
-            breathOsc = null;
-        }
+        if(breathOsc) { breathOsc.stop(); breathOsc.disconnect(); breathOsc = null; }
     }
 
-    // 3. Noise Generator (Rain/Brown Noise)
+    // Noise Generator
     let noiseNode = null;
     function toggleNoise(type) {
         if (noiseNode) {
-            noiseNode.disconnect();
-            noiseNode = null;
+            noiseNode.disconnect(); noiseNode = null;
             document.querySelectorAll('.sound-btn').forEach(b => b.classList.remove('active'));
             return;
         }
-        
-        // Ensure AudioContext is active
         if(audioCtx.state === 'suspended') audioCtx.resume();
-
-        const bufferSize = audioCtx.sampleRate * 2; // 2 seconds buffer
+        const bufferSize = audioCtx.sampleRate * 2;
         const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
         const data = buffer.getChannelData(0);
-
+        let lastOut = 0;
         for (let i = 0; i < bufferSize; i++) {
             const white = Math.random() * 2 - 1;
-            data[i] = (lastOut + (0.02 * white)) / 1.02; // Brown/Pink approximation
-            lastOut = data[i];
-            data[i] *= 3.5; 
+            data[i] = (lastOut + (0.02 * white)) / 1.02;
+            lastOut = data[i]; data[i] *= 3.5; 
         }
-        var lastOut = 0;
-
         noiseNode = audioCtx.createBufferSource();
-        noiseNode.buffer = buffer;
-        noiseNode.loop = true;
-        const gain = audioCtx.createGain();
-        gain.gain.value = 0.15; // Low volume
-        noiseNode.connect(gain);
-        gain.connect(audioCtx.destination);
+        noiseNode.buffer = buffer; noiseNode.loop = true;
+        const gain = audioCtx.createGain(); gain.gain.value = 0.15;
+        noiseNode.connect(gain); gain.connect(audioCtx.destination);
         noiseNode.start();
-        
-        // Update UI
         const btn = document.querySelector(`.sound-btn[onclick*="${type}"]`);
         if(btn) btn.classList.add('active');
     }
 
-
-    // --- BACKGROUND ANIMATION (CYBER GRID) ---
-    const bgCanvas = document.getElementById('bg-canvas');
-    const ctx = bgCanvas.getContext('2d');
-    let w, h;
-
-    function resizeBg() {
-        w = bgCanvas.width = window.innerWidth;
-        h = bgCanvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeBg);
-    resizeBg();
-
-    let offset = 0;
-    function animateBg() {
-        ctx.clearRect(0, 0, w, h);
-        
-        // Extract color from CSS variable
-        const style = getComputedStyle(document.body);
-        const gridColor = style.getPropertyValue('--grid-color').trim() || 'rgba(99,102,241,0.3)';
-        ctx.strokeStyle = gridColor;
-        ctx.lineWidth = 1;
-
-        // Draw Perspective Grid
-        const horizon = h * 0.4;
-        const gridGap = 40;
-        
-        ctx.beginPath();
-        // Vertical lines
-        for(let x = 0; x <= w; x += gridGap * 2) {
-            ctx.moveTo(x, h);
-            ctx.lineTo(w/2 + (x - w/2) * 0.1, horizon);
-        }
-        // Horizontal moving lines
-        offset = (offset + 0.5) % gridGap;
-        for(let y = horizon; y <= h; y += gridGap * (1 + (y-horizon)/h)) {
-            let actualY = y + offset * ((y-horizon)/h); 
-            if (actualY > h) actualY -= h - horizon; // Wrap
-            
-            ctx.moveTo(0, actualY);
-            ctx.lineTo(w, actualY);
-        }
-        ctx.stroke();
-        
-        requestAnimationFrame(animateBg);
-    }
-    animateBg();
-
-
     // --- APP CORE ---
-    let state = {
-        name: "Student",
-        theme: "",
-        xp: 0,
-        avatar: "std1",
-        tasks: [],
-        notes: "",
-        schedule: {}
-    };
-
-    if(localStorage.getItem('StudentOS_Synth')) {
-        state = {...state, ...JSON.parse(localStorage.getItem('StudentOS_Synth'))};
-    }
-
-    function save() { localStorage.setItem('StudentOS_Synth', JSON.stringify(state)); }
+    let state = { name: "Student", theme: "", xp: 0, avatar: "std1", tasks: [], notes: "", schedule: {} };
+    if(localStorage.getItem('StudentOS_Final')) { state = {...state, ...JSON.parse(localStorage.getItem('StudentOS_Final'))}; }
+    function save() { localStorage.setItem('StudentOS_Final', JSON.stringify(state)); }
 
     // --- INIT ---
-    updateGlobalUI();
-    renderSchedule();
+    updateGlobalUI(); renderSchedule();
     document.getElementById('notes').value = state.notes;
     document.getElementById('notes').addEventListener('input', (e) => { state.notes = e.target.value; save(); });
 
@@ -553,7 +654,6 @@
         renderTasks();
     }
 
-    // --- NAVIGATION ---
     function nav(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
@@ -563,7 +663,7 @@
         if(document.querySelectorAll('.mob-btn')[map[id]]) document.querySelectorAll('.mob-btn')[map[id]].classList.add('active');
     }
 
-    // --- SCHEDULE ---
+    // Schedule
     function renderSchedule() {
         const grid = document.getElementById('schGrid');
         grid.innerHTML = '<div class="sch-header">Tid</div><div class="sch-header">Man</div><div class="sch-header">Tir</div><div class="sch-header">Ons</div><div class="sch-header">Tor</div><div class="sch-header">Fre</div>';
@@ -582,19 +682,18 @@
     }
     function editSch(key) { const sub = prompt("Fag:"); if(sub) { state.schedule[key] = sub; save(); renderSchedule(); } }
 
-    // --- CALCULATOR ---
+    // Calculator
     let expression = "";
     function add(v) { expression += v; document.getElementById('calcDisp').innerText = expression; }
     function cls() { expression = ""; document.getElementById('calcDisp').innerText = "0"; }
     function solve() {
         try {
             let safe = expression.replace(/sin/g,'Math.sin').replace(/cos/g,'Math.cos').replace(/tan/g,'Math.tan').replace(/sqrt/g,'Math.sqrt').replace(/\^/g,'**');
-            document.getElementById('calcDisp').innerText = eval(safe);
-            expression = eval(safe).toString();
+            document.getElementById('calcDisp').innerText = eval(safe); expression = eval(safe).toString();
         } catch { document.getElementById('calcDisp').innerText = "Err"; expression=""; }
     }
 
-    // --- AVATAR & SETTINGS ---
+    // Settings
     function triggerAvatarUpload() { document.getElementById('avatarUpload').click(); }
     document.getElementById('avatarUpload').addEventListener('change', (e) => {
         if(e.target.files[0]) {
@@ -607,17 +706,14 @@
     function editName() { const n = prompt("Navn:"); if(n) { state.name=n; save(); updateGlobalUI(); } }
     function setTheme(t) { state.theme = t; save(); updateGlobalUI(); }
 
-    // --- SUCCESS ANIMATION ---
+    // Tasks & Animation
     function triggerSuccessAnimation() {
         const overlay = document.getElementById('success-animation');
         overlay.classList.remove('animate-boom');
-        void overlay.offsetWidth; 
-        overlay.classList.add('animate-boom');
-        playSuccessSound(); // USING SYNTH
+        void overlay.offsetWidth; overlay.classList.add('animate-boom');
+        playSuccessSound();
         setTimeout(() => { overlay.classList.remove('animate-boom'); }, 1500);
     }
-
-    // --- TASKS ---
     function addTask() {
         const val = document.getElementById('taskInput').value;
         if(!val) return;
@@ -633,25 +729,21 @@
         const l = document.getElementById('taskList'); l.innerHTML = "";
         state.tasks.forEach(t => { 
             l.innerHTML += `<div class="task-list-item" onclick="removeTask(${t.id})">
-                <span style="font-weight:600">${t.txt}</span>
-                <span class="verified-tag">Ferdig</span>
-            </div>`; 
+                <span style="font-weight:600">${t.txt}</span><span class="verified-tag">Ferdig</span></div>`; 
         });
     }
 
-    // --- BREATHING EXERCISE LOGIC ---
+    // Breathing
     let breathInterval;
     const breathOverlay = document.getElementById('breath-overlay');
     const breathCircle = document.getElementById('breath-circle');
     const breathText = document.getElementById('breath-text');
-
     function startBreathing() {
         breathOverlay.classList.add('active');
-        startBreathSound(); // USING SYNTH
+        startBreathSound();
         runBreathCycle();
         breathInterval = setInterval(runBreathCycle, 8000); 
     }
-
     function runBreathCycle() {
         breathText.innerText = "PUST INN";
         breathCircle.style.animation = "inhale 4s ease-in-out forwards";
@@ -660,19 +752,17 @@
             breathCircle.style.animation = "exhale 4s ease-in-out forwards";
         }, 4000);
     }
-
     function stopBreathing() {
         breathOverlay.classList.remove('active');
         clearInterval(breathInterval);
-        stopBreathSound(); // STOP SYNTH
+        stopBreathSound();
         breathCircle.style.animation = "none";
     }
 
-    // --- DYNAMIC TIMER (EVERY MINUTE PAUSE) ---
+    // Timer (1 min Interval)
     let defaultDuration = 25;
     let tTime = defaultDuration * 60;
     let tInt, tRun = false;
-
     function setDuration(mins) {
         clearInterval(tInt); tRun = false;
         document.getElementById('timerBtn').innerText = "START ØKT";
@@ -683,31 +773,21 @@
             if(btn.innerText.includes(mins)) btn.classList.add('active');
         });
     }
-
     function updateTimerDisplay() {
         let m = Math.floor(tTime/60); let s = tTime%60;
         document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
     }
-
     function toggleTimer() {
-        // Init Audio Context on first interaction
-        if(audioCtx.state === 'suspended') audioCtx.resume();
-
-        if(tRun) { 
-            clearInterval(tInt); document.getElementById('timerBtn').innerText="FORTSETT"; 
-        } else {
+        if(tRun) { clearInterval(tInt); document.getElementById('timerBtn').innerText="FORTSETT"; } 
+        else {
             tInt = setInterval(() => {
-                tTime--;
-                updateTimerDisplay();
-
-                // EVERY MINUTE PAUSE logic
+                tTime--; updateTimerDisplay();
                 if(tTime > 0 && tTime % 60 === 0 && tTime !== (defaultDuration*60)) {
                     clearInterval(tInt); tRun = false;
                     document.getElementById('timerBtn').innerText="FORTSETT";
                     startBreathing();
                     return;
                 }
-
                 if(tTime<=0) { 
                     clearInterval(tInt); tTime = defaultDuration * 60; 
                     triggerSuccessAnimation(); document.getElementById('timerBtn').innerText="START ØKT"; tRun = false;
@@ -723,7 +803,6 @@
         data: { labels: ['M','T','O','T','F','L','S'], datasets: [{ label:'XP', data:[100, 450, 300, 600, 400, 550, 800], borderColor:'#6366f1', borderWidth:3, tension:0.4 }] },
         options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{display:false}} }
     });
-
 </script>
 </body>
 </html>
