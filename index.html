@@ -3,245 +3,305 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>mehdi.co // Blue OS</title>
+    <title>mehdi.co // Flow State</title>
     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
     
     <style>
-        /* --- BLUE APP DESIGN SYSTEM --- */
+        /* --- FLOW STATE DESIGN SYSTEM --- */
         :root {
-            --bg-color: #f3f4f6;       /* Lys grå/hvit bakgrunn */
-            --sidebar-bg: #ffffff;     /* Hvit sidebar */
-            --card-bg: #ffffff;        /* Hvite kort */
+            --bg-gradient: linear-gradient(135deg, #e0e7ff 0%, #f3f4f6 100%);
+            --glass-surface: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.8);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
             
-            --primary: #3b82f6;        /* Klar Blå */
-            --primary-light: #eff6ff;  /* Veldig lys blå */
-            --primary-hover: #2563eb;  /* Mørkere blå for hover */
+            --primary: #4f46e5;        /* Indigo */
+            --primary-light: #e0e7ff;
+            --primary-dark: #4338ca;
             
-            --text-main: #1e293b;      /* Mørk blågrå tekst */
-            --text-muted: #64748b;     /* Dempet tekst */
+            --text-main: #1e293b;
+            --text-muted: #64748b;
             
-            --border: #e2e8f0;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --success: #10b981;
+            --danger: #ef4444;
             
-            --radius-md: 12px;
-            --radius-lg: 20px;
+            --radius-lg: 24px;
+            --radius-md: 16px;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
         
         body {
             margin: 0; font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color); color: var(--text-main);
+            background: var(--bg-gradient); color: var(--text-main);
             height: 100vh; overflow: hidden;
-            transition: opacity 0.5s ease;
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         /* --- 1. CINEMATIC INTRO --- */
         #intro-screen {
-            position: fixed; inset: 0; background: #ffffff; z-index: 50000;
+            position: fixed; inset: 0; background: white; z-index: 50000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             padding: 40px; text-align: center;
-            transition: opacity 0.8s ease-in-out;
+            transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
         #intro-screen.hidden { opacity: 0; pointer-events: none; }
 
-        .brand-logo {
-            font-size: 2rem; font-weight: 800; letter-spacing: -1px; color: var(--text-main); margin-bottom: 60px;
+        .logo-intro {
+            font-size: 2rem; font-weight: 800; margin-bottom: 60px; opacity: 0;
+            animation: fadeInBasic 1s ease forwards;
         }
-        .brand-logo span { color: var(--primary); }
+        .logo-intro span { color: var(--primary); }
 
-        .quote-box {
-            max-width: 700px; min-height: 120px; display: flex; flex-direction: column; justify-content: center;
-        }
+        .quote-container { max-width: 800px; min-height: 150px; position: relative; }
+        
         .quote-text {
-            font-size: 1.8rem; font-weight: 500; color: var(--text-main); line-height: 1.4;
-            opacity: 0; transform: translateY(20px);
-            animation: fadeUp 1s ease-out forwards 0.5s;
+            font-family: 'Playfair Display', serif; font-style: italic;
+            font-size: 2.5rem; line-height: 1.3; color: var(--text-main);
+            opacity: 0; filter: blur(10px); transform: translateY(20px);
+            animation: cinematicReveal 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 0.5s;
         }
+        
         .quote-author {
-            margin-top: 20px; font-size: 1rem; color: var(--text-muted); font-weight: 600;
-            opacity: 0; animation: fadeUp 1s ease-out forwards 1.5s;
+            margin-top: 25px; font-size: 1rem; color: var(--primary); font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+            opacity: 0; animation: fadeInBasic 1s ease forwards 1.8s;
         }
 
         .intro-btn {
-            margin-top: 60px; padding: 16px 40px; background: var(--primary); color: white;
-            border: none; border-radius: 30px; font-size: 1rem; font-weight: 600; cursor: pointer;
-            box-shadow: var(--shadow-md); transition: all 0.2s; opacity: 0;
-            animation: fadeUp 1s ease-out forwards 2.5s;
+            margin-top: 80px; padding: 18px 50px; background: var(--text-main); color: white;
+            border: none; border-radius: 50px; font-size: 1.1rem; font-weight: 600; cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); opacity: 0; transform: scale(0.9);
+            transition: 0.3s;
+            animation: popIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 2.5s;
         }
-        .intro-btn:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .intro-btn:hover { transform: scale(1.05) translateY(-2px); box-shadow: 0 15px 40px rgba(0,0,0,0.3); background: var(--primary); }
 
-        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+        @keyframes cinematicReveal { to { opacity: 1; filter: blur(0); transform: translateY(0); } }
+        @keyframes fadeInBasic { to { opacity: 1; } }
+        @keyframes popIn { to { opacity: 1; transform: scale(1); } }
 
 
-        /* --- 2. SETUP SCREEN (Clean App Style) --- */
+        /* --- 2. SETUP SCREEN --- */
         #setup-screen {
-            position: fixed; inset: 0; background: var(--bg-color); z-index: 40000;
-            display: none; align-items: center; justify-content: center;
+            position: fixed; inset: 0; background: rgba(255,255,255,0.8); backdrop-filter: blur(20px);
+            z-index: 40000; display: none; align-items: center; justify-content: center;
             opacity: 0; transition: opacity 0.5s ease;
         }
         #setup-screen.visible { display: flex; opacity: 1; }
 
         .setup-card {
-            background: var(--card-bg); width: 100%; max-width: 450px;
-            padding: 50px; border-radius: 24px; box-shadow: var(--shadow-lg);
-            text-align: center;
+            background: white; width: 100%; max-width: 420px; padding: 50px;
+            border-radius: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            text-align: center; border: 1px solid white;
         }
 
         .avatar-upload-wrapper {
-            width: 120px; height: 120px; margin: 0 auto 30px auto; position: relative;
-            cursor: pointer; group;
+            width: 130px; height: 130px; margin: 0 auto 30px auto; position: relative;
+            cursor: pointer; transition: 0.3s;
         }
+        .avatar-upload-wrapper:hover { transform: scale(1.05); }
         .setup-avatar {
             width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
-            background: var(--primary-light); border: 4px solid white;
-            box-shadow: var(--shadow-md); transition: 0.3s;
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.2); border: 4px solid white;
         }
-        .camera-icon {
-            position: absolute; bottom: 5px; right: 5px; width: 36px; height: 36px;
+        .camera-badge {
+            position: absolute; bottom: 5px; right: 5px; width: 40px; height: 40px;
             background: var(--primary); color: white; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            border: 3px solid white; font-size: 1.1rem;
+            border: 3px solid white; font-size: 1.2rem;
         }
-        
-        .input-label { display: block; text-align: left; font-size: 0.9rem; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
-        .setup-input {
-            width: 100%; padding: 14px 16px; border-radius: 12px; border: 2px solid var(--border);
-            font-size: 1rem; color: var(--text-main); outline: none; transition: 0.2s;
-            background: #f9fafb;
-        }
-        .setup-input:focus { border-color: var(--primary); background: white; }
 
-        /* --- 3. MAIN APP SHELL --- */
+        .setup-input {
+            width: 100%; padding: 16px; border-radius: 15px; border: 2px solid #e2e8f0;
+            font-size: 1.1rem; color: var(--text-main); outline: none; transition: 0.3s;
+            background: #f8fafc; text-align: center; font-weight: 500;
+        }
+        .setup-input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px var(--primary-light); }
+
+
+        /* --- 3. MAIN APP LAYOUT --- */
         .app-shell { display: flex; height: 100%; width: 100%; opacity: 0; transition: opacity 0.8s; }
         .app-shell.visible { opacity: 1; }
 
         /* Sidebar */
         .sidebar {
-            width: 260px; background: var(--sidebar-bg); border-right: 1px solid var(--border);
-            padding: 30px 20px; display: flex; flex-direction: column; gap: 8px;
+            width: 280px; background: rgba(255,255,255,0.6); backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255,255,255,0.5); padding: 30px 20px;
+            display: flex; flex-direction: column; gap: 8px;
         }
-        
+        .logo-area { font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 40px; padding-left: 15px; }
+        .logo-area span { color: var(--primary); }
+
         .nav-btn {
             background: transparent; border: none; color: var(--text-muted);
-            padding: 12px 16px; border-radius: 10px; cursor: pointer; text-align: left;
-            font-size: 0.95rem; font-weight: 500; display: flex; align-items: center; gap: 12px;
-            transition: all 0.2s;
+            padding: 14px 20px; border-radius: 14px; cursor: pointer; text-align: left;
+            font-size: 1rem; font-weight: 500; display: flex; align-items: center; gap: 15px;
+            transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
-        .nav-btn:hover { background: var(--primary-light); color: var(--primary); }
-        .nav-btn.active { background: var(--primary); color: white; font-weight: 600; box-shadow: var(--shadow-sm); }
-        .nav-btn i { font-size: 1.25rem; }
+        .nav-btn:hover { background: rgba(255,255,255,0.5); color: var(--primary); transform: translateX(5px); }
+        .nav-btn.active { background: white; color: var(--primary); font-weight: 700; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        .nav-btn i { font-size: 1.3rem; }
 
         .profile-mini {
-            margin-top: auto; padding: 16px; display: flex; align-items: center; gap: 12px;
-            background: var(--primary-light); border-radius: 16px;
+            margin-top: auto; padding: 15px; display: flex; align-items: center; gap: 12px;
+            background: white; border-radius: 18px; box-shadow: 0 4px 20px rgba(0,0,0,0.03);
         }
-        .profile-mini img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
-        .profile-mini div { display: flex; flex-direction: column; }
-        .profile-name { font-size: 0.9rem; font-weight: 700; color: var(--text-main); }
-        .profile-role { font-size: 0.75rem; color: var(--primary); font-weight: 600; }
+        .profile-mini img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
 
-        /* Main Content */
-        .main-view { flex: 1; overflow-y: auto; padding: 40px; background: var(--bg-color); }
-        .section { display: none; animation: fadeIn 0.4s ease-out; }
+        /* Main View */
+        .main-view { flex: 1; overflow-y: auto; padding: 40px 50px; position: relative; }
+        .section { display: none; animation: slideUpFade 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUpFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .page-header { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
-        .page-title { font-size: 1.8rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; }
-        
-        /* Grid & Cards */
-        .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; }
-        .app-card {
-            background: var(--card-bg); border-radius: var(--radius-lg); padding: 24px;
-            box-shadow: var(--shadow-sm); border: 1px solid var(--border);
-            position: relative; transition: transform 0.2s;
+        .page-header { margin-bottom: 30px; }
+        .greeting { font-size: 2.2rem; font-weight: 800; color: var(--text-main); margin: 0; }
+        .subtitle { color: var(--text-muted); font-size: 1rem; margin-top: 5px; }
+
+        /* Cards & Grid */
+        .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; }
+        .glass-card {
+            background: var(--glass-surface); border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg); padding: 30px;
+            box-shadow: var(--glass-shadow); backdrop-filter: blur(15px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .app-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .glass-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(31, 38, 135, 0.15); }
+
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .card-title { font-size: 1rem; font-weight: 700; color: var(--text-main); }
+        .card-title { font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
 
-        /* --- TASKS (IMPROVED) --- */
-        .task-input-area { display: flex; gap: 12px; margin-bottom: 24px; }
-        .task-input {
-            flex: 1; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border);
-            background: #f9fafb; outline: none; font-size: 0.95rem;
+        /* --- DASHBOARD ELEMENTS --- */
+        .timer-display { 
+            font-size: 4.5rem; font-weight: 800; color: var(--primary); 
+            text-align: center; margin: 15px 0; letter-spacing: -2px;
+            font-variant-numeric: tabular-nums;
         }
-        .task-input:focus { border-color: var(--primary); background: white; }
+        .time-controls { display: flex; gap: 8px; justify-content: center; margin-bottom: 25px; }
+        .chip { 
+            background: rgba(255,255,255,0.5); padding: 8px 18px; border-radius: 20px; 
+            font-size: 0.9rem; font-weight: 600; color: var(--text-muted); cursor: pointer; 
+            transition: 0.2s; border: 1px solid transparent;
+        }
+        .chip:hover { background: white; }
+        .chip.active { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
         
-        .add-btn {
-            background: var(--primary); color: white; border: none; padding: 0 24px;
-            border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.2s;
+        .primary-btn { 
+            width: 100%; padding: 16px; background: var(--primary); color: white; 
+            border: none; border-radius: 16px; font-weight: 600; font-size: 1rem; 
+            cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
         }
-        .add-btn:hover { background: var(--primary-hover); }
+        .primary-btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
 
+        .breath-btn-small {
+            margin-top: 15px; background: transparent; border: 2px solid var(--primary-light);
+            color: var(--primary); width: 100%; padding: 12px; border-radius: 16px;
+            font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .breath-btn-small:hover { background: var(--primary-light); }
+
+        /* Tasks */
         .task-list-item {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 16px; background: white; border: 1px solid var(--border);
-            border-radius: 12px; margin-bottom: 12px; transition: 0.2s;
+            padding: 18px; background: white; border-radius: 16px; margin-bottom: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02); transition: 0.2s;
+            border-left: 4px solid transparent;
         }
-        .task-list-item:hover { border-color: var(--primary); box-shadow: var(--shadow-sm); }
+        .task-list-item:hover { transform: translateX(5px); border-left-color: var(--primary); }
         
-        .task-text { font-weight: 500; color: var(--text-main); font-size: 0.95rem; flex: 1; margin-right: 20px; }
+        .task-text { font-weight: 500; font-size: 1rem; color: var(--text-main); margin-right: 15px; flex: 1; }
         
-        .task-actions { display: flex; gap: 8px; }
+        .btn-icon {
+            width: 36px; height: 36px; border-radius: 10px; display: flex; 
+            align-items: center; justify-content: center; cursor: pointer; border: none;
+            transition: 0.2s; font-size: 1rem;
+        }
+        .btn-del { background: #fee2e2; color: #ef4444; }
+        .btn-del:hover { background: #ef4444; color: white; }
+        .btn-done { background: #e0e7ff; color: var(--primary); margin-left: 8px; }
+        .btn-done:hover { background: var(--primary); color: white; }
+
+        /* Schedule (Smart Highlight) */
+        .schedule-grid { display: grid; grid-template-columns: 70px repeat(5, 1fr); gap: 1px; background: #e2e8f0; border-radius: 16px; overflow: hidden; min-width: 600px; }
+        .sch-cell { background: white; padding: 15px; min-height: 80px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .sch-cell:hover { background: #f8fafc; }
+        .sch-header { background: #f1f5f9; padding: 15px; font-weight: 600; color: var(--text-muted); text-align: center; }
+        .sch-time { background: white; color: var(--text-muted); font-size: 0.8rem; display: flex; align-items: center; justify-content: center; font-weight: 600; }
         
-        .btn-action {
-            height: 32px; padding: 0 12px; border-radius: 8px; border: none;
-            font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;
+        /* Neon Active Cell */
+        .sch-active { 
+            background: #e0e7ff; color: var(--primary); font-weight: 700;
+            box-shadow: inset 0 0 0 2px var(--primary); z-index: 2;
+        }
+
+        /* --- BREATHING OVERLAY (DETAILED) --- */
+        #breath-overlay {
+            position: fixed; inset: 0; background: rgba(255,255,255,0.95); z-index: 60000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.8s ease; backdrop-filter: blur(10px);
+        }
+        #breath-overlay.active { display: flex; opacity: 1; }
+
+        .breath-visual {
+            position: relative; width: 300px; height: 300px; display: flex;
+            align-items: center; justify-content: center; margin-bottom: 50px;
+        }
+        .breath-circle-main {
+            width: 120px; height: 120px; background: var(--primary); border-radius: 50%;
+            box-shadow: 0 0 60px var(--primary); z-index: 10;
+        }
+        .breath-circle-ghost {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 120px; height: 120px; border: 2px solid var(--primary); border-radius: 50%;
+            opacity: 0.5; z-index: 1;
+        }
+        
+        .breath-instruction {
+            font-family: 'Playfair Display', serif; font-size: 3rem; color: var(--primary);
+            font-weight: 700; opacity: 0; transition: opacity 0.5s; position: absolute; top: 70%;
+        }
+        .breath-instruction.show { opacity: 1; }
+
+        .stop-breath-btn {
+            padding: 12px 30px; border: 2px solid var(--text-muted); background: transparent;
+            border-radius: 30px; font-weight: 600; color: var(--text-muted); cursor: pointer;
             transition: 0.2s;
         }
-        .btn-delete { background: #fef2f2; color: #ef4444; border: 1px solid #fee2e2; }
-        .btn-delete:hover { background: #fee2e2; border-color: #fecaca; }
-        
-        .btn-complete { background: #eff6ff; color: var(--primary); border: 1px solid #dbeafe; }
-        .btn-complete:hover { background: #dbeafe; border-color: #bfdbfe; }
+        .stop-breath-btn:hover { border-color: var(--primary); color: var(--primary); }
 
-        /* Timer */
-        .timer-display { font-size: 4rem; font-weight: 700; color: var(--text-main); text-align: center; margin: 20px 0; font-variant-numeric: tabular-nums; letter-spacing: -2px; }
-        .time-controls { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; }
-        .chip { background: #f3f4f6; padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
-        .chip:hover { background: #e5e7eb; }
-        .chip.active { background: var(--primary-light); color: var(--primary); border-color: #dbeafe; }
-        .primary-btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.2s; }
-        .primary-btn:hover { background: var(--primary-hover); }
-
-        /* Sound Mixer */
-        .sound-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .sound-card { background: #f8fafc; padding: 16px; border-radius: 12px; text-align: center; cursor: pointer; border: 1px solid transparent; transition: 0.2s; }
-        .sound-card:hover { background: #f1f5f9; }
-        .sound-card.active { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
-        .sound-card i { font-size: 1.5rem; margin-bottom: 8px; display: block; }
-        .sound-card span { font-size: 0.85rem; font-weight: 600; }
-
-        /* Schedule */
-        .schedule-wrapper { overflow-x: auto; padding-bottom: 10px; }
-        .schedule-grid { display: grid; grid-template-columns: 60px repeat(5, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; min-width: 600px; }
-        .sch-cell { background: white; padding: 12px; min-height: 70px; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer; transition: 0.2s; }
-        .sch-cell:hover { background: #f8fafc; }
-        .sch-header { background: #f8fafc; font-weight: 600; color: var(--text-muted); padding: 12px; text-align: center; }
-        .sch-active { background: #eff6ff; border: 2px solid var(--primary); z-index: 2; position: relative; font-weight: 700; color: var(--primary); }
+        /* Animations for Breath */
+        @keyframes expandMain { 0% { transform: scale(1); } 100% { transform: scale(2.5); } }
+        @keyframes shrinkMain { 0% { transform: scale(2.5); } 100% { transform: scale(1); } }
+        @keyframes ripple { 0% { transform: translate(-50%,-50%) scale(1); opacity: 0.8; } 100% { transform: translate(-50%,-50%) scale(3.5); opacity: 0; } }
 
         /* Success Overlay */
         #success-overlay {
-            position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 60000;
-            display: none; align-items: center; justify-content: center;
-            opacity: 0; transition: opacity 0.3s;
+            position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 55000;
+            display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s;
         }
         #success-overlay.active { display: flex; opacity: 1; }
-        .success-card-modal {
-            background: white; padding: 40px; border-radius: 30px; text-align: center;
-            box-shadow: var(--shadow-lg); transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            border: 1px solid var(--border);
+        .success-modal {
+            background: white; padding: 50px; border-radius: 40px; text-align: center;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.15); transform: scale(0.8);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        #success-overlay.active .success-card-modal { transform: scale(1); }
+        #success-overlay.active .success-modal { transform: scale(1); }
         
-        .xp-badge { display: inline-block; background: #dcfce7; color: #166534; padding: 8px 16px; border-radius: 20px; font-weight: 700; margin-top: 15px; }
+        /* Mobile Hide */
+        @media (max-width: 768px) { .sidebar { display: none; } .mobile-nav { display: flex; } }
+        .mobile-nav { display: none; position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #e2e8f0; justify-content: space-around; padding: 15px; z-index: 100; }
+        .mob-btn { background: none; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 0.7rem; font-weight: 600; }
+        .mob-btn.active { color: var(--primary); }
+        .mob-btn i { font-size: 1.4rem; }
 
     </style>
 </head>
@@ -251,37 +311,35 @@
     <input type="file" id="setupAvatarUpload" accept="image/*" style="display: none;">
 
     <div id="intro-screen">
-        <div class="brand-logo">mehdi<span>.co</span></div>
-        <div class="quote-box">
-            <div class="quote-text" id="intro-quote"></div>
-            <div class="quote-author" id="intro-author"></div>
+        <div class="logo-intro">mehdi<span>.co</span></div>
+        <div class="quote-container">
+            <div class="quote-text" id="intro-quote">"Det er ikke fjellet vi bestiger, men oss selv."</div>
+            <div class="quote-author" id="intro-author">- Edmund Hillary</div>
         </div>
-        <button class="intro-btn" onclick="goToSetup()">Kom i gang</button>
+        <button class="intro-btn" onclick="goToSetup()">Start Reisen</button>
     </div>
 
     <div id="setup-screen">
         <div class="setup-card">
-            <h2 style="margin-bottom: 30px; font-size:1.5rem; font-weight:800;">Sett opp din profil</h2>
+            <h2 style="font-size:1.8rem; font-weight:800; margin-bottom:30px; color:var(--text-main);">Hvem er du?</h2>
             
             <div class="avatar-upload-wrapper" onclick="document.getElementById('setupAvatarUpload').click()">
                 <img id="setupAvPreview" class="setup-avatar" src="https://api.dicebear.com/7.x/notionists/svg?seed=student">
-                <div class="camera-icon"><i class="ph ph-camera"></i></div>
+                <div class="camera-badge"><i class="ph ph-camera"></i></div>
             </div>
             
-            <div style="text-align:left; margin-bottom:24px;">
-                <label class="input-label">Ditt Navn</label>
-                <input type="text" id="setupName" class="setup-input" placeholder="Skriv navnet ditt..." autocomplete="off">
+            <div style="margin-bottom:30px;">
+                <input type="text" id="setupName" class="setup-input" placeholder="Ditt Navn" autocomplete="off">
             </div>
             
-            <button class="primary-btn" onclick="finalizeLogin()">Gå til Dashboard <i class="ph ph-arrow-right" style="margin-left:8px;"></i></button>
+            <button class="primary-btn" onclick="finalizeLogin()">Gå til Appen <i class="ph ph-arrow-right" style="margin-left:5px;"></i></button>
         </div>
     </div>
 
     <div class="app-shell" id="app-shell">
         
         <aside class="sidebar">
-            <div class="logo-area" style="font-size:1.5rem; font-weight:800; margin-bottom:30px;">mehdi<span style="color:var(--primary)">.co</span></div>
-            
+            <div class="logo-area">mehdi<span style="color:var(--primary);">.co</span></div>
             <button class="nav-btn active" onclick="nav('dashboard')"><i class="ph ph-squares-four"></i> Oversikt</button>
             <button class="nav-btn" onclick="nav('schedule')"><i class="ph ph-calendar"></i> Timeplan</button>
             <button class="nav-btn" onclick="nav('tools')"><i class="ph ph-calculator"></i> Verktøy</button>
@@ -301,54 +359,49 @@
             
             <section id="dashboard" class="section active">
                 <div class="page-header">
-                    <h1 class="page-title" id="greet">Hei, Navn 👋</h1>
+                    <div>
+                        <h1 class="greeting" id="greet">Hei</h1>
+                        <p class="subtitle" id="dateSub">La oss være produktive i dag.</p>
+                    </div>
                 </div>
 
                 <div class="grid-layout">
-                    <div class="app-card" style="text-align:center;">
-                        <div class="card-header"><span class="card-title">Fokus</span><i class="ph ph-timer" style="color:var(--primary);"></i></div>
+                    <div class="glass-card" style="text-align:center;">
+                        <div class="card-header"><span class="card-title">Fokus Modus</span><i class="ph ph-hourglass-high" style="color:var(--primary);"></i></div>
                         <div class="timer-display" id="timer">25:00</div>
                         <div class="time-controls">
                             <div class="chip" onclick="setDuration(10)">10m</div>
                             <div class="chip active" onclick="setDuration(25)">25m</div>
                             <div class="chip" onclick="setDuration(45)">45m</div>
                         </div>
-                        <button class="primary-btn" id="timerBtn" onclick="toggleTimer()">Start Økt</button>
+                        <button class="primary-btn" id="timerBtn" onclick="toggleTimer()">Start Fokusøkt</button>
+                        
+                        <button class="breath-btn-small" onclick="startBreathing()">
+                            <i class="ph ph-wind"></i> Ta en Pustepause
+                        </button>
                     </div>
 
-                    <div class="app-card">
-                        <div class="card-header"><span class="card-title">Lyd</span><i class="ph ph-speaker-high"></i></div>
-                        <div class="sound-grid">
-                            <div class="sound-card" onclick="toggleNoise('pink', this)">
-                                <i class="ph ph-waves"></i><span>Fokus (Pink)</span>
-                            </div>
-                            <div class="sound-card" onclick="toggleNoise('brown', this)">
-                                <i class="ph ph-cloud-rain"></i><span>Dyp (Brown)</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="app-card">
-                        <div class="card-header"><span class="card-title">Aktivitet</span></div>
-                        <div style="height:150px;"><canvas id="chart"></canvas></div>
+                    <div class="glass-card">
+                        <div class="card-header"><span class="card-title">Dine Fremskritt</span></div>
+                        <div style="height:180px;"><canvas id="chart"></canvas></div>
                     </div>
                 </div>
             </section>
 
             <section id="schedule" class="section">
-                <div class="page-header"><h1 class="page-title">Ukeplan</h1></div>
-                <div class="app-card">
-                    <div class="schedule-wrapper">
+                <div class="page-header"><h1 class="greeting">Ukeplan</h1></div>
+                <div class="glass-card">
+                    <div style="overflow-x:auto; padding-bottom:10px;">
                         <div class="schedule-grid" id="schGrid"></div>
                     </div>
                 </div>
             </section>
 
             <section id="tools" class="section">
-                <div class="page-header"><h1 class="page-title">Verktøy</h1></div>
+                <div class="page-header"><h1 class="greeting">Verktøykasse</h1></div>
                 <div class="grid-layout">
-                    <div class="app-card" style="max-width:350px;">
-                        <input type="text" id="calcDisp" style="width:100%; font-size:2rem; text-align:right; border:none; outline:none; margin-bottom:20px; font-family:monospace;" readonly value="0">
+                    <div class="glass-card" style="max-width:350px;">
+                        <input type="text" id="calcDisp" style="width:100%; font-size:2rem; text-align:right; border:none; outline:none; margin-bottom:20px; font-family:monospace; background:transparent;" readonly value="0">
                         <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px;">
                             <button class="chip" onclick="add('7')">7</button><button class="chip" onclick="add('8')">8</button><button class="chip" onclick="add('9')">9</button><button class="chip" style="color:var(--primary);" onclick="add('/')">/</button>
                             <button class="chip" onclick="add('4')">4</button><button class="chip" onclick="add('5')">5</button><button class="chip" onclick="add('6')">6</button><button class="chip" style="color:var(--primary);" onclick="add('*')">*</button>
@@ -356,72 +409,102 @@
                             <button class="chip" style="color:red;" onclick="cls()">C</button><button class="chip" onclick="add('0')">0</button><button class="chip" onclick="add('.')">.</button><button class="chip" style="background:var(--primary); color:white;" onclick="solve()">=</button>
                         </div>
                     </div>
-                    <div class="app-card">
-                        <textarea id="notes" style="width:100%; height:300px; border:none; outline:none; resize:none; font-family:'Inter', sans-serif; font-size:1rem;" placeholder="Skriv notater her..."></textarea>
+                    <div class="glass-card">
+                        <div class="card-header"><span class="card-title">Notater</span></div>
+                        <textarea id="notes" style="width:100%; height:300px; border:none; outline:none; resize:none; font-family:'Inter',sans-serif; background:transparent; font-size:1rem;" placeholder="Skriv tankene dine her..."></textarea>
                     </div>
                 </div>
             </section>
 
             <section id="tasks" class="section">
-                <div class="page-header"><h1 class="page-title">Oppgaver</h1></div>
-                <div class="app-card" style="max-width:700px;">
-                    <div class="task-input-area">
-                        <input type="text" class="task-input" id="taskInput" placeholder="Hva skal gjøres?">
-                        <button class="add-btn" onclick="addTask()">Legg til</button>
+                <div class="page-header"><h1 class="greeting">Gjøremål</h1></div>
+                <div class="glass-card" style="max-width:700px;">
+                    <div style="display:flex; gap:10px; margin-bottom:30px;">
+                        <input type="text" class="setup-input" id="taskInput" placeholder="Hva må gjøres?" style="text-align:left;">
+                        <button class="primary-btn" style="width:auto; padding:0 30px;" onclick="addTask()">Legg til</button>
                     </div>
                     <div id="taskList"></div>
                 </div>
             </section>
 
             <section id="settings" class="section">
-                <div class="page-header"><h1 class="page-title">Innstillinger</h1></div>
-                <div class="app-card" style="text-align:center; padding:40px;">
-                    <div class="avatar-upload-wrapper" onclick="document.getElementById('avatarUpload').click()">
+                <div class="page-header"><h1 class="greeting">Din Profil</h1></div>
+                <div class="glass-card" style="text-align:center; padding:50px;">
+                    <div class="avatar-upload-wrapper" onclick="document.getElementById('avatarUpload').click()" style="margin:0 auto 20px auto;">
                         <img id="bigAv" class="setup-avatar" src="">
-                        <div class="camera-icon"><i class="ph ph-camera"></i></div>
                     </div>
                     <h2 id="bigName" style="margin-bottom:5px;">Navn</h2>
-                    <p style="color:var(--text-muted);">Brukerprofil</p>
-                    <button class="chip" onclick="editName()" style="margin-top:20px;">Endre Navn</button>
+                    <p style="color:var(--text-muted);">Student OS Bruker</p>
+                    <button class="chip" onclick="editName()" style="margin-top:20px;">Rediger Navn</button>
                 </div>
             </section>
 
         </main>
+        
+        <nav class="mobile-nav">
+            <button class="mob-btn active" onclick="nav('dashboard')"><i class="ph ph-squares-four"></i><span>Hjem</span></button>
+            <button class="mob-btn" onclick="nav('schedule')"><i class="ph ph-calendar"></i><span>Plan</span></button>
+            <button class="mob-btn" onclick="nav('tools')"><i class="ph ph-calculator"></i><span>Lab</span></button>
+            <button class="mob-btn" onclick="nav('tasks')"><i class="ph ph-check-square"></i><span>Mål</span></button>
+            <button class="mob-btn" onclick="nav('settings')"><i class="ph ph-user"></i><span>Meg</span></button>
+        </nav>
+    </div>
+
+    <div id="breath-overlay">
+        <div class="breath-visual">
+            <div class="breath-circle-ghost" id="ghost1"></div>
+            <div class="breath-circle-ghost" id="ghost2"></div>
+            <div class="breath-circle-main" id="breath-circle"></div>
+        </div>
+        
+        <div style="height:60px; position:relative; width:100%; text-align:center;">
+            <div class="breath-instruction" id="txt-in">PUST INN</div>
+            <div class="breath-instruction" id="txt-hold">HOLD</div>
+            <div class="breath-instruction" id="txt-out">PUST UT</div>
+        </div>
+
+        <button class="stop-breath-btn" onclick="stopBreathing()" style="margin-top:50px;">Avslutt Øvelse</button>
     </div>
 
     <div id="success-overlay">
-        <div class="success-card-modal">
-            <i class="ph ph-check-circle" style="font-size:5rem; color:var(--success); margin-bottom:15px;"></i>
-            <h2 style="font-size:2rem; font-weight:800; margin:0;">Bra Jobba!</h2>
-            <p style="color:var(--text-muted); margin-top:5px;">Oppgave fullført.</p>
-            <div class="xp-badge">+25 Poeng</div>
+        <div class="success-modal">
+            <i class="ph ph-check-circle" style="font-size:6rem; color:var(--success); margin-bottom:20px;"></i>
+            <h2 style="font-size:2.5rem; margin:0; color:var(--text-main);">Fantastisk!</h2>
+            <p style="color:var(--text-muted); font-size:1.1rem; margin-top:10px;">En oppgave mindre. Fortsett sånn!</p>
+            <div style="margin-top:30px; font-weight:700; color:var(--primary);">+25 XP</div>
         </div>
     </div>
 
 <script>
-    // --- 1. MOTIVATION LOGIC ---
+    // --- 1. INTRO & SETUP LOGIC ---
     const quotes = [
-        { text: "Det eneste umulige er det du ikke prøver på.", author: "Ukjent" },
-        { text: "Suksess er summen av små innsatser, gjentatt dag ut og dag inn.", author: "Robert Collier" },
-        { text: "Tro at du kan, og du er halvveis.", author: "Theodore Roosevelt" },
-        { text: "Din fremtid skapes av hva du gjør i dag, ikke i morgen.", author: "Robert Kiyosaki" }
+        { t: "Gjør det nå. Noen ganger blir 'senere' til 'aldri'.", a: "Ukjent" },
+        { t: "Suksess kommer ikke til deg, du går til den.", a: "Marva Collins" },
+        { t: "Den beste måten å forutsi fremtiden på er å skape den.", a: "Abraham Lincoln" },
+        { t: "Ikke vent på muligheter. Skap dem.", a: "Ukjent" }
     ];
 
     window.onload = function() {
-        // Pick random quote
         const q = quotes[Math.floor(Math.random() * quotes.length)];
-        document.getElementById('intro-quote').innerText = `"${q.text}"`;
-        document.getElementById('intro-author').innerText = `- ${q.author}`;
+        document.getElementById('intro-quote').innerText = `"${q.t}"`;
+        document.getElementById('intro-author').innerText = `- ${q.a}`;
         
-        // Restore state if exists
-        if(localStorage.getItem('BlueOS')) {
-            state = JSON.parse(localStorage.getItem('BlueOS'));
-            // If already set up, skip setup logic potentially, but for this demo flow:
+        // Greeting Time
+        const hr = new Date().getHours();
+        let greetingText = "Hei";
+        if(hr < 12) greetingText = "God morgen";
+        else if(hr < 18) greetingText = "God ettermiddag";
+        else greetingText = "God kveld";
+        document.getElementById('greet').innerText = `${greetingText}, ${state.name}`;
+
+        if(localStorage.getItem('FlowOS')) {
+            state = JSON.parse(localStorage.getItem('FlowOS'));
             if(state.name !== "Student") {
                 document.getElementById('setupName').value = state.name;
                 document.getElementById('setupAvPreview').src = state.avatar;
             }
         }
+        updateGlobalUI();
     };
 
     function goToSetup() {
@@ -430,199 +513,158 @@
     }
 
     function finalizeLogin() {
-        const name = document.getElementById('setupName').value;
-        if(name) state.name = name;
-        save();
-        updateGlobalUI();
-        
+        const n = document.getElementById('setupName').value;
+        if(n) state.name = n;
+        save(); updateGlobalUI();
         document.getElementById('setup-screen').classList.remove('visible');
         document.getElementById('app-shell').classList.add('visible');
     }
 
-    // --- APP STATE & CORE ---
+    // --- APP CORE ---
     let state = { name: "Student", avatar: "https://api.dicebear.com/7.x/notionists/svg?seed=student", xp: 0, tasks: [], notes: "", schedule: {} };
-    
-    function save() { localStorage.setItem('BlueOS', JSON.stringify(state)); }
+    function save() { localStorage.setItem('FlowOS', JSON.stringify(state)); }
 
     function updateGlobalUI() {
-        document.getElementById('greet').innerText = `Hei, ${state.name} 👋`;
+        const hr = new Date().getHours();
+        let greetingText = hr < 12 ? "God morgen" : hr < 18 ? "God ettermiddag" : "God kveld";
+        
+        document.getElementById('greet').innerText = `${greetingText}, ${state.name}`;
         document.getElementById('miniName').innerText = state.name;
         document.getElementById('bigName').innerText = state.name;
         document.getElementById('miniAv').src = state.avatar;
         document.getElementById('bigAv').src = state.avatar;
         document.getElementById('notes').value = state.notes;
-        renderTasks();
-        renderSchedule();
+        
+        const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('dateSub').innerText = new Date().toLocaleDateString('no-NO', dateOptions);
+
+        renderTasks(); renderSchedule();
     }
 
     function nav(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        // Simple mapping for active state visual
         event.currentTarget.classList.add('active');
     }
 
     // --- TASKS ---
     function addTask() {
-        const val = document.getElementById('taskInput').value;
-        if(!val) return;
-        state.tasks.unshift({ id: Date.now(), txt: val });
+        const v = document.getElementById('taskInput').value;
+        if(!v) return;
+        state.tasks.unshift({ id: Date.now(), txt: v });
         save(); renderTasks();
         document.getElementById('taskInput').value = "";
     }
-
-    function removeTask(id) {
-        state.tasks = state.tasks.filter(t => t.id !== id);
-        save(); renderTasks();
-    }
-
+    function removeTask(id) { state.tasks = state.tasks.filter(t => t.id !== id); save(); renderTasks(); }
     function completeTask(id) {
-        state.xp += 25;
-        state.tasks = state.tasks.filter(t => t.id !== id);
-        save(); renderTasks();
-        
-        // Show Success Overlay
-        const overlay = document.getElementById('success-overlay');
-        overlay.classList.add('active');
-        setTimeout(() => { overlay.classList.remove('active'); }, 1500);
+        state.xp += 25; state.tasks = state.tasks.filter(t => t.id !== id); save(); renderTasks();
+        const ov = document.getElementById('success-overlay');
+        ov.classList.add('active');
+        setTimeout(() => ov.classList.remove('active'), 2000);
     }
-
     function renderTasks() {
-        const list = document.getElementById('taskList');
-        list.innerHTML = "";
+        const l = document.getElementById('taskList'); l.innerHTML = "";
         state.tasks.forEach(t => {
-            list.innerHTML += `
+            l.innerHTML += `
             <div class="task-list-item">
                 <span class="task-text">${t.txt}</span>
                 <div class="task-actions">
-                    <button class="btn-action btn-delete" onclick="removeTask(${t.id})">
-                        <i class="ph ph-x"></i>
-                    </button>
-                    <button class="btn-action btn-complete" onclick="completeTask(${t.id})">
-                        <i class="ph ph-check"></i> Ferdig
-                    </button>
+                    <button class="btn-icon btn-del" onclick="removeTask(${t.id})"><i class="ph ph-x"></i></button>
+                    <button class="btn-icon btn-done" onclick="completeTask(${t.id})"><i class="ph ph-check"></i> Ferdig</button>
                 </div>
             </div>`;
         });
     }
 
-    // --- SCHEDULE (SMART HIGHLIGHT) ---
-    function renderSchedule() {
-        const grid = document.getElementById('schGrid');
-        grid.innerHTML = '<div class="sch-header">Tid</div><div class="sch-header">Man</div><div class="sch-header">Tir</div><div class="sch-header">Ons</div><div class="sch-header">Tor</div><div class="sch-header">Fre</div>';
-        const times = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00"];
-        const days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+    // --- BREATHING EXERCISE (DETAILED) ---
+    let breathInt;
+    const bCircle = document.getElementById('breath-circle');
+    const g1 = document.getElementById('ghost1');
+    const g2 = document.getElementById('ghost2');
+    const tIn = document.getElementById('txt-in');
+    const tHold = document.getElementById('txt-hold');
+    const tOut = document.getElementById('txt-out');
+
+    function startBreathing() {
+        document.getElementById('breath-overlay').classList.add('active');
+        runCycle();
+        breathInt = setInterval(runCycle, 12000); // 4s in, 4s hold, 4s out
+    }
+
+    function runCycle() {
+        // INHALE (0-4s)
+        tIn.classList.add('show'); tHold.classList.remove('show'); tOut.classList.remove('show');
+        bCircle.style.animation = "expandMain 4s ease-in-out forwards";
+        g1.style.animation = "ripple 4s ease-out infinite"; 
         
-        const now = new Date();
-        const currentDay = now.getDay(); // 1 = Mon
-        const currentHour = now.getHours();
+        // HOLD (4-8s)
+        setTimeout(() => {
+            tIn.classList.remove('show'); tHold.classList.add('show');
+            g1.style.animation = "none";
+        }, 4000);
+
+        // EXHALE (8-12s)
+        setTimeout(() => {
+            tHold.classList.remove('show'); tOut.classList.add('show');
+            bCircle.style.animation = "shrinkMain 4s ease-in-out forwards";
+        }, 8000);
+    }
+
+    function stopBreathing() {
+        document.getElementById('breath-overlay').classList.remove('active');
+        clearInterval(breathInt);
+        bCircle.style.animation = "none";
+        g1.style.animation = "none";
+        tIn.classList.remove('show'); tHold.classList.remove('show'); tOut.classList.remove('show');
+    }
+
+    // --- SCHEDULE ---
+    function renderSchedule() {
+        const g = document.getElementById('schGrid');
+        g.innerHTML = '<div class="sch-header">Tid</div><div class="sch-header">Man</div><div class="sch-header">Tir</div><div class="sch-header">Ons</div><div class="sch-header">Tor</div><div class="sch-header">Fre</div>';
+        const times = ["08:00","09:00","10:00","11:00","12:00","13:00","14:00"];
+        const days = ["Mon","Tue","Wed","Thu","Fri"];
+        const now = new Date(); const dIdx = now.getDay(); const h = now.getHours();
 
         times.forEach(t => {
-            grid.innerHTML += `<div class="sch-time">${t}</div>`;
-            days.forEach((d, idx) => {
-                const key = `${d}-${t}`;
-                const val = state.schedule[key] || "";
-                
-                let activeClass = "";
-                // Simple logic: if day matches index+1 AND hour matches string start
-                if(idx + 1 === currentDay && t.startsWith(currentHour.toString().padStart(2,'0'))) {
-                    activeClass = "sch-active";
-                }
-
-                grid.innerHTML += `<div class="sch-cell ${activeClass}" onclick="editSch('${key}')">${val}</div>`;
+            g.innerHTML += `<div class="sch-time">${t}</div>`;
+            days.forEach((d, i) => {
+                const k = `${d}-${t}`; const v = state.schedule[k] || "";
+                let ac = "";
+                if(i+1 === dIdx && t.startsWith(h.toString().padStart(2,'0'))) ac = "sch-active";
+                g.innerHTML += `<div class="sch-cell ${ac}" onclick="editSch('${k}')">${v}</div>`;
             });
         });
     }
-    function editSch(key) {
-        const val = prompt("Fag:");
-        if(val !== null) { state.schedule[key] = val; save(); renderSchedule(); }
-    }
+    function editSch(k) { const v = prompt("Fag:"); if(v!==null) { state.schedule[k]=v; save(); renderSchedule(); }}
 
-    // --- TOOLS (Calc & Notes) ---
-    let expr = "";
-    function add(v) { expr += v; document.getElementById('calcDisp').value = expr; }
-    function cls() { expr = ""; document.getElementById('calcDisp').value = "0"; }
-    function solve() { try { document.getElementById('calcDisp').value = eval(expr); expr = eval(expr).toString(); } catch{ document.getElementById('calcDisp').value = "Error"; expr=""; } }
-    
-    document.getElementById('notes').addEventListener('input', (e) => { state.notes = e.target.value; save(); });
+    // --- TOOLS ---
+    let ex = ""; function add(v){ex+=v; document.getElementById('calcDisp').value=ex;} function cls(){ex=""; document.getElementById('calcDisp').value="0";} function solve(){try{document.getElementById('calcDisp').value=eval(ex); ex=eval(ex).toString();}catch{document.getElementById('calcDisp').value="Error"; ex="";}}
+    document.getElementById('notes').addEventListener('input', (e)=>{state.notes=e.target.value; save();});
 
-    // --- SETTINGS (Avatar/Name) ---
-    function editName() { const n = prompt("Nytt navn:"); if(n) { state.name = n; save(); updateGlobalUI(); } }
-    document.getElementById('setupAvatarUpload').addEventListener('change', handleAvUpload);
-    document.getElementById('avatarUpload').addEventListener('change', handleAvUpload);
-    
-    function handleAvUpload(e) {
-        if(e.target.files[0]) {
-            const r = new FileReader();
-            r.onload = (evt) => { 
-                state.avatar = evt.target.result; 
-                if(document.getElementById('setupAvPreview')) document.getElementById('setupAvPreview').src = state.avatar;
-                save(); updateGlobalUI(); 
-            };
-            r.readAsDataURL(e.target.files[0]);
-        }
-    }
+    // --- SETTINGS ---
+    function editName() { const n = prompt("Nytt navn:"); if(n) { state.name=n; save(); updateGlobalUI(); } }
+    document.getElementById('setupAvatarUpload').addEventListener('change', hAv); document.getElementById('avatarUpload').addEventListener('change', hAv);
+    function hAv(e) { if(e.target.files[0]) { const r = new FileReader(); r.onload=(evt)=>{state.avatar=evt.target.result; if(document.getElementById('setupAvPreview'))document.getElementById('setupAvPreview').src=state.avatar; save(); updateGlobalUI();}; r.readAsDataURL(e.target.files[0]); }}
 
-    // --- AUDIO & TIMER ---
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    let noiseNode = null;
-
-    function toggleNoise(type, btn) {
-        if(audioCtx.state === 'suspended') audioCtx.resume();
-        
-        // Reset styles
-        document.querySelectorAll('.sound-card').forEach(c => c.classList.remove('active'));
-
-        if(noiseNode) {
-            noiseNode.stop(); noiseNode = null;
-            return; // Click again to stop
-        }
-
-        btn.classList.add('active');
-        
-        const bufferSize = audioCtx.sampleRate * 2;
-        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-        const data = buffer.getChannelData(0);
-        let lastOut = 0;
-        for (let i = 0; i < bufferSize; i++) {
-            const white = Math.random() * 2 - 1;
-            data[i] = (lastOut + (0.02 * white)) / 1.02;
-            lastOut = data[i];
-            data[i] *= 3.5; 
-        }
-        noiseNode = audioCtx.createBufferSource();
-        noiseNode.buffer = buffer;
-        noiseNode.loop = true;
-        const gain = audioCtx.createGain();
-        gain.gain.value = 0.05;
-        noiseNode.connect(gain); gain.connect(audioCtx.destination);
-        noiseNode.start();
-    }
-
-    let tTime = 25*60; let tInt;
-    function setDuration(m) { tTime=m*60; document.getElementById('timer').innerText = `${m}:00`; }
+    // --- TIMER ---
+    let tTime=1500; let tInt;
+    function setDuration(m){tTime=m*60; document.getElementById('timer').innerText=`${m}:00`;}
     function toggleTimer() {
-        const btn = document.getElementById('timerBtn');
-        if(tInt) { clearInterval(tInt); tInt=null; btn.innerText="Start Økt"; }
+        const b = document.getElementById('timerBtn');
+        if(tInt) { clearInterval(tInt); tInt=null; b.innerText="Start Fokusøkt"; }
         else {
-            btn.innerText = "Pause";
+            b.innerText = "Pause";
             tInt = setInterval(() => {
-                tTime--;
-                const m = Math.floor(tTime/60); const s = tTime%60;
+                tTime--; let m=Math.floor(tTime/60); let s=tTime%60;
                 document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
-                if(tTime<=0) clearInterval(tInt);
+                if(tTime<=0) { clearInterval(tInt); startBreathing(); }
             }, 1000);
         }
     }
 
-    // Chart
-    new Chart(document.getElementById('chart'), {
-        type: 'line',
-        data: { labels: ['Man','Tir','Ons','Tor','Fre'], datasets: [{ label:'XP', data:[50, 100, 75, 125, 200], borderColor:'#3b82f6', tension:0.4, fill:true, backgroundColor:'rgba(59, 130, 246, 0.1)' }] },
-        options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{display:false}} }
-    });
-
+    new Chart(document.getElementById('chart'), { type: 'line', data: { labels: ['Man','Tir','Ons','Tor','Fre'], datasets: [{ label:'XP', data:[50, 100, 75, 125, 200], borderColor:'#4f46e5', tension:0.4, fill:true, backgroundColor:'rgba(79, 70, 229, 0.1)' }] }, options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{display:false}} } });
 </script>
 </body>
 </html>
