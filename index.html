@@ -3,462 +3,470 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Student OS Ultimate</title>
+    <title>Student OS // AI Edition</title>
     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     
     <style>
-        /* --- TEMA VARIABLER --- */
+        /* --- CORE VARIABLES --- */
         :root {
             --bg: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.6);
-            --border: rgba(255, 255, 255, 0.1);
+            --sidebar-bg: rgba(15, 23, 42, 0.6);
+            --card-bg: rgba(30, 41, 59, 0.4);
+            --border: rgba(255, 255, 255, 0.08);
             --primary: #8b5cf6;
-            --accent: #06b6d4;
+            --accent: #38bdf8;
             --text: #f8fafc;
-            --sidebar-width: 280px;
-            --nav-height: 0px; /* Kun for mobil */
+            --text-dim: #94a3b8;
+            --success: #10b981;
         }
 
-        /* Tema: Nature */
-        body.theme-nature { --bg: #052e16; --primary: #22c55e; --accent: #86efac; --card-bg: rgba(20, 83, 45, 0.6); }
-        /* Tema: Energy */
-        body.theme-energy { --bg: #431407; --primary: #f97316; --accent: #fcd34d; --card-bg: rgba(124, 45, 18, 0.5); }
-        /* Tema: Midnight */
-        body.theme-midnight { --bg: #000000; --primary: #6366f1; --accent: #a855f7; --card-bg: #111; --border: #333; }
+        /* Themes */
+        body.theme-nature { --bg: #022c22; --sidebar-bg: rgba(2, 44, 34, 0.6); --primary: #10b981; --accent: #a7f3d0; }
+        body.theme-energy { --bg: #431407; --sidebar-bg: rgba(67, 20, 7, 0.6); --primary: #f97316; --accent: #fde047; }
+        body.theme-midnight { --bg: #000; --sidebar-bg: #111; --card-bg: #111; --border: #333; --primary: #6366f1; }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-
+        
         body {
             margin: 0; font-family: 'Outfit', sans-serif;
             background-color: var(--bg); color: var(--text);
             height: 100vh; overflow: hidden;
-            transition: background-color 0.5s ease;
+            transition: background 0.4s ease;
         }
 
         /* --- LAYOUT --- */
-        .app-layout {
-            display: flex; height: 100%; width: 100%;
-        }
+        .app-layout { display: flex; height: 100%; width: 100%; }
 
-        /* --- SIDEBAR (Desktop/Tablet) --- */
+        /* Sidebar (Desktop) */
         .sidebar {
-            width: var(--sidebar-width);
-            background: rgba(0,0,0,0.2);
-            backdrop-filter: blur(20px);
-            border-right: 1px solid var(--border);
-            padding: 30px;
-            display: flex; flex-direction: column; gap: 10px;
-            transition: 0.3s;
+            width: 260px; background: var(--sidebar-bg);
+            backdrop-filter: blur(20px); border-right: 1px solid var(--border);
+            padding: 25px; display: flex; flex-direction: column; gap: 8px;
             z-index: 10;
         }
-
-        .user-profile {
-            text-align: center; margin-bottom: 30px;
-            padding-bottom: 20px; border-bottom: 1px solid var(--border);
-        }
         
-        .avatar-frame {
-            width: 90px; height: 90px; margin: 0 auto 15px;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            border-radius: 50%; padding: 3px; cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .avatar-frame:hover { transform: scale(1.05); }
-        .avatar-frame img { width: 100%; height: 100%; border-radius: 50%; background: #000; }
+        /* Mobile Nav (Hidden by default) */
+        .mobile-nav { display: none; }
 
         .nav-item {
-            background: transparent; border: none; color: #94a3b8;
-            padding: 16px; border-radius: 16px; cursor: pointer;
-            text-align: left; font-size: 1rem; font-weight: 600;
-            display: flex; align-items: center; gap: 15px; transition: 0.3s;
+            background: transparent; border: none; color: var(--text-dim);
+            padding: 14px; border-radius: 12px; cursor: pointer;
+            text-align: left; font-size: 0.95rem; font-weight: 600;
+            display: flex; align-items: center; gap: 12px; transition: 0.2s;
         }
-        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
-        .nav-item.active { 
-            background: var(--primary); color: white; 
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2); 
-        }
-        .nav-item i { font-size: 1.4rem; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+        .nav-item.active { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .nav-item i { font-size: 1.3rem; }
 
-        /* --- MAIN CONTENT --- */
-        .content-area {
-            flex: 1; overflow-y: auto; padding: 40px;
-            padding-bottom: 100px; /* Space for mobile nav */
-            scroll-behavior: smooth;
-        }
-
+        /* Main Content */
+        .content-area { flex: 1; overflow-y: auto; padding: 30px; position: relative; }
         .section { display: none; animation: fadeUp 0.4s ease; }
         .section.active { display: block; }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeUp { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
 
-        /* --- MOBILE ADAPTATIONS --- */
-        @media (max-width: 768px) {
-            .sidebar { display: none; } /* Skjul sidebar på mobil */
-            .content-area { padding: 20px; padding-bottom: 90px; }
-            
-            /* Bottom Navigation Bar */
-            .mobile-nav {
-                position: fixed; bottom: 0; left: 0; width: 100%;
-                background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px);
-                border-top: 1px solid var(--border);
-                display: flex; justify-content: space-around; padding: 12px;
-                z-index: 100;
-            }
-            .mobile-btn {
-                background: none; border: none; color: #64748b;
-                display: flex; flex-direction: column; align-items: center;
-                gap: 5px; font-size: 0.7rem; font-weight: 600;
-            }
-            .mobile-btn i { font-size: 1.5rem; }
-            .mobile-btn.active { color: var(--primary); }
-            
-            .grid-3 { grid-template-columns: 1fr !important; }
-            .tool-grid { grid-template-columns: 1fr !important; }
-        }
-
-        /* --- DASHBOARD CARDS --- */
+        /* --- CARDS & GRID --- */
         .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
         
         .card {
             background: var(--card-bg); border: 1px solid var(--border);
-            border-radius: 24px; padding: 25px;
-            backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border-radius: 20px; padding: 25px; backdrop-filter: blur(10px);
         }
 
-        /* Timer */
-        .timer-display {
-            font-size: 4.5rem; font-weight: 800; text-align: center;
-            background: linear-gradient(to right, #fff, var(--primary));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            font-variant-numeric: tabular-nums; margin: 10px 0;
-        }
-
-        /* Buttons */
         .btn {
             background: var(--primary); color: white; border: none; width: 100%;
-            padding: 16px; border-radius: 18px; font-weight: 700; font-size: 1rem;
-            cursor: pointer; transition: transform 0.2s;
+            padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer;
+            transition: transform 0.2s; font-size: 0.9rem;
         }
-        .btn:active { transform: scale(0.96); }
+        .btn:active { transform: scale(0.97); }
 
-        /* Calculator */
-        .calc-screen {
-            width: 100%; background: #000; color: var(--accent); font-family: monospace;
-            font-size: 1.8rem; text-align: right; padding: 20px; border-radius: 15px; border: none; margin-bottom: 15px;
+        /* --- SETTINGS: PROFILE DESIGN --- */
+        .profile-header {
+            position: relative; height: 120px;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            border-radius: 20px 20px 0 0; margin: -25px -25px 50px -25px;
         }
-        .calc-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .key {
-            padding: 15px; border-radius: 12px; border: none; font-size: 1.2rem; font-weight: bold;
-            background: rgba(255,255,255,0.05); color: white; cursor: pointer;
+        .profile-avatar-large {
+            width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--bg);
+            position: absolute; bottom: -40px; left: 25px; background: #000;
+            cursor: pointer; transition: transform 0.3s;
         }
-        .key.op { color: var(--primary); background: rgba(255,255,255,0.1); }
-        .key.sci { color: var(--accent); font-size: 1rem; }
+        .profile-avatar-large:hover { transform: scale(1.05) rotate(5deg); }
         
-        /* Settings / Themes */
-        .theme-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px; }
-        .theme-btn {
-            padding: 20px; border-radius: 15px; border: 2px solid transparent; cursor: pointer;
-            text-align: center; font-weight: bold; color: white;
+        .theme-swatches { display: flex; gap: 15px; margin-top: 15px; }
+        .swatch {
+            width: 45px; height: 45px; border-radius: 50%; cursor: pointer;
+            border: 2px solid transparent; transition: 0.2s; position: relative;
         }
-        .theme-btn.active { border-color: white; transform: scale(0.98); }
+        .swatch.active { border-color: white; transform: scale(1.1); }
+        .swatch::after { content:''; position:absolute; inset:0; border-radius:50%; border:1px solid rgba(255,255,255,0.1); }
 
-        /* Inputs */
-        input.modern-input {
-            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
-            padding: 15px; border-radius: 15px; color: white; margin-bottom: 10px;
+        /* --- AI MODAL --- */
+        #ai-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px);
+            z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px;
         }
+        .ai-box {
+            background: #0f172a; border: 1px solid var(--primary); width: 100%; max-width: 400px;
+            border-radius: 24px; padding: 30px; text-align: center; position: relative; overflow: hidden;
+            box-shadow: 0 0 50px rgba(139, 92, 246, 0.2); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn { from{transform:scale(0.9); opacity:0;} to{transform:scale(1); opacity:1;} }
+
+        /* Scanning Effect */
+        .scan-container {
+            width: 100%; height: 200px; background: #000; border-radius: 12px;
+            margin: 20px 0; position: relative; overflow: hidden; display: none; border: 1px solid #333;
+        }
+        .scan-img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
+        .laser-line {
+            position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+            background: #10b981; box-shadow: 0 0 10px #10b981, 0 0 20px #10b981;
+            animation: scan 2s infinite linear;
+        }
+        @keyframes scan { 0% {top:0;} 50% {top:100%;} 100% {top:0;} }
+
+        .upload-area {
+            border: 2px dashed var(--border); border-radius: 15px; padding: 30px;
+            cursor: pointer; transition: 0.2s; margin-top: 20px;
+        }
+        .upload-area:hover { border-color: var(--primary); background: rgba(139, 92, 246, 0.1); }
+
+        /* --- TASK LIST STYLE --- */
+        .task-item {
+            background: rgba(255,255,255,0.03); padding: 12px 15px; border-radius: 12px;
+            margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;
+            border: 1px solid transparent; transition: 0.2s;
+        }
+        .task-item:hover { background: rgba(255,255,255,0.06); }
+        .ai-badge { 
+            font-size: 0.7rem; background: rgba(16, 185, 129, 0.15); color: #10b981; 
+            padding: 3px 8px; border-radius: 6px; display: flex; align-items: center; gap: 4px;
+        }
+
+        /* --- RESPONSIVE MOBILE --- */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .content-area { padding: 15px; padding-bottom: 100px; }
+            .mobile-nav {
+                position: fixed; bottom: 0; left: 0; width: 100%;
+                background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px);
+                border-top: 1px solid var(--border); display: flex; justify-content: space-around;
+                padding: 12px; z-index: 50;
+            }
+            .mob-btn {
+                background: none; border: none; color: var(--text-dim);
+                display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 0.75rem;
+            }
+            .mob-btn.active { color: var(--primary); }
+            .mob-btn i { font-size: 1.5rem; }
+            .grid-3 { grid-template-columns: 1fr; }
+        }
+        
+        /* Modern Input */
+        .glass-input {
+            width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border);
+            padding: 15px; border-radius: 12px; color: white; margin-bottom: 10px;
+        }
+        .glass-input:focus { border-color: var(--primary); }
+
     </style>
 </head>
-<body class="theme-default">
+<body class="">
 
     <div class="app-layout">
         
         <aside class="sidebar">
-            <div class="user-profile">
-                <div class="avatar-frame" onclick="changeAvatar()">
-                    <img id="avatarImg" src="" alt="Avatar">
-                </div>
-                <h3 id="nameDisplay" style="margin:0">Student</h3>
-                <small style="color: var(--accent); cursor: pointer;" onclick="editName()">✎ Endre navn</small>
+            <div style="padding: 10px 0; margin-bottom: 20px; font-weight: 900; font-size: 1.2rem; letter-spacing: 1px; color: var(--text);">
+                STUDENT<span style="color:var(--primary)">OS</span>
             </div>
-
-            <button class="nav-item active" onclick="nav('dashboard')">
-                <i class="ph ph-squares-four"></i> Oversikt
-            </button>
-            <button class="nav-item" onclick="nav('tools')">
-                <i class="ph ph-calculator"></i> Verktøy
-            </button>
-            <button class="nav-item" onclick="nav('settings')">
-                <i class="ph ph-gear"></i> Innstillinger
-            </button>
+            <button class="nav-item active" onclick="nav('dashboard')"><i class="ph ph-squares-four"></i> Oversikt</button>
+            <button class="nav-item" onclick="nav('tasks')"><i class="ph ph-check-square"></i> Oppgaver</button>
+            <button class="nav-item" onclick="nav('settings')"><i class="ph ph-gear"></i> Innstillinger</button>
+            
+            <div style="margin-top: auto; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 15px; display: flex; gap: 10px; align-items: center;">
+                <img id="miniAvatar" src="" style="width: 35px; height: 35px; border-radius: 50%; background:#000;">
+                <div style="font-size: 0.85rem;">
+                    <div id="miniName" style="font-weight: bold;">Student</div>
+                    <div style="color: var(--accent);">Level <span id="miniLvl">1</span></div>
+                </div>
+            </div>
         </aside>
 
         <main class="content-area">
             
             <section id="dashboard" class="section active">
-                <h1 id="welcomeText">Hei! 👋</h1>
-                
+                <h1 id="welcomeTitle">Hei! 👋</h1>
                 <div class="grid-3">
                     <div class="card" style="text-align: center;">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <h2 style="margin:0"><i class="ph ph-clock"></i> Fokus</h2>
-                            <span style="font-size:0.8rem; background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:8px;">+ XP</span>
-                        </div>
-                        <div class="timer-display" id="timer">25:00</div>
+                        <h2 style="margin-top:0"><i class="ph ph-clock"></i> Fokus Økt</h2>
+                        <div style="font-size: 4rem; font-weight: 800; margin: 15px 0; font-variant-numeric: tabular-nums;" id="timer">25:00</div>
                         <button class="btn" id="timerBtn" onclick="toggleTimer()">START ØKT</button>
                     </div>
-
                     <div class="card">
-                        <h2 style="margin:0 0 20px 0;"><i class="ph ph-trend-up"></i> Fremgang</h2>
-                        <div style="height: 180px;">
-                            <canvas id="chart"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <h2 style="margin:0 0 20px 0;"><i class="ph ph-check-circle"></i> Dagens Mål</h2>
-                        <input type="text" class="modern-input" id="quickTask" placeholder="Legg til mål..." onkeypress="if(event.key==='Enter') addTask()">
-                        <div id="taskList" style="max-height: 150px; overflow-y: auto;"></div>
+                        <h2 style="margin-top:0">Statistikk</h2>
+                        <div style="height: 180px;"><canvas id="chart"></canvas></div>
                     </div>
                 </div>
             </section>
 
-            <section id="tools" class="section">
-                <h1>Verktøy</h1>
-                <div class="grid-3 tool-grid">
-                    
-                    <div class="card">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                            <h2 style="margin:0">Kalkulator</h2>
-                            <button onclick="toggleSci()" style="background:none; border:1px solid var(--border); color:var(--accent); border-radius:8px; padding:5px 10px;">Vitenskapelig</button>
+            <section id="tasks" class="section">
+                <h1>Mine Mål & AI Check</h1>
+                <div class="card">
+                    <input type="text" class="glass-input" id="taskInput" placeholder="Skriv inn nytt læringsmål..." onkeypress="if(event.key==='Enter') initTask()">
+                    <div id="taskList" style="margin-top: 15px;">
                         </div>
-                        <input type="text" class="calc-screen" id="calcDisp" readonly>
-                        <div class="calc-keys" id="calcKeys">
-                            </div>
-                    </div>
-
-                    <div class="card">
-                        <h2><i class="ph ph-function"></i> Formelsamling</h2>
-                        <div style="display:flex; flex-direction:column; gap:10px;">
-                            <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:10px;">
-                                <strong>Areal Sirkel:</strong><br> $A = \pi r^2$
-                            </div>
-                            <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:10px;">
-                                <strong>Pytagoras:</strong><br> $a^2 + b^2 = c^2$
-                            </div>
-                            <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:10px;">
-                                <strong>Fart:</strong><br> $v = s / t$
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </section>
 
             <section id="settings" class="section">
-                <h1>Min Profil & Utseende</h1>
+                <h1>Min Profil</h1>
+                
                 <div class="grid-3">
-                    <div class="card">
-                        <h2>Endre Tema</h2>
-                        <p style="opacity:0.7">Velg farger som passer humøret ditt.</p>
-                        <div class="theme-grid">
-                            <div class="theme-btn" style="background:#0f172a" onclick="setTheme('')">Deep Focus</div>
-                            <div class="theme-btn" style="background:#052e16" onclick="setTheme('theme-nature')">Nature</div>
-                            <div class="theme-btn" style="background:#431407" onclick="setTheme('theme-energy')">Energy</div>
-                            <div class="theme-btn" style="background:#000000" onclick="setTheme('theme-midnight')">Midnight</div>
+                    <div class="card" style="grid-column: span 2;">
+                        <div class="profile-header"></div>
+                        <img id="settingAvatar" src="" class="profile-avatar-large" onclick="refreshAvatar()" title="Trykk for ny avatar">
+                        
+                        <div style="margin-top: 50px; display: flex; justify-content: space-between; align-items: flex-end;">
+                            <div style="flex-grow: 1; margin-right: 20px;">
+                                <label style="font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; font-weight: bold;">Visningsnavn</label>
+                                <input type="text" id="nameInput" class="glass-input" style="margin-top: 5px;" onchange="saveName()">
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 2rem; font-weight: 800; color: var(--primary);" id="xpTotal">0</div>
+                                <div style="font-size: 0.8rem; color: var(--text-dim);">TOTAL XP</div>
+                            </div>
                         </div>
                     </div>
 
                     <div class="card">
-                        <h2>Profil info</h2>
-                        <p>Klikk på bildet i menyen for å bytte avatar.</p>
-                        <input type="text" class="modern-input" id="nameInput" placeholder="Ditt navn">
-                        <button class="btn" onclick="saveName()">Lagre Navn</button>
+                        <h2>Utseende</h2>
+                        <p style="color:var(--text-dim); font-size: 0.9rem;">Velg temaet som passer din læringsstil.</p>
+                        <div class="theme-swatches">
+                            <div class="swatch" style="background: #0f172a;" onclick="changeTheme('')" title="Deep Focus"></div>
+                            <div class="swatch" style="background: #022c22;" onclick="changeTheme('theme-nature')" title="Nature"></div>
+                            <div class="swatch" style="background: #431407;" onclick="changeTheme('theme-energy')" title="Energy"></div>
+                            <div class="swatch" style="background: #000;" onclick="changeTheme('theme-midnight')" title="Midnight"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h2 style="color: #ef4444;">Faresone</h2>
+                        <button class="btn" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;" onclick="resetData()">Slett all data</button>
                     </div>
                 </div>
             </section>
 
         </main>
 
-        <nav class="mobile-nav" id="mobileNav" style="display:none;"> <button class="mobile-btn active" onclick="nav('dashboard')">
-                <i class="ph ph-squares-four"></i>
-                <span>Hjem</span>
-            </button>
-            <button class="mobile-btn" onclick="nav('tools')">
-                <i class="ph ph-calculator"></i>
-                <span>Verktøy</span>
-            </button>
-            <button class="mobile-btn" onclick="nav('settings')">
-                <i class="ph ph-user"></i>
-                <span>Profil</span>
-            </button>
+        <nav class="mobile-nav">
+            <button class="mob-btn active" onclick="nav('dashboard')"><i class="ph ph-squares-four"></i><span>Hjem</span></button>
+            <button class="mob-btn" onclick="nav('tasks')"><i class="ph ph-check-square"></i><span>Mål</span></button>
+            <button class="mob-btn" onclick="nav('settings')"><i class="ph ph-user"></i><span>Profil</span></button>
         </nav>
+    </div>
 
+    <div id="ai-modal">
+        <div class="ai-box">
+            <h2 style="color: var(--primary); margin-top:0;">🤖 AI Verifisering</h2>
+            <p id="ai-status" style="color: var(--text-dim);">Systemet krever visuelt bevis.</p>
+            
+            <label class="upload-area" id="uploadArea">
+                <i class="ph ph-camera" style="font-size: 2rem; color: var(--accent);"></i>
+                <div style="margin-top: 10px; font-weight: bold;">Last opp bilde</div>
+                <input type="file" id="fileInput" accept="image/*" style="display: none;">
+            </label>
+
+            <div class="scan-container" id="scanContainer">
+                <div class="laser-line"></div>
+                <img id="previewImg" class="scan-img">
+            </div>
+
+            <button class="btn" id="confirmBtn" style="display: none; margin-top: 15px;" onclick="finalizeTask()">Bekreft Fullført</button>
+            <button onclick="closeModal()" style="background:none; border:none; color: var(--text-dim); margin-top: 15px; cursor: pointer;">Avbryt</button>
+        </div>
     </div>
 
     <audio id="alarm" src="https://assets.mixkit.co/sfx/preview/mixkit-positive-notification-951.mp3"></audio>
 
 <script>
-    // --- STATE MANAGEMENT ---
-    let appState = {
-        name: "Student",
+    // --- STATE ---
+    let app = {
+        name: "Elev",
         theme: "",
         xp: 0,
-        avatarSeed: "student",
+        avatarSeed: "student123",
         tasks: []
     };
 
-    // Load Data
-    if(localStorage.getItem('studentOS_v2')) {
-        appState = {...appState, ...JSON.parse(localStorage.getItem('studentOS_v2'))};
+    // Load from memory
+    if(localStorage.getItem('studentOS_AI')) {
+        app = {...app, ...JSON.parse(localStorage.getItem('studentOS_AI'))};
     }
 
-    // --- SETUP UI ---
-    document.body.className = appState.theme;
-    document.getElementById('nameDisplay').innerText = appState.name;
-    document.getElementById('welcomeText').innerText = `Hei, ${appState.name}! 👋`;
-    document.getElementById('avatarImg').src = `https://api.dicebear.com/7.x/bottts/svg?seed=${appState.avatarSeed}`;
+    // --- INIT UI ---
+    updateUI();
     
-    // Check for mobile to show nav
-    if(window.innerWidth <= 768) document.getElementById('mobileNav').style.display = 'flex';
-
-    function saveState() {
-        localStorage.setItem('studentOS_v2', JSON.stringify(appState));
+    function updateUI() {
+        document.body.className = app.theme;
+        
+        // Names
+        document.getElementById('welcomeTitle').innerText = `Hei, ${app.name}! 👋`;
+        document.getElementById('nameInput').value = app.name;
+        document.getElementById('miniName').innerText = app.name;
+        
+        // Avatars
+        const avUrl = `https://api.dicebear.com/7.x/bottts/svg?seed=${app.avatarSeed}`;
+        document.getElementById('miniAvatar').src = avUrl;
+        document.getElementById('settingAvatar').src = avUrl;
+        
+        // Stats
+        document.getElementById('xpTotal').innerText = app.xp;
+        document.getElementById('miniLvl').innerText = Math.floor(app.xp / 500) + 1;
+        
+        // Render Tasks
+        renderTasks();
     }
+
+    function save() { localStorage.setItem('studentOS_AI', JSON.stringify(app)); }
 
     // --- NAVIGATION ---
     function nav(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-
-        // Update active buttons
-        document.querySelectorAll('.nav-item, .mobile-btn').forEach(b => b.classList.remove('active'));
         
-        // Simple logic to highlight correct buttons
-        const index = id === 'dashboard' ? 0 : id === 'tools' ? 1 : 2;
-        const desktopNavs = document.querySelectorAll('.nav-item');
-        const mobileNavs = document.querySelectorAll('.mobile-btn');
-        
-        if(desktopNavs.length) desktopNavs[index].classList.add('active');
-        if(mobileNavs.length && window.innerWidth <= 768) mobileNavs[index].classList.add('active');
+        // Update styling
+        document.querySelectorAll('.nav-item, .mob-btn').forEach(b => b.classList.remove('active'));
+        // Mapping logic (simple index based)
+        const idx = id==='dashboard'?0: id==='tasks'?1: 2;
+        document.querySelectorAll('.nav-item')[idx]?.classList.add('active');
+        document.querySelectorAll('.mob-btn')[idx]?.classList.add('active');
     }
 
-    // --- PROFILE & THEMES ---
-    function setTheme(themeName) {
-        document.body.className = themeName;
-        appState.theme = themeName;
-        saveState();
+    // --- SETTINGS LOGIC ---
+    function changeTheme(theme) {
+        app.theme = theme;
+        save();
+        updateUI();
     }
-
-    function changeAvatar() {
-        appState.avatarSeed = Math.random().toString(36).substring(7);
-        document.getElementById('avatarImg').src = `https://api.dicebear.com/7.x/bottts/svg?seed=${appState.avatarSeed}`;
-        saveState();
-    }
-
-    function editName() {
-        const newName = prompt("Hva vil du hete?", appState.name);
-        if(newName) {
-            appState.name = newName;
-            document.getElementById('nameDisplay').innerText = newName;
-            document.getElementById('welcomeText').innerText = `Hei, ${newName}! 👋`;
-            saveState();
-        }
+    
+    function refreshAvatar() {
+        app.avatarSeed = Math.random().toString(36);
+        save();
+        updateUI();
     }
     
     function saveName() {
-        const val = document.getElementById('nameInput').value;
-        if(val) {
-            appState.name = val;
-            document.getElementById('nameDisplay').innerText = val;
-            saveState();
-            alert("Navn lagret!");
+        app.name = document.getElementById('nameInput').value;
+        save();
+        updateUI();
+    }
+    
+    function resetData() {
+        if(confirm("Slette alt?")) {
+            localStorage.removeItem('studentOS_AI');
+            location.reload();
         }
     }
 
-    // --- CALCULATOR ENGINE ---
-    let calcMode = 'basic';
-    const keysBasic = ['7','8','9','/','4','5','6','*','1','2','3','-','C','0','=','+'];
-    const keysSci = ['sin','cos','tan','√','(',')','^','%','7','8','9','/','4','5','6','*','1','2','3','-','C','0','=','+'];
+    // --- AI TASK LOGIC ---
+    let pendingTask = "";
 
-    function renderCalc() {
-        const board = document.getElementById('calcKeys');
-        board.innerHTML = '';
-        const keys = calcMode === 'basic' ? keysBasic : keysSci;
-        
-        keys.forEach(k => {
-            const btn = document.createElement('button');
-            btn.className = `key ${['/','*','-','+','='].includes(k) ? 'op' : ''} ${['sin','cos','tan','√','^','%'].includes(k) ? 'sci' : ''}`;
-            btn.innerText = k;
-            btn.onclick = () => handleCalc(k);
-            board.appendChild(btn);
+    function initTask() {
+        const val = document.getElementById('taskInput').value;
+        if(!val) return;
+        pendingTask = val;
+        openModal();
+    }
+
+    function openModal() {
+        const m = document.getElementById('ai-modal');
+        m.style.display = 'flex';
+        // Reset state
+        document.getElementById('uploadArea').style.display = 'block';
+        document.getElementById('scanContainer').style.display = 'none';
+        document.getElementById('confirmBtn').style.display = 'none';
+        document.getElementById('ai-status').innerText = `Analyserer mål: "${pendingTask}"`;
+    }
+
+    function closeModal() {
+        document.getElementById('ai-modal').style.display = 'none';
+        document.getElementById('taskInput').value = "";
+    }
+
+    // File Upload Handler
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+        if (e.target.files && e.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Show scanning UI
+                document.getElementById('uploadArea').style.display = 'none';
+                const scanCont = document.getElementById('scanContainer');
+                scanCont.style.display = 'block';
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('ai-status').innerText = "AI Scanner bildet...";
+                
+                // Simulate AI processing time
+                setTimeout(() => {
+                    document.getElementById('ai-status').innerText = "✅ Verifisering Vellykket!";
+                    document.getElementById('ai-status').style.color = "var(--success)";
+                    document.getElementById('confirmBtn').style.display = 'inline-block';
+                }, 2500);
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    });
+
+    function finalizeTask() {
+        app.tasks.push({ text: pendingTask, id: Date.now() });
+        app.xp += 100; // Reward
+        save();
+        updateUI();
+        closeModal();
+        confetti({ particleCount: 150, spread: 80 });
+    }
+
+    function renderTasks() {
+        const list = document.getElementById('taskList');
+        list.innerHTML = "";
+        app.tasks.forEach(t => {
+            const div = document.createElement('div');
+            div.className = 'task-item';
+            div.innerHTML = `
+                <span style="font-weight:500">${t.text}</span>
+                <span class="ai-badge"><i class="ph ph-check"></i> AI Verified</span>
+            `;
+            list.prepend(div);
         });
-        
-        board.style.gridTemplateColumns = calcMode === 'basic' ? 'repeat(4, 1fr)' : 'repeat(4, 1fr)';
     }
 
-    let expr = "";
-    function handleCalc(val) {
-        const screen = document.getElementById('calcDisp');
-        if(val === 'C') expr = "";
-        else if(val === '=') {
-            try {
-                // Replace sci symbols for JS
-                let safeExpr = expr.replace('√', 'Math.sqrt').replace('^', '**').replace('sin', 'Math.sin').replace('cos', 'Math.cos');
-                expr = eval(safeExpr).toString();
-            } catch { expr = "Error"; }
-        }
-        else if(val === 'sin' || val === 'cos') expr += val + "(";
-        else if(val === '√') expr += "√(";
-        else expr += val;
-        
-        screen.value = expr;
-    }
-
-    function toggleSci() {
-        calcMode = calcMode === 'basic' ? 'sci' : 'basic';
-        renderCalc();
-    }
-    renderCalc();
-
-    // --- TIMER & TASKS (Simplified from prev) ---
-    let timeLeft = 25*60, tRun = false, tInt;
+    // --- TIMER ---
+    let tInt, tRun = false, tLeft = 25*60;
     function toggleTimer() {
-        if(tRun) { clearInterval(tInt); document.getElementById('timerBtn').innerText="START"; }
+        if(tRun) { clearInterval(tInt); document.getElementById('timerBtn').innerText="FORTSETT"; }
         else {
             tInt = setInterval(() => {
-                timeLeft--;
-                let m = Math.floor(timeLeft/60), s = timeLeft%60;
+                tLeft--;
+                let m = Math.floor(tLeft/60), s = tLeft%60;
                 document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
-                if(timeLeft<=0) { clearInterval(tInt); document.getElementById('alarm').play(); confetti(); timeLeft=25*60; }
+                if(tLeft<=0) { clearInterval(tInt); document.getElementById('alarm').play(); tLeft=25*60; }
             }, 1000);
             document.getElementById('timerBtn').innerText="PAUSE";
         }
         tRun = !tRun;
     }
 
-    function addTask() {
-        const val = document.getElementById('quickTask').value;
-        if(!val) return;
-        const d = document.createElement('div');
-        d.innerHTML = `• ${val}`;
-        d.style.padding = "10px";
-        d.style.borderBottom = "1px solid rgba(255,255,255,0.1)";
-        document.getElementById('taskList').prepend(d);
-        document.getElementById('quickTask').value = "";
-    }
-
-    // Chart
-    const ctx = document.getElementById('chart').getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
+    // --- CHART ---
+    new Chart(document.getElementById('chart'), {
+        type: 'bar',
         data: {
-            labels: ['M', 'T', 'O', 'T', 'F', 'L', 'S'],
-            datasets: [{ label: 'Fokus', data: [12, 19, 3, 5, 2, 3, 10], borderColor: '#8b5cf6', tension: 0.4 }]
+            labels: ['M','T','O','T','F'],
+            datasets: [{ label: 'Fokus', data: [3,5,2,8,4], backgroundColor: '#8b5cf6', borderRadius: 5 }]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{display:false}} }
+        options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{grid:{display:false}}, y:{display:false}} }
     });
 
 </script>
