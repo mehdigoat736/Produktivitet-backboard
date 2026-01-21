@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Student OS // Ultimate Fix</title>
+    <title>Student OS // Final Fix</title>
     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -38,7 +38,7 @@
             transition: background 0.5s ease;
         }
 
-        /* ZEN MODE STYLES */
+        /* ZEN MODE */
         body.zen-mode .sidebar, body.zen-mode .mobile-nav, body.zen-mode .logo-area { display: none !important; }
         body.zen-mode .glass-card:not(.zen-target) { display: none !important; }
         body.zen-mode .main-view { display: flex; align-items: center; justify-content: center; padding: 0; }
@@ -50,7 +50,7 @@
         }
         body.zen-mode .zen-btn i { color: var(--success); text-shadow: 0 0 10px var(--success); }
 
-        /* Background Blobs */
+        /* Background */
         .bg-orb {
             position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; z-index: -1;
             animation: float 10s infinite ease-in-out;
@@ -88,7 +88,7 @@
         .section.active { display: block; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
-        /* Cards & Grid */
+        /* Cards */
         .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
         .glass-card {
             background: var(--glass-surface); border: 1px solid var(--glass-border);
@@ -113,7 +113,7 @@
         .sch-cell:hover { background: rgba(255,255,255,0.08); border-color: var(--primary); }
         .sch-cell.active-day { background: rgba(99, 102, 241, 0.1); border-color: var(--primary); }
 
-        /* FLASHCARD STYLES (Fixed) */
+        /* FLASHCARD STYLES */
         .flashcard-container { perspective: 1000px; width: 100%; height: 300px; margin-bottom: 20px; cursor: pointer; }
         .flashcard-inner {
             position: relative; width: 100%; height: 100%; text-align: center;
@@ -130,19 +130,17 @@
         .flashcard-back { background: var(--primary); color: white; transform: rotateY(180deg); }
         .fc-controls { display: flex; justify-content: center; gap: 15px; }
 
-        /* Existing Styles */
+        /* Elements */
         .timer-display {
             font-size: 5rem; font-weight: 800; text-align: center; margin: 10px 0;
             font-variant-numeric: tabular-nums; letter-spacing: -3px;
             background: linear-gradient(180deg, #fff, var(--text-muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-        
         .zen-btn {
             position: absolute; top: 20px; right: 20px; background: none; border: none;
             color: var(--text-muted); font-size: 1.5rem; cursor: pointer; transition: 0.3s;
         }
         .zen-btn:hover { color: var(--text-main); transform: scale(1.1); }
-
         .action-btn {
             width: 100%; padding: 16px; border-radius: 18px; border: none;
             background: var(--primary); color: white; font-weight: 700; font-size: 1rem;
@@ -165,8 +163,7 @@
 
         /* Avatar */
         .avatar-container {
-            position: relative; width: 130px; height: 130px; margin: 0 auto; cursor: pointer;
-            transition: transform 0.3s;
+            position: relative; width: 130px; height: 130px; margin: 0 auto; cursor: pointer; transition: transform 0.3s;
         }
         .avatar-lg {
             width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
@@ -178,6 +175,15 @@
             border: 4px solid var(--glass-surface); box-shadow: 0 5px 15px rgba(0,0,0,0.5); color: white;
         }
         .avatar-container:hover { transform: scale(1.05); }
+
+        .profile-actions { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+        .pill-btn {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+            color: var(--text-muted); padding: 8px 16px; border-radius: 20px;
+            font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .pill-btn:hover { background: rgba(255,255,255,0.1); color: white; border-color: white; }
 
         /* Mobile Nav */
         .mobile-nav { display: none; }
@@ -197,7 +203,7 @@
             .mob-btn i { font-size: 1.5rem; }
         }
         
-        /* Modal & Scan */
+        /* Modal */
         #ai-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 999;
             display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px);
@@ -216,15 +222,6 @@
         }
         @keyframes laser { 0% {top:0} 50% {top:100%} 100% {top:0} }
 
-        .profile-actions { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
-        .pill-btn {
-            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
-            color: var(--text-muted); padding: 8px 16px; border-radius: 20px;
-            font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: 0.2s;
-            display: flex; align-items: center; gap: 6px;
-        }
-        .pill-btn:hover { background: rgba(255,255,255,0.1); color: white; border-color: white; }
-
         .task-list-item {
             display: flex; justify-content: space-between; align-items: center;
             padding: 15px; background: rgba(255,255,255,0.03); border-radius: 12px; margin-bottom: 10px;
@@ -235,7 +232,6 @@
             background: rgba(16, 185, 129, 0.1); color: var(--success); padding: 4px 8px; 
             border-radius: 6px; font-size: 0.7rem; font-weight: 700; display: flex; gap: 5px; align-items: center;
         }
-
     </style>
 </head>
 <body>
@@ -295,8 +291,7 @@
             <section id="schedule" class="section">
                 <h1>Min Ukeplan</h1>
                 <div class="glass-card" style="overflow:hidden;">
-                    <div class="schedule-grid" id="schGrid">
-                        </div>
+                    <div class="schedule-grid" id="schGrid"></div>
                 </div>
                 <p style="text-align:center; color:var(--text-muted); margin-top:10px;">Klikk på en time for å endre fag.</p>
             </section>
@@ -441,7 +436,7 @@
     <audio id="sfx-success" src="https://assets.mixkit.co/sfx/preview/mixkit-positive-notification-951.mp3"></audio>
 
 <script>
-    // --- APP CORE ---
+    // --- APP CORE (WITH MIGRATION FIX) ---
     let state = {
         name: "Student",
         theme: "",
@@ -449,21 +444,27 @@
         avatar: "std1",
         tasks: [],
         notes: "",
-        schedule: {}, // { "Mon-08:00": "Matte", ... }
+        schedule: {},
         flashcards: [
             {q: "Hva er hovedstaden i Norge?", a: "Oslo"},
             {q: "Hva er 5 * 5?", a: "25"}
         ]
     };
 
-    if(localStorage.getItem('ultimateOS_v2')) {
-        state = {...state, ...JSON.parse(localStorage.getItem('ultimateOS_v2'))};
-    } else {
-        // Migration fix for older versions
-        if(!state.flashcards) state.flashcards = [{q: "Hva er $\\pi$?", a: "3.14"}];
+    // Load and Merge state, handle missing fields
+    if(localStorage.getItem('ultimateOS_v3')) {
+        const saved = JSON.parse(localStorage.getItem('ultimateOS_v3'));
+        state = {...state, ...saved};
+        // Fix for missing flashcards in old data
+        if(!state.flashcards || state.flashcards.length === 0) {
+            state.flashcards = [
+                {q: "Hva er hovedstaden i Norge?", a: "Oslo"},
+                {q: "Hva er roten av 64?", a: "8"}
+            ];
+        }
     }
 
-    function save() { localStorage.setItem('ultimateOS_v2', JSON.stringify(state)); }
+    function save() { localStorage.setItem('ultimateOS_v3', JSON.stringify(state)); }
 
     // --- INIT ---
     updateGlobalUI();
@@ -496,11 +497,10 @@
         if(document.querySelectorAll('.mob-btn')[map[id]]) document.querySelectorAll('.mob-btn')[map[id]].classList.add('active');
     }
 
-    // --- SCHEDULE LOGIC ---
+    // --- SCHEDULE ---
     function renderSchedule() {
         const grid = document.getElementById('schGrid');
         grid.innerHTML = '<div class="sch-header">Tid</div><div class="sch-header">Man</div><div class="sch-header">Tir</div><div class="sch-header">Ons</div><div class="sch-header">Tor</div><div class="sch-header">Fre</div>';
-        
         const times = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00"];
         const days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
         const today = new Date().toString().split(' ')[0];
@@ -515,34 +515,33 @@
             });
         });
     }
+    function editSch(key) { const sub = prompt("Fag:"); if(sub) { state.schedule[key] = sub; save(); renderSchedule(); } }
 
-    function editSch(key) {
-        const sub = prompt("Fag:");
-        if(sub) { state.schedule[key] = sub; save(); renderSchedule(); }
-    }
-
-    // --- FLASHCARDS LOGIC (FIXED) ---
+    // --- FLASHCARDS (FIXED LOGIC) ---
     let cardIdx = 0;
     
     function renderCard() {
         if(!state.flashcards || state.flashcards.length === 0) {
-            document.getElementById('fcQuestion').innerText = "Ingen kort. Lag nytt!";
-            document.getElementById('fcAnswer').innerText = "Trykk +";
+            document.getElementById('fcQuestion').innerText = "Ingen kort.";
+            document.getElementById('fcAnswer').innerText = "Lag nytt.";
             return;
         }
+        // Ensure index is valid
+        if(cardIdx >= state.flashcards.length) cardIdx = 0;
+        
         document.getElementById('fcQuestion').innerText = state.flashcards[cardIdx].q;
         document.getElementById('fcAnswer').innerText = state.flashcards[cardIdx].a;
         document.querySelector('.flashcard-container').classList.remove('flipped');
     }
     
     function nextCard() {
-        if(state.flashcards.length === 0) return;
+        if(!state.flashcards.length) return;
         cardIdx = (cardIdx + 1) % state.flashcards.length;
         renderCard();
     }
     
     function prevCard() {
-        if(state.flashcards.length === 0) return;
+        if(!state.flashcards.length) return;
         cardIdx = (cardIdx - 1 + state.flashcards.length) % state.flashcards.length;
         renderCard();
     }
@@ -553,10 +552,8 @@
         if(q && a) { state.flashcards.push({q, a}); save(); cardIdx = state.flashcards.length-1; renderCard(); }
     }
 
-    // --- ZEN MODE ---
+    // --- ZEN & CALC ---
     function toggleZen() { document.body.classList.toggle('zen-mode'); }
-
-    // --- CALCULATOR ---
     let expression = "";
     function add(v) { expression += v; document.getElementById('calcDisp').innerText = expression; }
     function cls() { expression = ""; document.getElementById('calcDisp').innerText = "0"; }
@@ -581,7 +578,7 @@
     function editName() { const n = prompt("Navn:"); if(n) { state.name=n; save(); updateGlobalUI(); } }
     function setTheme(t) { state.theme = t; save(); updateGlobalUI(); }
 
-    // --- AI SCANNER (FIXED BUTTON) ---
+    // --- AI SCANNER (ROBUST FIX) ---
     let tempTask = "";
     function startAiFlow() {
         const v = document.getElementById('taskInput').value;
@@ -592,6 +589,7 @@
         document.getElementById('scanView').style.display = 'none';
         document.getElementById('aiConfirm').style.display = 'none';
         document.getElementById('ai-msg').innerText = `Analyserer mål: "${v}"`;
+        document.getElementById('ai-msg').style.color = "var(--text-muted)";
     }
     
     document.getElementById('fileIn').addEventListener('change', (e) => {
@@ -601,6 +599,7 @@
                 document.getElementById('uploadBtn').style.display = 'none';
                 document.getElementById('scanView').style.display = 'block';
                 document.getElementById('scanPreview').src = evt.target.result;
+                // Wait 1.5s for "scan", then show confirm
                 setTimeout(() => { 
                     document.getElementById('aiConfirm').style.display = 'block'; 
                     document.getElementById('ai-msg').innerText = "VERIFISERT."; 
@@ -618,7 +617,7 @@
         save(); 
         updateGlobalUI(); 
         closeAi(); 
-        confetti({ particleCount: 150, spread: 100 }); 
+        try { confetti({ particleCount: 150, spread: 100 }); } catch(e){}
         try { document.getElementById('sfx-success').play(); } catch(e){}
     }
     
@@ -645,6 +644,7 @@
         tRun = !tRun;
     }
 
+    // Chart
     new Chart(document.getElementById('chart'), {
         type: 'line',
         data: { labels: ['M','T','O','T','F','L','S'], datasets: [{ label:'XP', data:[100, 450, 300, 600, 400, 550, 800], borderColor:'#6366f1', borderWidth:3, tension:0.4 }] },
