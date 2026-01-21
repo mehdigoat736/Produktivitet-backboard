@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>mehdi.co // Guided OS</title>
+    <title>mehdi.co // Level Up</title>
     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -81,7 +81,7 @@
         .setup-input { background: transparent; border: none; border-bottom: 2px solid var(--glass-border); color: white; font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; text-align: center; padding: 10px; width: 250px; outline: none; transition: 0.3s; }
         .setup-input:focus { border-color: var(--primary); text-shadow: 0 0 10px var(--primary); }
 
-        /* --- STEP-BY-STEP TOUR OVERLAY --- */
+        /* --- TOUR OVERLAY --- */
         #tour-overlay {
             position: fixed; inset: 0; background: rgba(3, 7, 18, 0.85); z-index: 15000;
             display: none; opacity: 0; transition: opacity 0.5s; cursor: pointer;
@@ -90,22 +90,11 @@
         #tour-overlay.active { display: block; opacity: 1; }
 
         .hud-item {
-            position: absolute; display: none; align-items: flex-start; gap: 15px; /* Default hidden */
+            position: absolute; display: none; align-items: flex-start; gap: 15px; 
             opacity: 0; transform: translateX(-20px);
         }
-        .hud-item.visible {
-            display: flex;
-            animation: hudSlideIn 0.5s forwards ease-out;
-        }
-
-        .hud-line-container {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100%; width: 50px;
-        }
-        .hud-dot { width: 8px; height: 8px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 10px var(--primary); }
-        .hud-line { width: 2px; height: 100%; background: linear-gradient(to bottom, var(--primary), transparent); opacity: 0.5; }
+        .hud-item.visible { display: flex; animation: hudSlideIn 0.5s forwards ease-out; }
         .hud-connector { position: absolute; left: -60px; top: 15px; width: 60px; height: 1px; background: linear-gradient(90deg, transparent, var(--primary)); }
-
         .hud-card {
             background: rgba(20, 20, 30, 0.9); border: 1px solid var(--primary);
             padding: 15px 20px; border-radius: 4px; max-width: 300px;
@@ -113,27 +102,15 @@
         }
         .hud-card::before { content:''; position:absolute; top:-1px; left:-1px; width:10px; height:10px; border-top:2px solid white; border-left:2px solid white; }
         .hud-card::after { content:''; position:absolute; bottom:-1px; right:-1px; width:10px; height:10px; border-bottom:2px solid white; border-right:2px solid white; }
-
         .hud-title { color: var(--primary); font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 5px; text-transform: uppercase; }
         .hud-desc { color: var(--text-muted); font-size: 0.85rem; line-height: 1.4; margin: 0; }
-
-        /* Positioning */
         #hud-nav { top: 120px; left: 320px; }
         #hud-timer { top: 20%; right: 20%; transform: none; }
         #hud-tasks { bottom: 150px; left: 320px; }
-        
-        .tour-center-msg {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            text-align: center; width: 100%; pointer-events: none;
-        }
-        .tour-center-text {
-            font-family: 'JetBrains Mono', monospace; color: white; background: var(--primary);
-            padding: 10px 20px; display: inline-block; font-weight: 700; letter-spacing: 2px;
-            animation: pulseBtn 1.5s infinite; transition: 0.2s;
-        }
+        .tour-center-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 100%; pointer-events: none; }
+        .tour-center-text { font-family: 'JetBrains Mono', monospace; color: white; background: var(--primary); padding: 10px 20px; display: inline-block; font-weight: 700; letter-spacing: 2px; animation: pulseBtn 1.5s infinite; transition: 0.2s; }
         @keyframes pulseBtn { 0% { opacity:1; } 50% { opacity:0.5; } 100% { opacity:1; } }
         @keyframes hudSlideIn { to { opacity: 1; transform: translateX(0); } }
-
 
         /* --- APP LAYOUT --- */
         .app-shell { display: flex; height: 100%; width: 100%; position: relative; z-index: 1; opacity: 0; transition: opacity 1s ease 0.5s; }
@@ -154,20 +131,26 @@
         .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
         .glass-card { background: var(--glass-surface); border: 1px solid var(--glass-border); border-radius: 24px; padding: 25px; backdrop-filter: blur(15px); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6); transition: transform 0.3s; position: relative; overflow: visible; }
 
-        /* Sound Mixer */
-        .sound-mixer { display: flex; gap: 12px; margin-top: 15px; justify-content: center; }
-        .sound-btn { width: 55px; height: 55px; border-radius: 16px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.03); color: var(--text-muted); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; font-size: 1.2rem; }
-        .sound-btn:hover { background: rgba(255,255,255,0.1); color: white; transform: translateY(-3px); }
-        .sound-btn.active { background: rgba(99, 102, 241, 0.2); color: var(--primary); border-color: var(--primary); box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); }
-        .sound-label { font-size: 0.6rem; margin-top: 4px; font-weight: 700; text-transform: uppercase; }
-
-        /* Schedule */
+        /* --- SMART SCHEDULE (ACTIVE NEON) --- */
         .schedule-grid { display: grid; grid-template-columns: 80px repeat(5, 1fr); gap: 10px; overflow-x: auto; padding-bottom: 10px; min-width: 600px; }
         .sch-header { font-weight: 700; color: var(--text-muted); text-align: center; padding: 10px; }
         .sch-time { color: var(--text-muted); font-size: 0.8rem; display: flex; align-items: center; justify-content: center; }
-        .sch-cell { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; padding: 10px; min-height: 80px; font-size: 0.9rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; text-align: center; word-break: break-word; }
+        .sch-cell {
+            background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
+            border-radius: 12px; padding: 10px; min-height: 80px; font-size: 0.9rem;
+            cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; text-align: center; word-break: break-word;
+        }
         .sch-cell:hover { background: rgba(255,255,255,0.08); border-color: var(--primary); }
-        .sch-cell.active-day { background: rgba(99, 102, 241, 0.1); border-color: var(--primary); }
+        
+        /* THIS IS THE SMART NEON STYLE */
+        .sch-cell.current-active { 
+            background: rgba(99, 102, 241, 0.15); 
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 20px var(--primary), inset 0 0 20px rgba(99, 102, 241, 0.2);
+            animation: pulseNeon 2s infinite;
+            z-index: 2;
+        }
+        @keyframes pulseNeon { 0% { box-shadow: 0 0 15px var(--primary); } 50% { box-shadow: 0 0 30px var(--primary); } 100% { box-shadow: 0 0 15px var(--primary); } }
 
         /* Overlay */
         #breath-overlay { position: fixed; inset: 0; background: #000; z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 1s ease; }
@@ -180,13 +163,35 @@
         @keyframes inhale { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(3.5); opacity: 1; } }
         @keyframes exhale { 0% { transform: scale(3.5); opacity: 1; } 100% { transform: scale(1); opacity: 0.5; } }
 
-        .success-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; z-index: 9999; opacity: 0; transition: opacity 0.3s; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); }
-        .success-content { text-align: center; transform: scale(0.8); opacity: 0; }
-        .success-icon { font-size: 8rem; color: var(--success); text-shadow: 0 0 80px var(--success); margin-bottom: 20px; filter: drop-shadow(0 0 20px var(--success)); }
+        /* --- XP & LEVEL UP OVERLAY --- */
+        .success-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            pointer-events: none; z-index: 9999; opacity: 0; transition: opacity 0.3s;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
+        }
+        .success-content { text-align: center; transform: scale(0.8); opacity: 0; display:flex; flex-direction:column; align-items:center; }
+        .success-icon { font-size: 8rem; color: var(--success); text-shadow: 0 0 80px var(--success); margin-bottom: 10px; filter: drop-shadow(0 0 20px var(--success)); }
         .success-text { font-size: 4rem; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 4px; text-shadow: 0 0 40px var(--success); }
+        .xp-text { font-size: 2.5rem; font-weight: 800; color: var(--accent); margin-top: 10px; animation: floatUp 1s forwards; opacity:0; }
+        
+        .level-progress-container { width: 300px; height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; margin-top: 20px; overflow: hidden; position: relative; }
+        .level-progress-bar { width: 0%; height: 100%; background: var(--primary); box-shadow: 0 0 10px var(--primary); transition: width 1s cubic-bezier(0.22, 1, 0.36, 1); }
+        .level-text { color: var(--text-muted); margin-top: 10px; font-family: 'JetBrains Mono', monospace; }
+
         .success-overlay.animate-boom { opacity: 1; }
         .success-overlay.animate-boom .success-content { animation: popInSuccess 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        .success-overlay.animate-boom .xp-text { animation: floatUp 0.8s 0.2s forwards; }
+        
         @keyframes popInSuccess { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes floatUp { 0% { transform: translateY(20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+
+        /* Level Badge */
+        .level-badge {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white; padding: 5px 12px; border-radius: 12px; font-weight: 800; font-size: 0.8rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); margin-top: 5px;
+        }
 
         /* Timer */
         .timer-display { font-size: 5.5rem; font-weight: 800; text-align: center; margin: 20px 0; font-variant-numeric: tabular-nums; letter-spacing: -4px; background: linear-gradient(180deg, #fff, var(--text-muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 20px rgba(255,255,255,0.1)); }
@@ -289,6 +294,12 @@
         <div class="success-content">
             <i class="ph ph-check-circle success-icon"></i>
             <div class="success-text">GODT JOBBA!</div>
+            <div class="xp-text">+25 XP</div>
+            
+            <div class="level-progress-container">
+                <div class="level-progress-bar" id="xp-bar-overlay"></div>
+            </div>
+            <div class="level-text" id="level-text-overlay">LEVEL 1: 50 / 100 XP</div>
         </div>
     </div>
 
@@ -315,7 +326,7 @@
                 <img id="miniAv" src="" style="width:40px;height:40px;border-radius:50%;background:#000;object-fit:cover;">
                 <div>
                     <div id="miniName" style="font-weight:700; font-size:0.9rem;">Elev</div>
-                    <div style="font-size:0.75rem; color:var(--primary);">Online</div>
+                    <div id="miniLevel" class="level-badge">LVL 1</div>
                 </div>
             </div>
         </aside>
@@ -354,7 +365,7 @@
                     </div>
 
                     <div class="glass-card">
-                        <h3 style="margin:0 0 15px 0;">XP Progresjon</h3>
+                        <h3 style="margin:0 0 15px 0;">Rank & XP</h3>
                         <div style="height:150px;"><canvas id="chart"></canvas></div>
                     </div>
                 </div>
@@ -365,7 +376,7 @@
                 <div class="glass-card" style="overflow:hidden;">
                     <div class="schedule-grid" id="schGrid"></div>
                 </div>
-                <p style="text-align:center; color:var(--text-muted); margin-top:10px;">Klikk på en time for å endre fag.</p>
+                <p style="text-align:center; color:var(--text-muted); margin-top:10px;">Klikk på en time for å endre fag. Aktiv time lyser opp.</p>
             </section>
 
             <section id="tools" class="section">
@@ -738,8 +749,8 @@
 
     // --- APP CORE ---
     let state = { name: "Student", theme: "", xp: 0, avatar: "std1", tasks: [], notes: "", schedule: {} };
-    if(localStorage.getItem('StudentOS_Finalv6')) { state = {...state, ...JSON.parse(localStorage.getItem('StudentOS_Finalv6'))}; }
-    function save() { localStorage.setItem('StudentOS_Finalv6', JSON.stringify(state)); }
+    if(localStorage.getItem('StudentOS_LevelUp')) { state = {...state, ...JSON.parse(localStorage.getItem('StudentOS_LevelUp'))}; }
+    function save() { localStorage.setItem('StudentOS_LevelUp', JSON.stringify(state)); }
 
     // --- INIT ---
     updateGlobalUI(); renderSchedule();
@@ -751,9 +762,15 @@
         document.getElementById('greet').innerText = `Hei, ${state.name}.`;
         document.getElementById('miniName').innerText = state.name;
         document.getElementById('bigName').innerText = state.name;
+        
         let avUrl = state.avatar.startsWith('data:image') ? state.avatar : `https://api.dicebear.com/7.x/notionists/svg?seed=${state.avatar}`;
         document.getElementById('miniAv').src = avUrl;
         document.getElementById('bigAv').src = avUrl;
+        
+        // Calculate Level
+        const level = Math.floor(state.xp / 100) + 1;
+        document.getElementById('miniLevel').innerText = `LVL ${level}`;
+        
         renderTasks();
     }
 
@@ -772,14 +789,23 @@
         grid.innerHTML = '<div class="sch-header">Tid</div><div class="sch-header">Man</div><div class="sch-header">Tir</div><div class="sch-header">Ons</div><div class="sch-header">Tor</div><div class="sch-header">Fre</div>';
         const times = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00"];
         const days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
-        const today = new Date().toString().split(' ')[0];
+        const today = new Date();
+        const currentDayIndex = today.getDay(); // 1 = Mon
+        const currentHour = today.getHours();
+
         times.forEach(t => {
             grid.innerHTML += `<div class="sch-time">${t}</div>`;
-            days.forEach(d => {
+            days.forEach((d, index) => {
                 const key = `${d}-${t}`;
                 const subject = state.schedule[key] || "+";
-                const isToday = d === today ? 'active-day' : '';
-                grid.innerHTML += `<div class="sch-cell ${isToday}" onclick="editSch('${key}')">${subject}</div>`;
+                let activeClass = "";
+                
+                // Smart Neon Active Logic
+                const dayMatch = (index + 1) === currentDayIndex;
+                const timeMatch = t.startsWith(currentHour.toString().padStart(2, '0'));
+                if (dayMatch && timeMatch) activeClass = "current-active";
+
+                grid.innerHTML += `<div class="sch-cell ${activeClass}" onclick="editSch('${key}')">${subject}</div>`;
             });
         });
     }
@@ -809,25 +835,38 @@
     function editName() { const n = prompt("Navn:"); if(n) { state.name=n; save(); updateGlobalUI(); } }
     function setTheme(t) { state.theme = t; save(); updateGlobalUI(); }
 
-    // Tasks & Animation
+    // Tasks & Gamification
     function triggerSuccessAnimation() {
         const overlay = document.getElementById('success-animation');
         overlay.classList.remove('animate-boom');
+        
+        // Update XP Bar in overlay
+        const currentProgress = state.xp % 100;
+        const level = Math.floor(state.xp / 100) + 1;
+        document.getElementById('xp-bar-overlay').style.width = currentProgress + "%";
+        document.getElementById('level-text-overlay').innerText = `LEVEL ${level}: ${currentProgress} / 100 XP`;
+
         void overlay.offsetWidth; overlay.classList.add('animate-boom');
         playSuccessSound();
-        setTimeout(() => { overlay.classList.remove('animate-boom'); }, 1500);
+        setTimeout(() => { overlay.classList.remove('animate-boom'); }, 2000);
     }
+
     function addTask() {
         const val = document.getElementById('taskInput').value;
         if(!val) return;
         state.tasks.unshift({ txt: val, id: Date.now() }); 
-        state.xp += 50; save(); renderTasks();
+        save(); renderTasks();
         document.getElementById('taskInput').value = "";
     }
+
     function removeTask(id) {
-        triggerSuccessAnimation();
-        setTimeout(() => { state.tasks = state.tasks.filter(t => t.id !== id); save(); renderTasks(); }, 1000);
+        state.xp += 25; // Add XP
+        save();
+        updateGlobalUI(); // Update badges
+        triggerSuccessAnimation(); // Show Animation
+        setTimeout(() => { state.tasks = state.tasks.filter(t => t.id !== id); save(); renderTasks(); }, 1500);
     }
+
     function renderTasks() {
         const l = document.getElementById('taskList'); l.innerHTML = "";
         state.tasks.forEach(t => { 
@@ -862,7 +901,7 @@
         breathCircle.style.animation = "none";
     }
 
-    // Timer (1 min Interval)
+    // Timer
     let defaultDuration = 25;
     let tTime = defaultDuration * 60;
     let tInt, tRun = false;
