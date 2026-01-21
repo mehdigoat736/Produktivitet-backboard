@@ -3,541 +3,473 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>mehdi.co // Red Protocol</title>
+    <title>mehdi.co // Blue OS</title>
     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;800&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
     
     <style>
-        /* --- RED PROTOCOL DESIGN SYSTEM --- */
+        /* --- BLUE APP DESIGN SYSTEM --- */
         :root {
-            --bg-color: #050505;
-            --surface: #0a0a0a;
-            --surface-border: #333;
-            --primary: #ff003c; /* Cyber Red */
-            --primary-dim: rgba(255, 0, 60, 0.2);
-            --text-main: #ffffff;
-            --text-muted: #888;
-            --glow: 0 0 20px var(--primary);
-            --font-ui: 'Rajdhani', sans-serif;
-            --font-code: 'JetBrains Mono', monospace;
+            --bg-color: #f3f4f6;       /* Lys grå/hvit bakgrunn */
+            --sidebar-bg: #ffffff;     /* Hvit sidebar */
+            --card-bg: #ffffff;        /* Hvite kort */
+            
+            --primary: #3b82f6;        /* Klar Blå */
+            --primary-light: #eff6ff;  /* Veldig lys blå */
+            --primary-hover: #2563eb;  /* Mørkere blå for hover */
+            
+            --text-main: #1e293b;      /* Mørk blågrå tekst */
+            --text-muted: #64748b;     /* Dempet tekst */
+            
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            
+            --radius-md: 12px;
+            --radius-lg: 20px;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
         
         body {
-            margin: 0; font-family: var(--font-ui);
+            margin: 0; font-family: 'Inter', sans-serif;
             background-color: var(--bg-color); color: var(--text-main);
             height: 100vh; overflow: hidden;
-            letter-spacing: 1px;
+            transition: opacity 0.5s ease;
         }
 
-        /* --- CRT SCANLINE EFFECT --- */
-        body::after {
-            content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 2px, 3px 100%; pointer-events: none; z-index: 99999;
-        }
-
-        /* --- BACKGROUND PARTICLES --- */
-        #neural-canvas {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0; pointer-events: none; opacity: 0.4;
-        }
-
-        /* --- THE AI CORE (NEW ROBOT) --- */
+        /* --- 1. CINEMATIC INTRO --- */
         #intro-screen {
-            position: fixed; inset: 0; background: #000; z-index: 30000;
+            position: fixed; inset: 0; background: #ffffff; z-index: 50000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 1s ease;
+            padding: 40px; text-align: center;
+            transition: opacity 0.8s ease-in-out;
         }
         #intro-screen.hidden { opacity: 0; pointer-events: none; }
 
-        .ai-core-container {
-            width: 150px; height: 150px; display: flex; align-items: center; justify-content: center;
-            position: relative; margin-bottom: 40px;
+        .brand-logo {
+            font-size: 2rem; font-weight: 800; letter-spacing: -1px; color: var(--text-main); margin-bottom: 60px;
+        }
+        .brand-logo span { color: var(--primary); }
+
+        .quote-box {
+            max-width: 700px; min-height: 120px; display: flex; flex-direction: column; justify-content: center;
+        }
+        .quote-text {
+            font-size: 1.8rem; font-weight: 500; color: var(--text-main); line-height: 1.4;
+            opacity: 0; transform: translateY(20px);
+            animation: fadeUp 1s ease-out forwards 0.5s;
+        }
+        .quote-author {
+            margin-top: 20px; font-size: 1rem; color: var(--text-muted); font-weight: 600;
+            opacity: 0; animation: fadeUp 1s ease-out forwards 1.5s;
+        }
+
+        .intro-btn {
+            margin-top: 60px; padding: 16px 40px; background: var(--primary); color: white;
+            border: none; border-radius: 30px; font-size: 1rem; font-weight: 600; cursor: pointer;
+            box-shadow: var(--shadow-md); transition: all 0.2s; opacity: 0;
+            animation: fadeUp 1s ease-out forwards 2.5s;
+        }
+        .intro-btn:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+
+        /* --- 2. SETUP SCREEN (Clean App Style) --- */
+        #setup-screen {
+            position: fixed; inset: 0; background: var(--bg-color); z-index: 40000;
+            display: none; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.5s ease;
+        }
+        #setup-screen.visible { display: flex; opacity: 1; }
+
+        .setup-card {
+            background: var(--card-bg); width: 100%; max-width: 450px;
+            padding: 50px; border-radius: 24px; box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+
+        .avatar-upload-wrapper {
+            width: 120px; height: 120px; margin: 0 auto 30px auto; position: relative;
+            cursor: pointer; group;
+        }
+        .setup-avatar {
+            width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
+            background: var(--primary-light); border: 4px solid white;
+            box-shadow: var(--shadow-md); transition: 0.3s;
+        }
+        .camera-icon {
+            position: absolute; bottom: 5px; right: 5px; width: 36px; height: 36px;
+            background: var(--primary); color: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            border: 3px solid white; font-size: 1.1rem;
         }
         
-        /* The Red Eye */
-        .ai-core {
-            width: 60px; height: 60px; background: var(--primary);
-            border-radius: 50%;
-            box-shadow: 0 0 50px var(--primary), inset 0 0 20px #fff;
-            animation: pulseEye 3s infinite ease-in-out;
-            z-index: 2;
-        }
-        
-        /* Rotating Rings */
-        .ai-ring {
-            position: absolute; border: 1px solid var(--primary); border-radius: 50%;
-            box-shadow: 0 0 10px var(--primary-dim); opacity: 0.7;
-        }
-        .ring-1 { width: 100px; height: 100px; border-top-color: transparent; border-bottom-color: transparent; animation: spin 4s linear infinite; }
-        .ring-2 { width: 130px; height: 130px; border-left-color: transparent; border-right-color: transparent; animation: spinRev 6s linear infinite; }
-
-        .message-box {
-            font-family: var(--font-code); color: var(--primary); font-size: 1.1rem;
-            text-align: center; min-height: 2em; text-shadow: 0 0 10px var(--primary);
-            opacity: 1; transition: opacity 0.5s ease; width: 80%; max-width: 600px;
-        }
-        .message-box.fade-out { opacity: 0; }
-
-        /* Setup Panel */
-        #setup-panel {
-            display: none; flex-direction: column; align-items: center; gap: 30px;
-            width: 100%; opacity: 0; transition: opacity 1s;
-        }
-        #setup-panel.visible { display: flex; opacity: 1; }
-
+        .input-label { display: block; text-align: left; font-size: 0.9rem; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
         .setup-input {
-            background: transparent; border: none; border-bottom: 2px solid var(--primary);
-            color: white; font-family: var(--font-ui); font-size: 2rem; font-weight: 700;
-            text-align: center; padding: 10px; width: 300px; outline: none;
-            text-transform: uppercase; text-shadow: 0 0 10px rgba(255,255,255,0.5);
+            width: 100%; padding: 14px 16px; border-radius: 12px; border: 2px solid var(--border);
+            font-size: 1rem; color: var(--text-main); outline: none; transition: 0.2s;
+            background: #f9fafb;
         }
-        
-        .start-btn {
-            background: var(--primary); color: black; border: none; padding: 15px 50px;
-            font-family: var(--font-code); font-weight: 800; font-size: 1.2rem;
-            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
-            cursor: pointer; transition: 0.2s; box-shadow: var(--glow);
-            text-transform: uppercase; letter-spacing: 2px;
-        }
-        .start-btn:hover { background: white; box-shadow: 0 0 40px white; }
+        .setup-input:focus { border-color: var(--primary); background: white; }
 
-        /* --- APP LAYOUT --- */
-        .app-shell { display: flex; height: 100%; width: 100%; position: relative; z-index: 1; opacity: 0; transition: opacity 1s; }
+        /* --- 3. MAIN APP SHELL --- */
+        .app-shell { display: flex; height: 100%; width: 100%; opacity: 0; transition: opacity 0.8s; }
         .app-shell.visible { opacity: 1; }
 
+        /* Sidebar */
         .sidebar {
-            width: 280px; background: rgba(10, 10, 10, 0.8); backdrop-filter: blur(20px);
-            border-right: 1px solid var(--surface-border); padding: 30px;
-            display: flex; flex-direction: column; gap: 15px;
+            width: 260px; background: var(--sidebar-bg); border-right: 1px solid var(--border);
+            padding: 30px 20px; display: flex; flex-direction: column; gap: 8px;
         }
         
-        .logo-area {
-            font-family: var(--font-code); font-size: 1.5rem; font-weight: 800; 
-            color: white; margin-bottom: 40px; letter-spacing: -1px;
-            text-shadow: 0 0 15px rgba(255,255,255,0.3);
-        }
-        .logo-area span { color: var(--primary); text-shadow: 0 0 15px var(--primary); }
-
         .nav-btn {
-            background: transparent; border: 1px solid transparent; color: var(--text-muted);
-            padding: 15px 20px; cursor: pointer; text-align: left;
-            font-family: var(--font-ui); font-size: 1.1rem; font-weight: 700;
-            display: flex; align-items: center; gap: 15px; text-transform: uppercase;
-            transition: 0.3s; position: relative; overflow: hidden;
+            background: transparent; border: none; color: var(--text-muted);
+            padding: 12px 16px; border-radius: 10px; cursor: pointer; text-align: left;
+            font-size: 0.95rem; font-weight: 500; display: flex; align-items: center; gap: 12px;
+            transition: all 0.2s;
         }
-        .nav-btn:hover { color: white; border-color: var(--primary-dim); background: rgba(255,0,60,0.05); }
-        .nav-btn.active { 
-            color: var(--primary); border-color: var(--primary); 
-            background: rgba(255,0,60,0.1); box-shadow: inset 5px 0 0 var(--primary);
+        .nav-btn:hover { background: var(--primary-light); color: var(--primary); }
+        .nav-btn.active { background: var(--primary); color: white; font-weight: 600; box-shadow: var(--shadow-sm); }
+        .nav-btn i { font-size: 1.25rem; }
+
+        .profile-mini {
+            margin-top: auto; padding: 16px; display: flex; align-items: center; gap: 12px;
+            background: var(--primary-light); border-radius: 16px;
         }
-        .nav-btn i { font-size: 1.4rem; }
+        .profile-mini img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .profile-mini div { display: flex; flex-direction: column; }
+        .profile-name { font-size: 0.9rem; font-weight: 700; color: var(--text-main); }
+        .profile-role { font-size: 0.75rem; color: var(--primary); font-weight: 600; }
 
         /* Main Content */
-        .main-view { flex: 1; overflow-y: auto; padding: 40px; position: relative; }
-        .section { display: none; animation: glitchIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .main-view { flex: 1; overflow-y: auto; padding: 40px; background: var(--bg-color); }
+        .section { display: none; animation: fadeIn 0.4s ease-out; }
         .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Cards */
-        .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; }
-        .glass-card {
-            background: rgba(10, 10, 10, 0.7); border: 1px solid var(--surface-border);
-            padding: 30px; position: relative;
-            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+        .page-header { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+        .page-title { font-size: 1.8rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; }
+        
+        /* Grid & Cards */
+        .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; }
+        .app-card {
+            background: var(--card-bg); border-radius: var(--radius-lg); padding: 24px;
+            box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+            position: relative; transition: transform 0.2s;
         }
-        /* Tech Corners */
-        .glass-card::before { content:''; position: absolute; top: 0; left: 0; width: 20px; height: 20px; border-top: 2px solid var(--primary); border-left: 2px solid var(--primary); }
-        .glass-card::after { content:''; position: absolute; bottom: 0; right: 0; width: 20px; height: 20px; border-bottom: 2px solid var(--primary); border-right: 2px solid var(--primary); }
+        .app-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .card-title { font-size: 1rem; font-weight: 700; color: var(--text-main); }
 
-        /* --- TASKS (CLEAN & COOL) --- */
+        /* --- TASKS (IMPROVED) --- */
+        .task-input-area { display: flex; gap: 12px; margin-bottom: 24px; }
+        .task-input {
+            flex: 1; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border);
+            background: #f9fafb; outline: none; font-size: 0.95rem;
+        }
+        .task-input:focus { border-color: var(--primary); background: white; }
+        
+        .add-btn {
+            background: var(--primary); color: white; border: none; padding: 0 24px;
+            border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.2s;
+        }
+        .add-btn:hover { background: var(--primary-hover); }
+
         .task-list-item {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 20px; background: #000; border: 1px solid var(--surface-border);
-            margin-bottom: 15px; transition: 0.3s; position: relative;
+            padding: 16px; background: white; border: 1px solid var(--border);
+            border-radius: 12px; margin-bottom: 12px; transition: 0.2s;
         }
-        .task-list-item:hover { border-color: var(--primary); transform: translateX(5px); }
+        .task-list-item:hover { border-color: var(--primary); box-shadow: var(--shadow-sm); }
         
-        .task-text { font-family: var(--font-code); color: white; font-size: 1rem; flex: 1; }
+        .task-text { font-weight: 500; color: var(--text-main); font-size: 0.95rem; flex: 1; margin-right: 20px; }
         
-        .task-actions { display: flex; gap: 15px; }
+        .task-actions { display: flex; gap: 8px; }
         
-        .icon-btn {
-            background: transparent; border: 1px solid var(--surface-border); color: var(--text-muted);
-            width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.2s;
+        .btn-action {
+            height: 32px; padding: 0 12px; border-radius: 8px; border: none;
+            font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;
+            transition: 0.2s;
         }
-        .icon-btn.delete:hover { border-color: red; color: red; box-shadow: 0 0 15px red; }
-        .icon-btn.check:hover { border-color: var(--primary); color: var(--primary); box-shadow: 0 0 15px var(--primary); background: var(--primary); color: black; }
+        .btn-delete { background: #fef2f2; color: #ef4444; border: 1px solid #fee2e2; }
+        .btn-delete:hover { background: #fee2e2; border-color: #fecaca; }
+        
+        .btn-complete { background: #eff6ff; color: var(--primary); border: 1px solid #dbeafe; }
+        .btn-complete:hover { background: #dbeafe; border-color: #bfdbfe; }
 
         /* Timer */
-        .timer-display { 
-            font-family: var(--font-code); font-size: 6rem; font-weight: 700; 
-            color: white; text-align: center; margin: 10px 0;
-            text-shadow: 0 0 20px var(--primary);
-        }
-        .time-controls { display: flex; gap: 10px; justify-content: center; margin-bottom: 30px; }
-        .time-btn { 
-            background: black; border: 1px solid var(--surface-border); color: var(--text-muted); 
-            padding: 8px 16px; font-family: var(--font-code); cursor: pointer; transition: 0.2s;
-        }
-        .time-btn:hover { border-color: white; color: white; }
-        .time-btn.active { border-color: var(--primary); color: var(--primary); box-shadow: 0 0 10px var(--primary); }
+        .timer-display { font-size: 4rem; font-weight: 700; color: var(--text-main); text-align: center; margin: 20px 0; font-variant-numeric: tabular-nums; letter-spacing: -2px; }
+        .time-controls { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; }
+        .chip { background: #f3f4f6; padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
+        .chip:hover { background: #e5e7eb; }
+        .chip.active { background: var(--primary-light); color: var(--primary); border-color: #dbeafe; }
+        .primary-btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.2s; }
+        .primary-btn:hover { background: var(--primary-hover); }
 
-        /* Avatar */
-        .avatar-container { position: relative; width: 120px; height: 120px; margin: 0 auto; cursor: pointer; }
-        .avatar-lg { width: 100%; height: 100%; object-fit: cover; border: 2px solid var(--primary); box-shadow: 0 0 30px var(--primary-dim); filter: grayscale(100%); transition: 0.3s; }
-        .avatar-container:hover .avatar-lg { filter: grayscale(0%); box-shadow: 0 0 50px var(--primary); }
-        .camera-btn { 
-            position: absolute; bottom: -10px; right: -10px; width: 40px; height: 40px; 
-            background: black; border: 1px solid var(--primary); color: var(--primary);
-            display: flex; align-items: center; justify-content: center;
-        }
+        /* Sound Mixer */
+        .sound-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .sound-card { background: #f8fafc; padding: 16px; border-radius: 12px; text-align: center; cursor: pointer; border: 1px solid transparent; transition: 0.2s; }
+        .sound-card:hover { background: #f1f5f9; }
+        .sound-card.active { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+        .sound-card i { font-size: 1.5rem; margin-bottom: 8px; display: block; }
+        .sound-card span { font-size: 0.85rem; font-weight: 600; }
 
-        /* Animations */
-        @keyframes pulseEye { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.9); opacity: 0.8; } }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes spinRev { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
-        @keyframes glitchIn { 0% { opacity:0; transform:translateX(-10px); } 50% { opacity:1; transform:translateX(5px); } 100% { opacity:1; transform:translateX(0); } }
+        /* Schedule */
+        .schedule-wrapper { overflow-x: auto; padding-bottom: 10px; }
+        .schedule-grid { display: grid; grid-template-columns: 60px repeat(5, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; min-width: 600px; }
+        .sch-cell { background: white; padding: 12px; min-height: 70px; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer; transition: 0.2s; }
+        .sch-cell:hover { background: #f8fafc; }
+        .sch-header { background: #f8fafc; font-weight: 600; color: var(--text-muted); padding: 12px; text-align: center; }
+        .sch-active { background: #eff6ff; border: 2px solid var(--primary); z-index: 2; position: relative; font-weight: 700; color: var(--primary); }
 
-        /* Overlays */
-        #breath-overlay, .success-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 40000;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
+        /* Success Overlay */
+        #success-overlay {
+            position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 60000;
+            display: none; align-items: center; justify-content: center;
             opacity: 0; transition: opacity 0.3s;
         }
-        #breath-overlay.active, .success-overlay.animate-boom { display: flex; opacity: 1; }
+        #success-overlay.active { display: flex; opacity: 1; }
+        .success-card-modal {
+            background: white; padding: 40px; border-radius: 30px; text-align: center;
+            box-shadow: var(--shadow-lg); transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid var(--border);
+        }
+        #success-overlay.active .success-card-modal { transform: scale(1); }
         
-        .success-text { font-family: var(--font-ui); font-size: 4rem; font-weight: 900; color: white; text-shadow: 0 0 30px var(--primary); letter-spacing: 5px; margin-top: 20px; text-transform: uppercase; }
-        .xp-text { font-family: var(--font-code); font-size: 2rem; color: var(--primary); }
+        .xp-badge { display: inline-block; background: #dcfce7; color: #166534; padding: 8px 16px; border-radius: 20px; font-weight: 700; margin-top: 15px; }
 
-        .breath-circle { width: 100px; height: 100px; background: transparent; border: 4px solid var(--primary); border-radius: 50%; box-shadow: 0 0 50px var(--primary); }
-        .breath-text { font-size: 2rem; font-weight: 800; color: white; position: absolute; text-shadow: 0 0 20px var(--primary); font-family: var(--font-code); }
-        @keyframes inhale { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(4); opacity: 1; } }
-        @keyframes exhale { 0% { transform: scale(4); opacity: 1; } 100% { transform: scale(1); opacity: 0.5; } }
-
-        /* Mobile Hide */
-        .mobile-nav { display: none; }
     </style>
 </head>
 <body>
-
-    <canvas id="neural-canvas"></canvas>
 
     <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
     <input type="file" id="setupAvatarUpload" accept="image/*" style="display: none;">
 
     <div id="intro-screen">
-        <div class="ai-core-container">
-            <div class="ai-ring ring-1"></div>
-            <div class="ai-ring ring-2"></div>
-            <div class="ai-core"></div>
+        <div class="brand-logo">mehdi<span>.co</span></div>
+        <div class="quote-box">
+            <div class="quote-text" id="intro-quote"></div>
+            <div class="quote-author" id="intro-author"></div>
         </div>
-        
-        <div class="message-box" id="ai-message">INITIALIZING RED PROTOCOL...</div>
-        
-        <div id="setup-panel">
-            <div class="avatar-container" onclick="document.getElementById('setupAvatarUpload').click()">
-                <img id="setupAvPreview" class="avatar-lg" src="https://api.dicebear.com/7.x/bottts/svg?seed=0">
-                <div class="camera-btn"><i class="ph ph-camera"></i></div>
+        <button class="intro-btn" onclick="goToSetup()">Kom i gang</button>
+    </div>
+
+    <div id="setup-screen">
+        <div class="setup-card">
+            <h2 style="margin-bottom: 30px; font-size:1.5rem; font-weight:800;">Sett opp din profil</h2>
+            
+            <div class="avatar-upload-wrapper" onclick="document.getElementById('setupAvatarUpload').click()">
+                <img id="setupAvPreview" class="setup-avatar" src="https://api.dicebear.com/7.x/notionists/svg?seed=student">
+                <div class="camera-icon"><i class="ph ph-camera"></i></div>
             </div>
-            <input type="text" id="setupName" class="setup-input" placeholder="OPERATOR NAME" autocomplete="off">
-            <button class="start-btn" onclick="finalizeLogin()">ACCESS SYSTEM</button>
+            
+            <div style="text-align:left; margin-bottom:24px;">
+                <label class="input-label">Ditt Navn</label>
+                <input type="text" id="setupName" class="setup-input" placeholder="Skriv navnet ditt..." autocomplete="off">
+            </div>
+            
+            <button class="primary-btn" onclick="finalizeLogin()">Gå til Dashboard <i class="ph ph-arrow-right" style="margin-left:8px;"></i></button>
         </div>
     </div>
 
     <div class="app-shell" id="app-shell">
+        
         <aside class="sidebar">
-            <div class="logo-area">mehdi<span>.co</span></div>
+            <div class="logo-area" style="font-size:1.5rem; font-weight:800; margin-bottom:30px;">mehdi<span style="color:var(--primary)">.co</span></div>
+            
             <button class="nav-btn active" onclick="nav('dashboard')"><i class="ph ph-squares-four"></i> Oversikt</button>
             <button class="nav-btn" onclick="nav('schedule')"><i class="ph ph-calendar"></i> Timeplan</button>
             <button class="nav-btn" onclick="nav('tools')"><i class="ph ph-calculator"></i> Verktøy</button>
-            <button class="nav-btn" onclick="nav('tasks')"><i class="ph ph-check-square"></i> Oppdrag</button>
-            <button class="nav-btn" onclick="nav('settings')"><i class="ph ph-gear"></i> System</button>
-            <div style="margin-top:auto; display:flex; gap:15px; align-items:center;">
-                <img id="miniAv" src="" style="width:50px;height:50px;border:1px solid var(--primary); filter:grayscale(100%);">
-                <div><div id="miniName" style="font-weight:700; font-size:1rem; color:white;">UNKNOWN</div><div style="color:var(--primary); font-size:0.7rem; letter-spacing:1px;">ONLINE</div></div>
+            <button class="nav-btn" onclick="nav('tasks')"><i class="ph ph-check-square"></i> Oppgaver</button>
+            <button class="nav-btn" onclick="nav('settings')"><i class="ph ph-gear"></i> Innstillinger</button>
+            
+            <div class="profile-mini">
+                <img id="miniAv" src="">
+                <div>
+                    <div id="miniName" class="profile-name">Navn</div>
+                    <div class="profile-role">Student</div>
+                </div>
             </div>
         </aside>
 
         <main class="main-view">
+            
             <section id="dashboard" class="section active">
-                <h1 id="greet" style="font-weight:800; font-size:3rem; margin-bottom:10px; color:white; text-transform:uppercase;">VELKOMMEN</h1>
-                <p style="color:var(--primary); font-family:var(--font-code); margin-bottom:40px;">SYSTEM STATUS: OPTIMAL</p>
-                
+                <div class="page-header">
+                    <h1 class="page-title" id="greet">Hei, Navn 👋</h1>
+                </div>
+
                 <div class="grid-layout">
-                    <div class="glass-card" style="text-align:center;">
-                        <h3 style="color:var(--text-muted); letter-spacing:2px; font-size:0.9rem;">ACTIVE SESSION</h3>
+                    <div class="app-card" style="text-align:center;">
+                        <div class="card-header"><span class="card-title">Fokus</span><i class="ph ph-timer" style="color:var(--primary);"></i></div>
                         <div class="timer-display" id="timer">25:00</div>
                         <div class="time-controls">
-                            <button class="time-btn" onclick="setDuration(10)">10</button>
-                            <button class="time-btn active" onclick="setDuration(25)">25</button>
-                            <button class="time-btn" onclick="setDuration(45)">45</button>
+                            <div class="chip" onclick="setDuration(10)">10m</div>
+                            <div class="chip active" onclick="setDuration(25)">25m</div>
+                            <div class="chip" onclick="setDuration(45)">45m</div>
                         </div>
-                        <button class="start-btn" id="timerBtn" onclick="toggleTimer()">INITIATE</button>
+                        <button class="primary-btn" id="timerBtn" onclick="toggleTimer()">Start Økt</button>
                     </div>
-                    <div class="glass-card">
-                        <h3 style="color:var(--text-muted); letter-spacing:2px; font-size:0.9rem;">PERFORMANCE</h3>
-                        <div style="height:200px;"><canvas id="chart"></canvas></div>
+
+                    <div class="app-card">
+                        <div class="card-header"><span class="card-title">Lyd</span><i class="ph ph-speaker-high"></i></div>
+                        <div class="sound-grid">
+                            <div class="sound-card" onclick="toggleNoise('pink', this)">
+                                <i class="ph ph-waves"></i><span>Fokus (Pink)</span>
+                            </div>
+                            <div class="sound-card" onclick="toggleNoise('brown', this)">
+                                <i class="ph ph-cloud-rain"></i><span>Dyp (Brown)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="app-card">
+                        <div class="card-header"><span class="card-title">Aktivitet</span></div>
+                        <div style="height:150px;"><canvas id="chart"></canvas></div>
                     </div>
                 </div>
             </section>
 
             <section id="schedule" class="section">
-                <h1 style="color:white; text-transform:uppercase;">Tidslinje</h1>
-                <div class="glass-card" style="overflow:hidden;">
-                    <div class="schedule-grid" id="schGrid"></div>
+                <div class="page-header"><h1 class="page-title">Ukeplan</h1></div>
+                <div class="app-card">
+                    <div class="schedule-wrapper">
+                        <div class="schedule-grid" id="schGrid"></div>
+                    </div>
                 </div>
             </section>
 
             <section id="tools" class="section">
-                <h1 style="color:white; text-transform:uppercase;">Verktøy</h1>
+                <div class="page-header"><h1 class="page-title">Verktøy</h1></div>
                 <div class="grid-layout">
-                    <div class="glass-card" style="max-width: 400px;">
-                        <div class="calc-wrapper">
-                            <div class="calc-screen" id="calcDisp">0</div>
-                            <div class="calc-grid">
-                                <button class="calc-key sci" onclick="add('sin(')">sin</button><button class="calc-key sci" onclick="add('cos(')">cos</button><button class="calc-key sci" onclick="add('tan(')">tan</button><button class="calc-key sci" onclick="add('sqrt(')">√</button>
-                                <button class="calc-key" onclick="add('7')">7</button><button class="calc-key" onclick="add('8')">8</button><button class="calc-key" onclick="add('9')">9</button><button class="calc-key op" onclick="add('/')">/</button>
-                                <button class="calc-key" onclick="add('4')">4</button><button class="calc-key" onclick="add('5')">5</button><button class="calc-key" onclick="add('6')">6</button><button class="calc-key op" onclick="add('*')">*</button>
-                                <button class="calc-key" onclick="add('1')">1</button><button class="calc-key" onclick="add('2')">2</button><button class="calc-key" onclick="add('3')">3</button><button class="calc-key op" onclick="add('-')">-</button>
-                                <button class="calc-key" style="color:var(--primary);" onclick="cls()">C</button><button class="calc-key" onclick="add('0')">0</button><button class="calc-key" onclick="add('.')">.</button><button class="calc-key" style="background:var(--primary); color:black;" onclick="solve()">=</button>
-                            </div>
+                    <div class="app-card" style="max-width:350px;">
+                        <input type="text" id="calcDisp" style="width:100%; font-size:2rem; text-align:right; border:none; outline:none; margin-bottom:20px; font-family:monospace;" readonly value="0">
+                        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px;">
+                            <button class="chip" onclick="add('7')">7</button><button class="chip" onclick="add('8')">8</button><button class="chip" onclick="add('9')">9</button><button class="chip" style="color:var(--primary);" onclick="add('/')">/</button>
+                            <button class="chip" onclick="add('4')">4</button><button class="chip" onclick="add('5')">5</button><button class="chip" onclick="add('6')">6</button><button class="chip" style="color:var(--primary);" onclick="add('*')">*</button>
+                            <button class="chip" onclick="add('1')">1</button><button class="chip" onclick="add('2')">2</button><button class="chip" onclick="add('3')">3</button><button class="chip" style="color:var(--primary);" onclick="add('-')">-</button>
+                            <button class="chip" style="color:red;" onclick="cls()">C</button><button class="chip" onclick="add('0')">0</button><button class="chip" onclick="add('.')">.</button><button class="chip" style="background:var(--primary); color:white;" onclick="solve()">=</button>
                         </div>
                     </div>
-                    <div class="glass-card">
-                        <h3 style="color:var(--primary); font-family:var(--font-code);">DATA LOG</h3>
-                        <textarea id="notes" style="width:100%; height:300px; background:black; border:1px solid #333; color:var(--primary); padding:15px; font-family:var(--font-code); resize:none;" placeholder="Enter data..."></textarea>
+                    <div class="app-card">
+                        <textarea id="notes" style="width:100%; height:300px; border:none; outline:none; resize:none; font-family:'Inter', sans-serif; font-size:1rem;" placeholder="Skriv notater her..."></textarea>
                     </div>
                 </div>
             </section>
 
             <section id="tasks" class="section">
-                <h1 style="color:white; text-transform:uppercase;">Aktive Oppdrag</h1>
-                <div class="glass-card" style="max-width:700px;">
-                    <div style="display:flex; gap:15px; margin-bottom:40px;">
-                        <input type="text" id="taskInput" class="setup-input" placeholder="NYTT OPPDRAG" style="text-align:left; font-size:1.2rem; width:100%;">
-                        <button class="start-btn" style="padding:15px 30px;" onclick="addTask()">OK</button>
+                <div class="page-header"><h1 class="page-title">Oppgaver</h1></div>
+                <div class="app-card" style="max-width:700px;">
+                    <div class="task-input-area">
+                        <input type="text" class="task-input" id="taskInput" placeholder="Hva skal gjøres?">
+                        <button class="add-btn" onclick="addTask()">Legg til</button>
                     </div>
                     <div id="taskList"></div>
                 </div>
             </section>
 
             <section id="settings" class="section">
-                <h1 style="color:white; text-transform:uppercase;">System</h1>
-                <div class="glass-card" style="text-align:center; padding-top:40px;">
-                    <div class="avatar-container" onclick="triggerAvatarUpload()">
-                        <img id="bigAv" class="avatar-lg" src="">
-                        <div class="edit-badge"><i class="ph ph-camera"></i></div>
+                <div class="page-header"><h1 class="page-title">Innstillinger</h1></div>
+                <div class="app-card" style="text-align:center; padding:40px;">
+                    <div class="avatar-upload-wrapper" onclick="document.getElementById('avatarUpload').click()">
+                        <img id="bigAv" class="setup-avatar" src="">
+                        <div class="camera-icon"><i class="ph ph-camera"></i></div>
                     </div>
-                    <h2 id="bigName" style="margin:20px 0 5px 0; color:white; font-family:var(--font-code);">UNKNOWN</h2>
-                    <div style="color:var(--primary); letter-spacing:2px; font-weight:700;">OPERATOR</div>
-                    <div style="margin-top:30px;">
-                        <button class="start-btn" style="background:transparent; border:1px solid var(--primary); color:var(--primary);" onclick="editName()">EDIT ID</button>
-                    </div>
+                    <h2 id="bigName" style="margin-bottom:5px;">Navn</h2>
+                    <p style="color:var(--text-muted);">Brukerprofil</p>
+                    <button class="chip" onclick="editName()" style="margin-top:20px;">Endre Navn</button>
                 </div>
             </section>
+
         </main>
     </div>
 
-    <div id="success-animation" class="success-overlay">
-        <div class="success-content">
-            <i class="ph ph-check-circle" style="font-size:8rem; color:var(--success); filter:drop-shadow(0 0 20px var(--success));"></i>
-            <div class="success-text">MISSION COMPLETE</div>
-            <div class="xp-text">+25 XP ACQUIRED</div>
+    <div id="success-overlay">
+        <div class="success-card-modal">
+            <i class="ph ph-check-circle" style="font-size:5rem; color:var(--success); margin-bottom:15px;"></i>
+            <h2 style="font-size:2rem; font-weight:800; margin:0;">Bra Jobba!</h2>
+            <p style="color:var(--text-muted); margin-top:5px;">Oppgave fullført.</p>
+            <div class="xp-badge">+25 Poeng</div>
         </div>
-    </div>
-
-    <div id="breath-overlay">
-        <div class="breath-circle-container">
-            <div class="breath-circle" id="breath-circle"></div>
-            <div class="breath-text" id="breath-text">PUST INN</div>
-        </div>
-        <button class="close-breath-btn" onclick="stopBreathing()" style="margin-top:40px; background:transparent; border:1px solid #555; color:white; padding:10px 20px; font-family:var(--font-code); cursor:pointer;">AVSLUTT SYKLUS</button>
     </div>
 
 <script>
-    // --- RED PARTICLES BACKGROUND ---
-    const canvas = document.getElementById('neural-canvas');
-    const ctx = canvas.getContext('2d');
-    let w, h, particles = [];
-
-    function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
-    window.addEventListener('resize', resize); resize();
-
-    class Particle {
-        constructor() {
-            this.x = Math.random() * w; this.y = Math.random() * h;
-            this.vx = (Math.random() - 0.5) * 0.5; this.vy = (Math.random() - 0.5) * 0.5;
-            this.size = Math.random() * 2;
-        }
-        update() {
-            this.x += this.vx; this.y += this.vy;
-            if(this.x < 0 || this.x > w) this.vx *= -1; if(this.y < 0 || this.y > h) this.vy *= -1;
-        }
-        draw() {
-            ctx.fillStyle = '#ff003c'; ctx.globalAlpha = 0.4; ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
-        }
-    }
-    for(let i=0; i<60; i++) particles.push(new Particle());
-    
-    function animateParticles() {
-        ctx.clearRect(0, 0, w, h);
-        particles.forEach(p => { 
-            p.update(); p.draw(); 
-            // Connect
-            particles.forEach(p2 => {
-                const dx = p.x - p2.x; const dy = p.y - p2.y;
-                const dist = Math.sqrt(dx*dx + dy*dy);
-                if(dist < 100) {
-                    ctx.beginPath(); ctx.strokeStyle = '#ff003c'; ctx.globalAlpha = 1 - (dist/100); ctx.lineWidth = 0.2;
-                    ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
-                }
-            });
-        });
-        requestAnimationFrame(animateParticles);
-    }
-    animateParticles();
-
-    // --- AUDIO SYNTHESIZER ---
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-    function playTypeSound() {
-        if(audioCtx.state === 'suspended') return;
-        const t = audioCtx.currentTime;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'square'; osc.frequency.setValueAtTime(800, t);
-        osc.frequency.exponentialRampToValueAtTime(100, t + 0.03);
-        gain.gain.setValueAtTime(0.05, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.start(t); osc.stop(t + 0.03);
-    }
-
-    function playBassDrop() {
-        if(audioCtx.state === 'suspended') audioCtx.resume();
-        const t = audioCtx.currentTime;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine'; osc.frequency.setValueAtTime(100, t);
-        osc.frequency.exponentialRampToValueAtTime(30, t + 1.5);
-        gain.gain.setValueAtTime(0.5, t); gain.gain.linearRampToValueAtTime(0, t + 1.5);
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.start(t); osc.stop(t + 1.5);
-    }
-
-    function playGlitchSound() {
-        if(audioCtx.state === 'suspended') return;
-        const t = audioCtx.currentTime;
-        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(200, t); osc.frequency.linearRampToValueAtTime(500, t+0.1);
-        gain.gain.setValueAtTime(0.1, t); gain.gain.exponentialRampToValueAtTime(0.01, t+0.1);
-        osc.connect(gain); gain.connect(audioCtx.destination); osc.start(t); osc.stop(t+0.1);
-    }
-
-    // --- AI INTRO SEQUENCE (CLEAN TRANSITIONS) ---
-    const messages = [
-        "SYSTEM AWAKE.",
-        "ESTABLISHING NEURAL LINK...",
-        "WELCOME, OPERATOR."
+    // --- 1. MOTIVATION LOGIC ---
+    const quotes = [
+        { text: "Det eneste umulige er det du ikke prøver på.", author: "Ukjent" },
+        { text: "Suksess er summen av små innsatser, gjentatt dag ut og dag inn.", author: "Robert Collier" },
+        { text: "Tro at du kan, og du er halvveis.", author: "Theodore Roosevelt" },
+        { text: "Din fremtid skapes av hva du gjør i dag, ikke i morgen.", author: "Robert Kiyosaki" }
     ];
-    let msgIndex = 0;
 
-    function runIntro() {
-        const msgBox = document.getElementById('ai-message');
+    window.onload = function() {
+        // Pick random quote
+        const q = quotes[Math.floor(Math.random() * quotes.length)];
+        document.getElementById('intro-quote').innerText = `"${q.text}"`;
+        document.getElementById('intro-author').innerText = `- ${q.author}`;
         
-        if (msgIndex < messages.length) {
-            // 1. Fade Out
-            msgBox.classList.add('fade-out');
-            
-            setTimeout(() => {
-                // 2. Change Text & Type Effect
-                msgBox.innerText = "";
-                msgBox.classList.remove('fade-out');
-                
-                let txt = messages[msgIndex];
-                let charIdx = 0;
-                
-                let typeInt = setInterval(() => {
-                    if (charIdx < txt.length) {
-                        msgBox.innerText += txt.charAt(charIdx);
-                        playTypeSound();
-                        charIdx++;
-                    } else {
-                        clearInterval(typeInt);
-                        msgIndex++;
-                        setTimeout(runIntro, 1500); // Wait before next msg
-                    }
-                }, 50); // Typing speed
-                
-            }, 500); // Fade out duration
-        } else {
-            // End of intro -> Show Setup
-            document.getElementById('ai-message').style.display = 'none';
-            document.getElementById('setup-panel').classList.add('visible');
-            playBassDrop();
+        // Restore state if exists
+        if(localStorage.getItem('BlueOS')) {
+            state = JSON.parse(localStorage.getItem('BlueOS'));
+            // If already set up, skip setup logic potentially, but for this demo flow:
+            if(state.name !== "Student") {
+                document.getElementById('setupName').value = state.name;
+                document.getElementById('setupAvPreview').src = state.avatar;
+            }
         }
-    }
-    
-    // Start automatically
-    window.onload = () => { setTimeout(runIntro, 1000); };
+    };
 
-    // --- SETUP LOGIC ---
-    function finalizeLogin() {
-        if(audioCtx.state === 'suspended') audioCtx.resume();
-        const nameInput = document.getElementById('setupName').value;
-        if(!nameInput) { alert("IDENTIFICATION REQUIRED"); return; }
-        
-        state.name = nameInput; save(); updateGlobalUI();
-        
+    function goToSetup() {
         document.getElementById('intro-screen').classList.add('hidden');
-        document.getElementById('app-shell').classList.add('visible');
-        playBassDrop();
+        document.getElementById('setup-screen').classList.add('visible');
     }
 
-    document.getElementById('setupAvatarUpload').addEventListener('change', (e) => {
-        if(e.target.files[0]) {
-            const r = new FileReader();
-            r.onload = (evt) => { state.avatar = evt.target.result; document.getElementById('setupAvPreview').src = state.avatar; };
-            r.readAsDataURL(e.target.files[0]);
-        }
-    });
+    function finalizeLogin() {
+        const name = document.getElementById('setupName').value;
+        if(name) state.name = name;
+        save();
+        updateGlobalUI();
+        
+        document.getElementById('setup-screen').classList.remove('visible');
+        document.getElementById('app-shell').classList.add('visible');
+    }
 
-    // --- APP CORE ---
-    let state = { name: "OPERATOR", xp: 0, avatar: "std1", tasks: [], notes: "", schedule: {} };
-    if(localStorage.getItem('RedProtocol')) { state = {...state, ...JSON.parse(localStorage.getItem('RedProtocol'))}; }
-    function save() { localStorage.setItem('RedProtocol', JSON.stringify(state)); }
+    // --- APP STATE & CORE ---
+    let state = { name: "Student", avatar: "https://api.dicebear.com/7.x/notionists/svg?seed=student", xp: 0, tasks: [], notes: "", schedule: {} };
+    
+    function save() { localStorage.setItem('BlueOS', JSON.stringify(state)); }
 
     function updateGlobalUI() {
-        document.getElementById('greet').innerText = `VELKOMMEN, ${state.name}`;
+        document.getElementById('greet').innerText = `Hei, ${state.name} 👋`;
         document.getElementById('miniName').innerText = state.name;
         document.getElementById('bigName').innerText = state.name;
-        let avUrl = state.avatar.startsWith('data:image') ? state.avatar : `https://api.dicebear.com/7.x/bottts/svg?seed=${state.avatar}`;
-        document.getElementById('miniAv').src = avUrl;
-        document.getElementById('bigAv').src = avUrl;
+        document.getElementById('miniAv').src = state.avatar;
+        document.getElementById('bigAv').src = state.avatar;
+        document.getElementById('notes').value = state.notes;
         renderTasks();
+        renderSchedule();
     }
 
     function nav(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        // Find button logic skipped for brevity, keeping simple layout
-        document.getElementById(id).classList.add('active');
+        // Simple mapping for active state visual
+        event.currentTarget.classList.add('active');
     }
 
-    // --- TASK LOGIC ---
+    // --- TASKS ---
     function addTask() {
         const val = document.getElementById('taskInput').value;
         if(!val) return;
-        state.tasks.unshift({ txt: val, id: Date.now() }); 
+        state.tasks.unshift({ id: Date.now(), txt: val });
         save(); renderTasks();
         document.getElementById('taskInput').value = "";
-        playTypeSound();
     }
 
     function removeTask(id) {
@@ -546,79 +478,150 @@
     }
 
     function completeTask(id) {
-        playGlitchSound();
-        state.xp += 25; 
+        state.xp += 25;
         state.tasks = state.tasks.filter(t => t.id !== id);
         save(); renderTasks();
         
-        const overlay = document.getElementById('success-animation');
-        overlay.classList.add('animate-boom');
-        setTimeout(() => overlay.classList.remove('animate-boom'), 2000);
+        // Show Success Overlay
+        const overlay = document.getElementById('success-overlay');
+        overlay.classList.add('active');
+        setTimeout(() => { overlay.classList.remove('active'); }, 1500);
     }
 
     function renderTasks() {
-        const l = document.getElementById('taskList'); l.innerHTML = "";
-        state.tasks.forEach(t => { 
-            l.innerHTML += `
+        const list = document.getElementById('taskList');
+        list.innerHTML = "";
+        state.tasks.forEach(t => {
+            list.innerHTML += `
             <div class="task-list-item">
                 <span class="task-text">${t.txt}</span>
                 <div class="task-actions">
-                    <button class="icon-btn delete" onclick="removeTask(${t.id})"><i class="ph ph-x"></i></button>
-                    <button class="icon-btn check" onclick="completeTask(${t.id})"><i class="ph ph-check"></i></button>
+                    <button class="btn-action btn-delete" onclick="removeTask(${t.id})">
+                        <i class="ph ph-x"></i>
+                    </button>
+                    <button class="btn-action btn-complete" onclick="completeTask(${t.id})">
+                        <i class="ph ph-check"></i> Ferdig
+                    </button>
                 </div>
-            </div>`; 
+            </div>`;
         });
     }
 
-    // --- STANDARD FUNCTIONS (Timer, Calc, etc.) ---
-    // (Included simplified versions to keep it working)
-    document.getElementById('notes').value = state.notes;
-    document.getElementById('notes').addEventListener('input', (e) => { state.notes = e.target.value; save(); });
-    
-    // Schedule
-    const grid = document.getElementById('schGrid');
-    grid.innerHTML = '<div class="sch-header">Tid</div><div class="sch-header">Man</div><div class="sch-header">Tir</div><div class="sch-header">Ons</div><div class="sch-header">Tor</div><div class="sch-header">Fre</div>';
-    const times = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00"];
-    const days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
-    times.forEach(t => {
-        grid.innerHTML += `<div class="sch-time">${t}</div>`;
-        days.forEach(d => {
-            const key = `${d}-${t}`;
-            const sub = state.schedule[key] || "+";
-            grid.innerHTML += `<div class="sch-cell" onclick="editSch('${key}')">${sub}</div>`;
-        });
-    });
-    function editSch(key) { const s = prompt("Fag:"); if(s) { state.schedule[key]=s; save(); location.reload(); }}
+    // --- SCHEDULE (SMART HIGHLIGHT) ---
+    function renderSchedule() {
+        const grid = document.getElementById('schGrid');
+        grid.innerHTML = '<div class="sch-header">Tid</div><div class="sch-header">Man</div><div class="sch-header">Tir</div><div class="sch-header">Ons</div><div class="sch-header">Tor</div><div class="sch-header">Fre</div>';
+        const times = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00"];
+        const days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+        
+        const now = new Date();
+        const currentDay = now.getDay(); // 1 = Mon
+        const currentHour = now.getHours();
 
-    // Timer
-    let tTime = 25*60; let tInt;
-    function toggleTimer() {
-        if(tInt) { clearInterval(tInt); tInt=null; document.getElementById('timerBtn').innerText="RESUME"; }
-        else {
-            tInt = setInterval(() => {
-                tTime--;
-                let m = Math.floor(tTime/60), s = tTime%60;
-                document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
-                if(tTime<=0) { clearInterval(tInt); tTime=25*60; document.getElementById('timerBtn').innerText="START"; playBassDrop(); }
-            }, 1000);
-            document.getElementById('timerBtn').innerText="HALT";
+        times.forEach(t => {
+            grid.innerHTML += `<div class="sch-time">${t}</div>`;
+            days.forEach((d, idx) => {
+                const key = `${d}-${t}`;
+                const val = state.schedule[key] || "";
+                
+                let activeClass = "";
+                // Simple logic: if day matches index+1 AND hour matches string start
+                if(idx + 1 === currentDay && t.startsWith(currentHour.toString().padStart(2,'0'))) {
+                    activeClass = "sch-active";
+                }
+
+                grid.innerHTML += `<div class="sch-cell ${activeClass}" onclick="editSch('${key}')">${val}</div>`;
+            });
+        });
+    }
+    function editSch(key) {
+        const val = prompt("Fag:");
+        if(val !== null) { state.schedule[key] = val; save(); renderSchedule(); }
+    }
+
+    // --- TOOLS (Calc & Notes) ---
+    let expr = "";
+    function add(v) { expr += v; document.getElementById('calcDisp').value = expr; }
+    function cls() { expr = ""; document.getElementById('calcDisp').value = "0"; }
+    function solve() { try { document.getElementById('calcDisp').value = eval(expr); expr = eval(expr).toString(); } catch{ document.getElementById('calcDisp').value = "Error"; expr=""; } }
+    
+    document.getElementById('notes').addEventListener('input', (e) => { state.notes = e.target.value; save(); });
+
+    // --- SETTINGS (Avatar/Name) ---
+    function editName() { const n = prompt("Nytt navn:"); if(n) { state.name = n; save(); updateGlobalUI(); } }
+    document.getElementById('setupAvatarUpload').addEventListener('change', handleAvUpload);
+    document.getElementById('avatarUpload').addEventListener('change', handleAvUpload);
+    
+    function handleAvUpload(e) {
+        if(e.target.files[0]) {
+            const r = new FileReader();
+            r.onload = (evt) => { 
+                state.avatar = evt.target.result; 
+                if(document.getElementById('setupAvPreview')) document.getElementById('setupAvPreview').src = state.avatar;
+                save(); updateGlobalUI(); 
+            };
+            r.readAsDataURL(e.target.files[0]);
         }
     }
-    function setDuration(m) { tTime=m*60; document.getElementById('timer').innerText=`${m}:00`; }
 
-    // Settings
-    function triggerAvatarUpload() { document.getElementById('avatarUpload').click(); }
-    document.getElementById('avatarUpload').addEventListener('change', (e) => { if(e.target.files[0]) { const r = new FileReader(); r.onload = (evt) => { state.avatar = evt.target.result; save(); updateGlobalUI(); }; r.readAsDataURL(e.target.files[0]); } });
-    function editName() { const n = prompt("NEW ID:"); if(n) { state.name=n; save(); updateGlobalUI(); } }
+    // --- AUDIO & TIMER ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let noiseNode = null;
 
-    // Calc
-    let expr = "";
-    function add(v) { expr+=v; document.getElementById('calcDisp').innerText=expr; }
-    function cls() { expr=""; document.getElementById('calcDisp').innerText="0"; }
-    function solve() { try { document.getElementById('calcDisp').innerText = eval(expr); expr=""; } catch { document.getElementById('calcDisp').innerText = "ERR"; } }
+    function toggleNoise(type, btn) {
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+        
+        // Reset styles
+        document.querySelectorAll('.sound-card').forEach(c => c.classList.remove('active'));
+
+        if(noiseNode) {
+            noiseNode.stop(); noiseNode = null;
+            return; // Click again to stop
+        }
+
+        btn.classList.add('active');
+        
+        const bufferSize = audioCtx.sampleRate * 2;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        let lastOut = 0;
+        for (let i = 0; i < bufferSize; i++) {
+            const white = Math.random() * 2 - 1;
+            data[i] = (lastOut + (0.02 * white)) / 1.02;
+            lastOut = data[i];
+            data[i] *= 3.5; 
+        }
+        noiseNode = audioCtx.createBufferSource();
+        noiseNode.buffer = buffer;
+        noiseNode.loop = true;
+        const gain = audioCtx.createGain();
+        gain.gain.value = 0.05;
+        noiseNode.connect(gain); gain.connect(audioCtx.destination);
+        noiseNode.start();
+    }
+
+    let tTime = 25*60; let tInt;
+    function setDuration(m) { tTime=m*60; document.getElementById('timer').innerText = `${m}:00`; }
+    function toggleTimer() {
+        const btn = document.getElementById('timerBtn');
+        if(tInt) { clearInterval(tInt); tInt=null; btn.innerText="Start Økt"; }
+        else {
+            btn.innerText = "Pause";
+            tInt = setInterval(() => {
+                tTime--;
+                const m = Math.floor(tTime/60); const s = tTime%60;
+                document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
+                if(tTime<=0) clearInterval(tInt);
+            }, 1000);
+        }
+    }
 
     // Chart
-    new Chart(document.getElementById('chart'), { type: 'line', data: { labels: ['M','T','O','T','F','L','S'], datasets: [{ label:'XP', data:[100, 450, 300, 600, 400, 550, 800], borderColor:'#ff003c', borderWidth:2, tension:0.4, pointBackgroundColor:'white' }] }, options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{display:false}} } });
+    new Chart(document.getElementById('chart'), {
+        type: 'line',
+        data: { labels: ['Man','Tir','Ons','Tor','Fre'], datasets: [{ label:'XP', data:[50, 100, 75, 125, 200], borderColor:'#3b82f6', tension:0.4, fill:true, backgroundColor:'rgba(59, 130, 246, 0.1)' }] },
+        options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{display:false}} }
+    });
 
 </script>
 </body>
