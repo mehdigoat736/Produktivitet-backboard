@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Student OS // Final Fix</title>
+    <title>Student OS // New Start</title>
     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -24,10 +24,9 @@
             --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
         }
 
-        /* Themes */
-        body.theme-cyber { --bg-color: #050505; --primary: #00f0ff; --accent: #ff003c; --shadow-glow: 0 0 20px rgba(0, 240, 255, 0.4); }
-        body.theme-nature { --bg-color: #022c22; --primary: #34d399; --accent: #facc15; --shadow-glow: 0 0 20px rgba(52, 211, 153, 0.3); }
-        body.theme-sunset { --bg-color: #2a0a18; --primary: #f43f5e; --accent: #fb923c; --shadow-glow: 0 0 20px rgba(244, 63, 94, 0.3); }
+        body.theme-cyber { --bg-color: #050505; --primary: #00f0ff; --accent: #ff003c; }
+        body.theme-nature { --bg-color: #022c22; --primary: #34d399; --accent: #facc15; }
+        body.theme-sunset { --bg-color: #2a0a18; --primary: #f43f5e; --accent: #fb923c; }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
         
@@ -62,7 +61,6 @@
         /* Layout */
         .app-shell { display: flex; height: 100%; width: 100%; position: relative; z-index: 1; }
 
-        /* Sidebar */
         .sidebar {
             width: 280px; background: rgba(0,0,0,0.2); backdrop-filter: blur(25px);
             border-right: 1px solid var(--glass-border); padding: 30px;
@@ -82,13 +80,11 @@
         .nav-btn.active { background: var(--primary); color: #fff; box-shadow: var(--shadow-glow); }
         .nav-btn i { font-size: 1.4rem; }
 
-        /* Main View */
         .main-view { flex: 1; overflow-y: auto; padding: 40px; position: relative; }
         .section { display: none; animation: slideIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .section.active { display: block; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
-        /* Cards */
         .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
         .glass-card {
             background: var(--glass-surface); border: 1px solid var(--glass-border);
@@ -96,9 +92,8 @@
             box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
             transition: transform 0.3s; position: relative; overflow: visible;
         }
-        .glass-card:hover { transform: translateY(-5px); border-color: var(--primary); }
 
-        /* SCHEDULE STYLES */
+        /* SCHEDULE */
         .schedule-grid {
             display: grid; grid-template-columns: 80px repeat(5, 1fr); gap: 10px;
             overflow-x: auto; padding-bottom: 10px; min-width: 600px;
@@ -111,9 +106,8 @@
             cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; text-align: center; word-break: break-word;
         }
         .sch-cell:hover { background: rgba(255,255,255,0.08); border-color: var(--primary); }
-        .sch-cell.active-day { background: rgba(99, 102, 241, 0.1); border-color: var(--primary); }
 
-        /* FLASHCARD STYLES */
+        /* FLASHCARDS */
         .flashcard-container { perspective: 1000px; width: 100%; height: 300px; margin-bottom: 20px; cursor: pointer; }
         .flashcard-inner {
             position: relative; width: 100%; height: 100%; text-align: center;
@@ -140,14 +134,12 @@
             position: absolute; top: 20px; right: 20px; background: none; border: none;
             color: var(--text-muted); font-size: 1.5rem; cursor: pointer; transition: 0.3s;
         }
-        .zen-btn:hover { color: var(--text-main); transform: scale(1.1); }
         .action-btn {
             width: 100%; padding: 16px; border-radius: 18px; border: none;
             background: var(--primary); color: white; font-weight: 700; font-size: 1rem;
             cursor: pointer; transition: 0.2s; box-shadow: var(--shadow-glow);
         }
-        .action-btn:active { transform: scale(0.95); }
-
+        
         /* Calculator */
         .calc-screen {
             background: #000; color: var(--primary); padding: 20px; border-radius: 18px;
@@ -174,8 +166,6 @@
             background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center;
             border: 4px solid var(--glass-surface); box-shadow: 0 5px 15px rgba(0,0,0,0.5); color: white;
         }
-        .avatar-container:hover { transform: scale(1.05); }
-
         .profile-actions { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
         .pill-btn {
             background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
@@ -183,9 +173,8 @@
             font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: 0.2s;
             display: flex; align-items: center; gap: 6px;
         }
-        .pill-btn:hover { background: rgba(255,255,255,0.1); color: white; border-color: white; }
 
-        /* Mobile Nav */
+        /* Mobile */
         .mobile-nav { display: none; }
         @media (max-width: 768px) {
             .sidebar { display: none; }
@@ -330,27 +319,22 @@
                                 <button class="calc-key sci" onclick="add('cos(')">cos</button>
                                 <button class="calc-key sci" onclick="add('tan(')">tan</button>
                                 <button class="calc-key sci" onclick="add('sqrt(')">√</button>
-                                
                                 <button class="calc-key sci" onclick="add('^')">^</button>
                                 <button class="calc-key sci" onclick="add('(')">(</button>
                                 <button class="calc-key sci" onclick="add(')')">)</button>
                                 <button class="calc-key op" onclick="add('/')">÷</button>
-                                
                                 <button class="calc-key" onclick="add('7')">7</button>
                                 <button class="calc-key" onclick="add('8')">8</button>
                                 <button class="calc-key" onclick="add('9')">9</button>
                                 <button class="calc-key op" onclick="add('*')">×</button>
-                                
                                 <button class="calc-key" onclick="add('4')">4</button>
                                 <button class="calc-key" onclick="add('5')">5</button>
                                 <button class="calc-key" onclick="add('6')">6</button>
                                 <button class="calc-key op" onclick="add('-')">-</button>
-                                
                                 <button class="calc-key" onclick="add('1')">1</button>
                                 <button class="calc-key" onclick="add('2')">2</button>
                                 <button class="calc-key" onclick="add('3')">3</button>
                                 <button class="calc-key op" onclick="add('+')">+</button>
-
                                 <button class="calc-key clear" style="color:#ef4444;" onclick="cls()">C</button>
                                 <button class="calc-key" onclick="add('0')">0</button>
                                 <button class="calc-key" onclick="add('.')">.</button>
@@ -381,12 +365,8 @@
                     <div style="color:var(--primary); font-size:0.9rem; font-weight:600; margin-bottom:20px;">STUDENT OS USER</div>
                     
                     <div class="profile-actions">
-                        <button class="pill-btn" onclick="editName()">
-                            <i class="ph ph-pencil-simple"></i> Endre Navn
-                        </button>
-                        <button class="pill-btn" onclick="resetAvatar()">
-                            <i class="ph ph-robot"></i> Generer Robot
-                        </button>
+                        <button class="pill-btn" onclick="editName()"><i class="ph ph-pencil-simple"></i> Endre Navn</button>
+                        <button class="pill-btn" onclick="resetAvatar()"><i class="ph ph-robot"></i> Generer Robot</button>
                     </div>
                     
                     <div style="margin-top:40px; text-align:left; border-top:1px solid var(--glass-border); padding-top:20px;">
@@ -421,6 +401,7 @@
             <label id="uploadBtn" style="display:block; padding:30px; border:2px dashed var(--glass-border); border-radius:15px; cursor:pointer; margin:20px 0;">
                 <i class="ph ph-upload-simple" style="font-size:2rem; color:var(--accent);"></i>
                 <div style="margin-top:10px; font-weight:700;">Last opp bilde</div>
+                <input type="file" id="fileIn" hidden accept="image/*">
             </label>
 
             <div id="scanView" class="scan-window">
@@ -436,7 +417,8 @@
     <audio id="sfx-success" src="https://assets.mixkit.co/sfx/preview/mixkit-positive-notification-951.mp3"></audio>
 
 <script>
-    // --- APP CORE (WITH MIGRATION FIX) ---
+    // --- APP CORE (NEW ID FOR FRESH START) ---
+    // Change ID to "StudentOS_Clean" to force browser to ignore old broken data
     let state = {
         name: "Student",
         theme: "",
@@ -451,20 +433,16 @@
         ]
     };
 
-    // Load and Merge state, handle missing fields
-    if(localStorage.getItem('ultimateOS_v3')) {
-        const saved = JSON.parse(localStorage.getItem('ultimateOS_v3'));
+    if(localStorage.getItem('StudentOS_Clean')) {
+        const saved = JSON.parse(localStorage.getItem('StudentOS_Clean'));
         state = {...state, ...saved};
-        // Fix for missing flashcards in old data
-        if(!state.flashcards || state.flashcards.length === 0) {
-            state.flashcards = [
-                {q: "Hva er hovedstaden i Norge?", a: "Oslo"},
-                {q: "Hva er roten av 64?", a: "8"}
-            ];
+        // Auto-repair if flashcards array is missing
+        if(!state.flashcards) {
+            state.flashcards = [{q: "Hva er hovedstaden i Norge?", a: "Oslo"}];
         }
     }
 
-    function save() { localStorage.setItem('ultimateOS_v3', JSON.stringify(state)); }
+    function save() { localStorage.setItem('StudentOS_Clean', JSON.stringify(state)); }
 
     // --- INIT ---
     updateGlobalUI();
@@ -517,16 +495,18 @@
     }
     function editSch(key) { const sub = prompt("Fag:"); if(sub) { state.schedule[key] = sub; save(); renderSchedule(); } }
 
-    // --- FLASHCARDS (FIXED LOGIC) ---
+    // --- FLASHCARDS (ROBUST FIX) ---
     let cardIdx = 0;
     
     function renderCard() {
+        // Fix: Ensure we have cards
         if(!state.flashcards || state.flashcards.length === 0) {
             document.getElementById('fcQuestion').innerText = "Ingen kort.";
-            document.getElementById('fcAnswer').innerText = "Lag nytt.";
+            document.getElementById('fcAnswer').innerText = "Trykk +";
             return;
         }
-        // Ensure index is valid
+        // Fix: Ensure index is valid
+        if(cardIdx < 0) cardIdx = 0;
         if(cardIdx >= state.flashcards.length) cardIdx = 0;
         
         document.getElementById('fcQuestion').innerText = state.flashcards[cardIdx].q;
@@ -536,20 +516,27 @@
     
     function nextCard() {
         if(!state.flashcards.length) return;
-        cardIdx = (cardIdx + 1) % state.flashcards.length;
+        cardIdx++;
+        if(cardIdx >= state.flashcards.length) cardIdx = 0;
         renderCard();
     }
     
     function prevCard() {
         if(!state.flashcards.length) return;
-        cardIdx = (cardIdx - 1 + state.flashcards.length) % state.flashcards.length;
+        cardIdx--;
+        if(cardIdx < 0) cardIdx = state.flashcards.length - 1;
         renderCard();
     }
     
     function newCard() {
         const q = prompt("Spørsmål:");
         const a = prompt("Svar:");
-        if(q && a) { state.flashcards.push({q, a}); save(); cardIdx = state.flashcards.length-1; renderCard(); }
+        if(q && a) { 
+            state.flashcards.push({q, a}); 
+            save(); 
+            cardIdx = state.flashcards.length - 1; 
+            renderCard(); 
+        }
     }
 
     // --- ZEN & CALC ---
@@ -578,7 +565,7 @@
     function editName() { const n = prompt("Navn:"); if(n) { state.name=n; save(); updateGlobalUI(); } }
     function setTheme(t) { state.theme = t; save(); updateGlobalUI(); }
 
-    // --- AI SCANNER (ROBUST FIX) ---
+    // --- AI SCANNER (FIXED) ---
     let tempTask = "";
     function startAiFlow() {
         const v = document.getElementById('taskInput').value;
@@ -588,7 +575,7 @@
         document.getElementById('uploadBtn').style.display = 'block';
         document.getElementById('scanView').style.display = 'none';
         document.getElementById('aiConfirm').style.display = 'none';
-        document.getElementById('ai-msg').innerText = `Analyserer mål: "${v}"`;
+        document.getElementById('ai-msg').innerText = `Analyserer: "${v}"`;
         document.getElementById('ai-msg').style.color = "var(--text-muted)";
     }
     
@@ -599,7 +586,7 @@
                 document.getElementById('uploadBtn').style.display = 'none';
                 document.getElementById('scanView').style.display = 'block';
                 document.getElementById('scanPreview').src = evt.target.result;
-                // Wait 1.5s for "scan", then show confirm
+                // Wait for scan animation
                 setTimeout(() => { 
                     document.getElementById('aiConfirm').style.display = 'block'; 
                     document.getElementById('ai-msg').innerText = "VERIFISERT."; 
