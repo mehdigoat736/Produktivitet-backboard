@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Zenith OS // Ultimate</title>
+    <title>Zenith OS // Functional Tools</title>
     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -138,7 +138,7 @@
             margin-top: auto; padding: 15px; border-top: 1px solid var(--glass-border);
             display: flex; align-items: center; gap: 15px;
         }
-        .profile-widget img { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--glass-border); }
+        .profile-widget img { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--glass-border); object-fit: cover; }
 
         /* Main View */
         .main-view { flex: 1; overflow-y: auto; padding: 60px 80px; }
@@ -160,12 +160,7 @@
             position: relative; overflow: hidden;
         }
         .zen-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px -10px black; border-color: rgba(255,255,255,0.2); }
-        .zen-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, rgba(255,255,255,0.05), transparent);
-            opacity: 0.5; pointer-events: none;
-        }
-
+        
         .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .card-title { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); }
 
@@ -173,6 +168,7 @@
         .timer-display { 
             font-family: var(--font-display); font-size: 6rem; font-weight: 300; 
             text-align: center; margin: 20px 0; color: white; text-shadow: 0 0 30px var(--accent-glow);
+            font-variant-numeric: tabular-nums;
         }
         .time-controls { display: flex; gap: 10px; justify-content: center; margin-bottom: 30px; }
         .chip { background: var(--glass-low); border: 1px solid var(--glass-border); color: var(--text-muted); padding: 8px 20px; border-radius: 20px; cursor: pointer; transition: 0.3s; }
@@ -217,11 +213,18 @@
         .mob-btn { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; }
         .mob-btn.active { color: var(--accent); }
 
+        /* Tools (Calculator) */
+        .calc-screen { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--glass-border); font-family: var(--font-display); font-size: 2.5rem; color: white; text-align: right; padding: 20px 0; margin-bottom: 20px; outline: none; }
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .calc-key { background: var(--glass-low); border: 1px solid var(--glass-border); color: white; padding: 15px; border-radius: 12px; font-size: 1.1rem; cursor: pointer; transition: 0.2s; }
+        .calc-key:hover { background: var(--glass-med); border-color: white; }
+        .calc-key.op { color: var(--accent); }
+        .calc-key.eq { background: var(--accent); color: black; border-color: var(--accent); }
+
         /* Overlays */
         #breath-overlay { position: fixed; inset: 0; background: #000; z-index: 60000; display: none; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 1s; }
         #breath-overlay.active { display: flex; opacity: 1; }
         .breath-circle { width: 200px; height: 200px; border: 1px solid var(--accent); border-radius: 50%; box-shadow: 0 0 50px var(--accent-glow); position: relative; }
-        .breath-circle::after { content:''; position: absolute; inset: -20px; border: 1px solid rgba(59,130,246,0.3); border-radius: 50%; }
         .breath-label { margin-top: 40px; font-family: var(--font-display); font-size: 2rem; letter-spacing: 5px; color: var(--accent); }
         @keyframes zenInhale { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(1.5); opacity: 1; } }
         @keyframes zenExhale { 0% { transform: scale(1.5); opacity: 1; } 100% { transform: scale(1); opacity: 0.5; } }
@@ -304,8 +307,32 @@
                 </div>
             </section>
 
-            <section id="tools" class="section"><h1 class="header-lg">Verktøy</h1><p class="sub-header">Kommer snart.</p></section>
-            <section id="settings" class="section"><h1 class="header-lg">Innstillinger</h1><p class="sub-header">System konfigurasjon.</p></section>
+            <section id="tools" class="section">
+                <h1 class="header-lg">Verktøy</h1>
+                <div class="grid-layout">
+                    <div class="zen-card" style="max-width:350px;">
+                        <div class="card-head"><span class="card-title">Kalkulator</span></div>
+                        <input type="text" class="calc-screen" id="calcDisp" readonly value="0">
+                        <div class="calc-grid">
+                            <button class="calc-key" onclick="add('7')">7</button><button class="calc-key" onclick="add('8')">8</button><button class="calc-key" onclick="add('9')">9</button><button class="calc-key op" onclick="add('/')">÷</button>
+                            <button class="calc-key" onclick="add('4')">4</button><button class="calc-key" onclick="add('5')">5</button><button class="calc-key" onclick="add('6')">6</button><button class="calc-key op" onclick="add('*')">×</button>
+                            <button class="calc-key" onclick="add('1')">1</button><button class="calc-key" onclick="add('2')">2</button><button class="calc-key" onclick="add('3')">3</button><button class="calc-key op" onclick="add('-')">-</button>
+                            <button class="calc-key" style="color:#ef4444;" onclick="cls()">C</button><button class="calc-key" onclick="add('0')">0</button><button class="calc-key" onclick="add('.')">.</button><button class="calc-key eq" onclick="solve()">=</button>
+                        </div>
+                    </div>
+                    <div class="zen-card">
+                        <div class="card-head"><span class="card-title">Notater</span></div>
+                        <textarea id="notes" style="width:100%; height:350px; background:transparent; border:none; color:white; font-family:'Inter',sans-serif; font-size:1.1rem; line-height:1.6; resize:none; outline:none;" placeholder="Skriv notater her..."></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <section id="settings" class="section">
+                <h1 class="header-lg">Innstillinger</h1>
+                <div class="zen-card" style="margin-top:40px; text-align:center;">
+                    <button class="z-btn" onclick="editName()" style="max-width:200px;">ENDRE NAVN</button>
+                </div>
+            </section>
 
         </main>
 
@@ -323,7 +350,7 @@
     </div>
 
 <script>
-    // --- 1. ZENITH PARTICLES (ATMOSPHERE) ---
+    // --- 1. ZENITH PARTICLES ---
     const canvas = document.getElementById('zenith-canvas');
     const ctx = canvas.getContext('2d');
     let w, h, particles = [];
@@ -335,8 +362,7 @@
         constructor() {
             this.x = Math.random() * w; this.y = Math.random() * h;
             this.vx = (Math.random() - 0.5) * 0.2; this.vy = (Math.random() - 0.5) * 0.2;
-            this.size = Math.random() * 2;
-            this.alpha = Math.random() * 0.5;
+            this.size = Math.random() * 2; this.alpha = Math.random() * 0.5;
         }
         update() {
             this.x += this.vx; this.y += this.vy;
@@ -351,33 +377,27 @@
     for(let i=0; i<80; i++) particles.push(new Particle());
 
     function animate() {
-        ctx.clearRect(0, 0, w, h);
-        particles.forEach(p => { p.update(); p.draw(); });
+        ctx.clearRect(0, 0, w, h); particles.forEach(p => { p.update(); p.draw(); });
         requestAnimationFrame(animate);
     }
     animate();
 
-    // --- 2. AUDIO ENGINE (AMBIENT + CLICK) ---
+    // --- 2. AUDIO ENGINE ---
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     const actx = new AudioCtx();
-    let droneOsc;
-    let audioEnabled = false;
+    let droneOsc; let audioEnabled = false;
 
     function startDrone() {
         if(!audioEnabled) return;
         droneOsc = actx.createOscillator();
         const g = actx.createGain();
-        droneOsc.type = 'sine';
-        droneOsc.frequency.value = 50; // Low frequency hum
-        g.gain.value = 0.05; // Very subtle
-        droneOsc.connect(g); g.connect(actx.destination);
-        droneOsc.start();
+        droneOsc.type = 'sine'; droneOsc.frequency.value = 50; g.gain.value = 0.05;
+        droneOsc.connect(g); g.connect(actx.destination); droneOsc.start();
     }
 
     function playClick() {
         if(!audioEnabled) return;
-        const osc = actx.createOscillator();
-        const g = actx.createGain();
+        const osc = actx.createOscillator(); const g = actx.createGain();
         osc.frequency.setValueAtTime(800, actx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(100, actx.currentTime + 0.05);
         g.gain.setValueAtTime(0.1, actx.currentTime);
@@ -390,35 +410,35 @@
         if(actx.state === 'suspended') actx.resume();
         audioEnabled = !audioEnabled;
         const btn = document.getElementById('audioBtn');
-        if(audioEnabled) {
-            btn.classList.add('active');
-            startDrone();
-        } else {
-            btn.classList.remove('active');
-            if(droneOsc) { droneOsc.stop(); droneOsc = null; }
-        }
+        if(audioEnabled) { btn.classList.add('active'); startDrone(); } 
+        else { btn.classList.remove('active'); if(droneOsc) { droneOsc.stop(); droneOsc = null; } }
     }
-
-    // Connect clicks
-    document.addEventListener('click', (e) => {
-        if(e.target.tagName === 'BUTTON' || e.target.closest('button')) playClick();
-    });
+    document.addEventListener('click', (e) => { if(e.target.tagName === 'BUTTON' || e.target.closest('button')) playClick(); });
 
     // --- 3. APP LOGIC ---
-    let state = { name: "User", avatar: "https://api.dicebear.com/7.x/notionists/svg?seed=zenith", tasks: [] };
+    let state = { name: "User", avatar: "https://api.dicebear.com/7.x/notionists/svg?seed=zenith", tasks: [], notes: "" };
+    if(localStorage.getItem('ZenithOS')) { state = JSON.parse(localStorage.getItem('ZenithOS')); }
+
+    function save() { localStorage.setItem('ZenithOS', JSON.stringify(state)); }
 
     function enterZenith() {
         if(actx.state === 'suspended') actx.resume();
         const n = document.getElementById('setupName').value;
         if(n) state.name = n;
-        updateUI();
-        
+        save(); updateUI();
         document.getElementById('intro-screen').classList.add('hidden');
         document.getElementById('app-shell').classList.add('visible');
-        
-        // Auto start audio if desired, or let user toggle
-        // setTimeout(() => toggleAudio(), 1000); 
     }
+
+    // Auto-login check
+    window.onload = function() {
+        if(state.name !== "User") {
+            document.getElementById('setupName').value = state.name;
+            document.getElementById('introAv').src = state.avatar;
+        }
+        updateUI();
+        document.getElementById('notes').value = state.notes;
+    };
 
     document.getElementById('avatarUpload').addEventListener('change', (e) => {
         if(e.target.files[0]) {
@@ -426,6 +446,7 @@
             r.onload = (evt) => {
                 state.avatar = evt.target.result;
                 document.getElementById('introAv').src = state.avatar;
+                save(); updateUI();
             };
             r.readAsDataURL(e.target.files[0]);
         }
@@ -437,9 +458,9 @@
         document.getElementById('greet').innerHTML = `${greeting}, <span style="font-weight:600">${state.name}</span>.`;
         document.getElementById('miniName').innerText = state.name;
         document.getElementById('miniAv').src = state.avatar;
-        
         const dateOpt = { weekday: 'long', month: 'long', day: 'numeric' };
         document.getElementById('dateSub').innerText = "I dag er det " + new Date().toLocaleDateString('no-NO', dateOpt);
+        renderTasks();
     }
 
     function nav(id) {
@@ -449,18 +470,41 @@
         if(event) event.currentTarget.classList.add('active');
     }
 
+    function editName() { const n = prompt("Nytt navn:"); if(n){state.name=n; save(); updateUI();} }
+
+    // --- TOOLS: CALCULATOR & NOTES ---
+    let calcInput = "";
+    function add(val) {
+        const disp = document.getElementById('calcDisp');
+        if(calcInput === "" && val === ".") calcInput = "0.";
+        else if(calcInput === "" && isNaN(val)) return;
+        calcInput += val;
+        disp.value = calcInput;
+    }
+    function cls() { calcInput = ""; document.getElementById('calcDisp').value = "0"; }
+    function solve() {
+        try {
+            const result = eval(calcInput);
+            document.getElementById('calcDisp').value = result;
+            calcInput = result.toString();
+        } catch { document.getElementById('calcDisp').value = "Feil"; calcInput=""; }
+    }
+
+    // Notes auto-save
+    document.getElementById('notes').addEventListener('input', (e) => {
+        state.notes = e.target.value;
+        save();
+    });
+
     // --- TASKS ---
     function addTask() {
         const v = document.getElementById('taskInput').value;
         if(!v) return;
         state.tasks.push({id: Date.now(), txt: v});
-        renderTasks();
+        save(); renderTasks();
         document.getElementById('taskInput').value = "";
     }
-    function removeTask(id) {
-        state.tasks = state.tasks.filter(t => t.id !== id);
-        renderTasks();
-    }
+    function removeTask(id) { state.tasks = state.tasks.filter(t => t.id !== id); save(); renderTasks(); }
     function renderTasks() {
         const l = document.getElementById('taskList'); l.innerHTML = "";
         state.tasks.forEach(t => {
@@ -491,15 +535,12 @@
     let bInt;
     function startBreath() {
         document.getElementById('breath-overlay').classList.add('active');
-        const c = document.getElementById('bCircle');
-        const t = document.getElementById('bText');
-        
+        const c = document.getElementById('bCircle'); const t = document.getElementById('bText');
         function cycle() {
             t.innerText = "PUST INN"; c.style.animation = "zenInhale 4s ease-in-out forwards";
             setTimeout(() => { t.innerText = "PUST UT"; c.style.animation = "zenExhale 4s ease-in-out forwards"; }, 4000);
         }
-        cycle();
-        bInt = setInterval(cycle, 8000);
+        cycle(); bInt = setInterval(cycle, 8000);
     }
     function stopBreath() {
         document.getElementById('breath-overlay').classList.remove('active');
