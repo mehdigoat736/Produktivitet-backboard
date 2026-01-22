@@ -3,644 +3,642 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>mehdi.co // Spotify Edition</title>
-    
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
+    <title>NEON DRIFT: ULTIMATE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        /* --- SPOTIFY / PREMIUM DESIGN SYSTEM --- */
         :root {
-            --bg-gradient: linear-gradient(120deg, #121212 0%, #1e1e1e 100%);
-            --card-bg: #181818;
-            --card-hover: #282828;
-            --text-main: #ffffff;
-            --text-muted: #b3b3b3;
-            --primary: #1db954; /* Spotify Green */
-            --primary-hover: #1ed760;
-            --accent: #3b82f6; /* Blue accent */
-            
-            --font-stack: 'Montserrat', sans-serif;
-            
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --shadow-lg: 0 20px 50px rgba(0,0,0,0.5);
+            --blue: #00f3ff;
+            --pink: #ff003c;
+            --yellow: #ffd700;
+            --bg: #050505;
+            --glass: rgba(10, 10, 10, 0.9);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
+        * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
         
         body {
-            margin: 0; font-family: var(--font-stack);
-            background: var(--bg-gradient); color: var(--text-main);
-            height: 100vh; overflow: hidden;
-            letter-spacing: -0.02em; /* Tighter tracking like Spotify */
+            margin: 0; overflow: hidden; background-color: var(--bg);
+            font-family: 'Rajdhani', sans-serif; color: white;
+            height: 100vh; width: 100vw;
         }
 
-        /* --- DETAILED ANIMATED BACKGROUND --- */
-        #neural-canvas {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0; pointer-events: none; opacity: 0.3;
+        /* CANVAS */
+        #gameCanvas { display: block; width: 100%; height: 100%; filter: contrast(1.1) saturate(1.2); }
+
+        /* UI LAYER */
+        #ui-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; padding: 20px; display: flex; flex-direction: column; justify-content: space-between;
         }
 
-        /* --- 1. CINEMATIC INTRO --- */
-        #intro-screen {
-            position: fixed; inset: 0; background: #000; z-index: 50000;
+        /* HUD - TOP */
+        .hud-top { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; }
+        
+        .score-box { text-align: left; }
+        .hud-label { font-family: 'Orbitron', sans-serif; font-size: 0.7rem; color: var(--blue); letter-spacing: 2px; margin-bottom: 2px; }
+        .score-val { font-family: 'Orbitron', sans-serif; font-size: 2rem; font-weight: 900; text-shadow: 0 0 10px var(--blue); }
+        
+        .currency-box { text-align: center; color: var(--yellow); }
+        .coin-icon { display: inline-block; width: 12px; height: 12px; background: var(--yellow); border-radius: 50%; box-shadow: 0 0 10px var(--yellow); margin-right: 5px; }
+
+        /* DETALJERT HP BAR */
+        .hp-container { text-align: right; width: 250px; }
+        .hp-bar-frame {
+            display: flex; gap: 4px; justify-content: flex-end;
+            margin-top: 5px; transform: skewX(-20deg);
+        }
+        .hp-segment {
+            width: 100%; height: 12px; background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2); transition: 0.2s;
+        }
+        .hp-segment.active { background: var(--pink); box-shadow: 0 0 15px var(--pink); border-color: var(--pink); }
+        .hp-segment.critical { animation: flashCritical 0.5s infinite; }
+
+        /* SCREENS (MENU, SHOP, GAMEOVER) */
+        .screen {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 40px; text-align: center;
-            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: auto; z-index: 20; transition: opacity 0.5s;
         }
-        #intro-screen.hidden { opacity: 0; pointer-events: none; }
+        .hidden { opacity: 0; pointer-events: none; }
 
-        .intro-brand {
-            font-size: 4rem; font-weight: 900; color: white; margin-bottom: 0;
-            transform: scale(0.9); opacity: 0;
-            animation: fadeInScale 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 0.2s;
+        /* WELCOME ANIMATION */
+        .boot-sequence h1 {
+            font-family: 'Orbitron'; font-size: 3.5rem; font-weight: 900; line-height: 1;
+            text-shadow: 3px 3px 0px var(--pink), -3px -3px 0px var(--blue);
+            animation: glitchIntro 2s infinite alternate; text-align: center;
         }
-        .intro-brand span { color: var(--primary); }
-
-        .intro-quote {
-            font-size: 1.5rem; font-weight: 600; color: var(--text-muted); margin-top: 20px;
-            max-width: 600px; line-height: 1.4; opacity: 0; transform: translateY(20px);
-            animation: slideUpFade 1s ease forwards 1s;
+        .boot-sequence p {
+            color: var(--blue); letter-spacing: 5px; margin-top: 10px; font-weight: 700;
+            animation: textFade 2s ease-in-out infinite alternate;
         }
 
-        .intro-btn {
-            margin-top: 60px; padding: 18px 45px; border-radius: 50px; border: none;
-            background: var(--primary); color: black; font-weight: 700; font-size: 1.1rem;
-            cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
-            opacity: 0; animation: fadeInBasic 1s ease forwards 2s; transition: 0.2s;
+        /* BUTTONS */
+        .btn-group { display: flex; gap: 20px; margin-top: 40px; }
+        .neon-btn {
+            background: transparent; border: 2px solid var(--blue); color: white;
+            font-family: 'Orbitron'; font-size: 1.2rem; padding: 15px 40px;
+            text-transform: uppercase; cursor: pointer; transition: 0.3s;
+            position: relative; overflow: hidden; box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
         }
-        .intro-btn:hover { background: var(--primary-hover); transform: scale(1.05); }
+        .neon-btn:hover { background: var(--blue); color: black; box-shadow: 0 0 40px var(--blue); transform: scale(1.05); }
+        .neon-btn.secondary { border-color: var(--yellow); color: var(--yellow); box-shadow: none; font-size: 1rem; padding: 15px 30px; }
+        .neon-btn.secondary:hover { background: var(--yellow); color: black; box-shadow: 0 0 30px var(--yellow); }
 
-        @keyframes fadeInScale { to { opacity: 1; transform: scale(1); } }
-        @keyframes slideUpFade { to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInBasic { to { opacity: 1; } }
-
-
-        /* --- 2. SETUP SCREEN --- */
-        #setup-screen {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 40000;
-            display: none; align-items: center; justify-content: center;
-            opacity: 0; transition: opacity 0.5s ease;
+        /* SHOP UI */
+        #shop-screen { background: rgba(5,5,10,0.95); }
+        .shop-grid { display: flex; gap: 30px; margin-top: 40px; flex-wrap: wrap; justify-content: center; }
+        .shop-item {
+            background: rgba(255,255,255,0.05); border: 1px solid #333; padding: 20px;
+            width: 200px; text-align: center; border-radius: 10px; transition: 0.3s;
+            position: relative;
         }
-        #setup-screen.visible { display: flex; opacity: 1; }
-
-        .setup-card {
-            background: var(--card-bg); padding: 50px; border-radius: 20px;
-            width: 100%; max-width: 450px; text-align: center;
-            border: 1px solid var(--glass-border); box-shadow: var(--shadow-lg);
-        }
-
-        .avatar-upload-wrapper {
-            width: 130px; height: 130px; margin: 0 auto 30px auto; position: relative;
-            cursor: pointer; transition: 0.3s;
-        }
-        .avatar-upload-wrapper:hover { transform: scale(1.05); }
-        .setup-avatar {
-            width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5); border: 3px solid var(--card-bg);
-        }
-        .camera-badge {
-            position: absolute; bottom: 5px; right: 5px; width: 40px; height: 40px;
-            background: var(--primary); color: black; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            border: 3px solid var(--card-bg); font-size: 1.2rem;
-        }
-
-        .setup-input {
-            width: 100%; padding: 16px; border-radius: 10px; border: 1px solid var(--glass-border);
-            font-size: 1.1rem; color: white; background: #2a2a2a; outline: none;
-            text-align: center; font-weight: 600; font-family: var(--font-stack);
-            transition: 0.3s; margin-bottom: 25px;
-        }
-        .setup-input:focus { border-color: var(--primary); background: #333; }
-
-
-        /* --- 3. MAIN APP LAYOUT --- */
-        .app-shell { display: flex; height: 100%; width: 100%; position:relative; z-index:1; opacity: 0; transition: opacity 0.8s; }
-        .app-shell.visible { opacity: 1; }
-
-        /* Sidebar */
-        .sidebar {
-            width: 260px; background: black; padding: 30px 20px;
-            display: flex; flex-direction: column; gap: 8px; z-index: 10;
-        }
-        .logo-area {
-            font-size: 1.5rem; font-weight: 800; color: white; margin-bottom: 40px; padding-left: 10px;
-        }
-        .logo-area span { color: var(--primary); }
-
-        .nav-btn {
-            background: transparent; border: none; color: var(--text-muted);
-            padding: 14px 20px; border-radius: 5px; cursor: pointer; text-align: left;
-            font-size: 0.95rem; font-weight: 700; display: flex; align-items: center; gap: 15px;
-            transition: all 0.2s ease;
-        }
-        .nav-btn:hover { color: white; }
-        .nav-btn.active { background: #282828; color: white; }
-        .nav-btn i { font-size: 1.4rem; }
-
-        .profile-mini {
-            margin-top: auto; padding: 15px; display: flex; align-items: center; gap: 12px;
-            border-top: 1px solid #282828;
-        }
-        .profile-mini img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
-
-        /* Main View */
-        .main-view {
-            flex: 1; overflow-y: auto; padding: 40px 50px; position: relative;
-            background: linear-gradient(180deg, #222 0%, #121212 40%);
-        }
-        .section { display: none; animation: slideIn 0.4s ease-out; }
-        .section.active { display: block; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .page-header { margin-bottom: 30px; }
-        .greeting { font-size: 3.5rem; font-weight: 900; color: white; margin: 0; letter-spacing: -2px; }
+        .shop-item:hover { border-color: white; transform: translateY(-5px); }
+        .shop-item.owned { border-color: var(--blue); background: rgba(0, 243, 255, 0.05); }
+        .shop-item.selected { border-color: var(--blue); box-shadow: 0 0 20px var(--blue); }
         
-        /* Premium Cards */
-        .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; }
-        .app-card {
-            background: var(--card-bg); border-radius: 8px; padding: 24px;
-            position: relative; transition: background 0.3s ease, transform 0.3s ease;
-            box-shadow: 0 4px 60px rgba(0,0,0,0.5);
-        }
-        .app-card:hover { background: var(--card-hover); }
+        .ship-preview { width: 100%; height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; }
+        /* Using canvas for preview rendering in JS */
         
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .card-title { font-size: 1.1rem; font-weight: 700; color: white; }
+        .shop-price { color: var(--yellow); font-weight: 700; font-size: 1.2rem; margin-bottom: 10px; }
+        .shop-btn {
+            width: 100%; padding: 10px; border: none; font-weight: 800; cursor: pointer;
+            font-family: 'Orbitron'; clip-path: polygon(10% 0, 100% 0, 100% 100%, 0% 100%, 0% 25%);
+        }
+        .btn-buy { background: var(--yellow); color: black; }
+        .btn-select { background: #333; color: white; }
+        .btn-selected { background: var(--blue); color: black; cursor: default; }
 
-        /* --- DASHBOARD ELEMENTS --- */
-        .timer-display { 
-            font-size: 5rem; font-weight: 800; color: white; 
-            text-align: center; margin: 20px 0; letter-spacing: -3px;
-            font-variant-numeric: tabular-nums;
+        .back-btn { position: absolute; top: 30px; left: 30px; border: none; background: transparent; color: #666; font-size: 1.5rem; cursor: pointer; }
+        .back-btn:hover { color: white; }
+
+        /* DEATH SCREEN */
+        .death-title { font-size: 5rem; color: var(--pink); font-family: 'Orbitron'; text-shadow: 0 0 50px var(--pink); animation: shake 0.5s; }
+
+        /* ANIMATIONS */
+        @keyframes glitchIntro {
+            0% { text-shadow: 3px 3px 0px var(--pink), -3px -3px 0px var(--blue); }
+            50% { text-shadow: -3px 2px 0px var(--pink), 3px -2px 0px var(--blue); }
+            100% { text-shadow: 3px -3px 0px var(--pink), -3px 3px 0px var(--blue); }
         }
-        .time-controls { display: flex; gap: 10px; justify-content: center; margin-bottom: 30px; }
-        .chip { 
-            background: #333; padding: 8px 20px; border-radius: 20px; 
-            font-size: 0.85rem; font-weight: 700; color: white; cursor: pointer; 
-            transition: 0.2s; border: 1px solid transparent;
-        }
-        .chip:hover { transform: scale(1.05); border-color: white; }
-        .chip.active { background: var(--primary); color: black; border-color: var(--primary); }
+        @keyframes flashCritical { 0%, 100% { background: var(--pink); } 50% { background: #500; } }
+        @keyframes shake { 0% { transform: translate(0,0); } 20% { transform: translate(-10px, 10px); } 40% { transform: translate(10px, -10px); } 100% { transform: translate(0,0); } }
         
-        .primary-btn { 
-            width: 100%; padding: 16px; background: var(--primary); color: black; 
-            border: none; border-radius: 50px; font-weight: 700; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;
-            cursor: pointer; transition: 0.2s;
+        .screen-shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        .slow-mo { transition: all 1s; filter: grayscale(100%) contrast(2); }
+
+        @media (max-width: 768px) {
+            .boot-sequence h1 { font-size: 2.5rem; }
+            .btn-group { flex-direction: column; }
+            .shop-grid { gap: 15px; }
         }
-        .primary-btn:hover { transform: scale(1.02); background: var(--primary-hover); }
-
-        /* Breathing Button */
-        .breath-btn-big {
-            margin-top: 15px; width: 100%; padding: 14px;
-            background: rgba(255,255,255,0.1); color: white; font-weight: 600;
-            border-radius: 50px; border: 1px solid transparent; cursor: pointer;
-            transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-        .breath-btn-big:hover { border-color: white; background: rgba(255,255,255,0.2); }
-
-        /* Tasks (Perfected) */
-        .task-list-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 16px; background: rgba(255,255,255,0.05); border-radius: 6px; margin-bottom: 10px;
-            transition: 0.2s;
-        }
-        .task-list-item:hover { background: rgba(255,255,255,0.1); }
-        
-        .task-text { font-weight: 600; font-size: 1rem; color: white; margin-right: 20px; flex: 1; }
-        
-        .btn-icon {
-            width: 32px; height: 32px; border-radius: 50%; display: flex; 
-            align-items: center; justify-content: center; cursor: pointer; border: none;
-            transition: 0.2s; font-size: 1rem;
-        }
-        .btn-del { background: transparent; color: #ff5555; border: 1px solid #ff5555; }
-        .btn-del:hover { background: #ff5555; color: white; }
-        
-        .btn-done { background: var(--primary); color: black; margin-left: 10px; width: auto; padding: 0 15px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; }
-        .btn-done:hover { transform: scale(1.05); background: var(--primary-hover); }
-
-        /* Mini Game Overlay */
-        #game-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 60000;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-        }
-        #game-overlay.active { display: flex; }
-        #game-canvas { border: 2px solid var(--primary); border-radius: 10px; cursor: none; background: #111; touch-action: none; }
-        .game-ui { position: absolute; top: 40px; font-size: 2rem; font-weight: 800; color: var(--primary); pointer-events: none; }
-        .close-game { position: absolute; top: 40px; right: 40px; background: #333; color: white; padding: 10px 20px; border-radius: 20px; border:none; font-weight:700; cursor:pointer; }
-
-        /* Breathing Overlay */
-        #breath-overlay {
-            position: fixed; inset: 0; background: #000; z-index: 60000;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            opacity: 0; transition: opacity 1s ease;
-        }
-        #breath-overlay.active { display: flex; opacity: 1; }
-        .breath-circle { width: 150px; height: 150px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 100px var(--primary); }
-        .breath-text { font-size: 3rem; font-weight: 900; color: white; position: absolute; text-transform: uppercase; letter-spacing: 5px; }
-        @keyframes inhale { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(3); opacity: 1; } }
-        @keyframes exhale { 0% { transform: scale(3); opacity: 1; } 100% { transform: scale(1); opacity: 0.6; } }
-
-        /* Success Overlay */
-        #success-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 55000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
-        #success-overlay.active { display: flex; opacity: 1; }
-        .success-modal { text-align: center; transform: scale(0.8); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        #success-overlay.active .success-modal { transform: scale(1); }
-        .success-text { font-size: 4rem; font-weight: 900; color: white; letter-spacing: -2px; margin-bottom: 10px; }
-        .xp-gain { font-size: 2rem; color: var(--primary); font-weight: 700; }
-
-        /* Mobile Hide */
-        .mobile-nav { display: none; }
-        @media (max-width: 768px) { .sidebar { display: none; } .mobile-nav { display: flex; } }
-        .mobile-nav { position: fixed; bottom: 0; width: 100%; background: #121212; border-top: 1px solid #333; justify-content: space-around; padding: 15px; z-index: 100; }
-        .mob-btn { background: none; border: none; color: #b3b3b3; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 0.7rem; font-weight: 600; }
-        .mob-btn.active { color: white; }
-        .mob-btn i { font-size: 1.5rem; }
-
-        /* Schedule & Tools */
-        .schedule-grid { display: grid; grid-template-columns: 70px repeat(5, 1fr); gap: 1px; background: #333; border-radius: 8px; overflow: hidden; min-width: 600px; }
-        .sch-cell { background: #181818; padding: 15px; min-height: 80px; display: flex; align-items: center; justify-content: center; font-weight: 500; cursor: pointer; color: white; }
-        .sch-cell:hover { background: #282828; }
-        .sch-header { background: #121212; padding: 15px; font-weight: 700; color: var(--text-muted); text-align: center; }
-        .sch-active { background: rgba(29, 185, 84, 0.2); color: var(--primary); font-weight: 700; border: 1px solid var(--primary); }
-        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .calc-key { padding: 20px; border-radius: 50%; border: none; font-size: 1.2rem; font-weight: 700; background: #333; color: white; cursor: pointer; }
-        .calc-key:hover { background: #444; }
-        .calc-key.op { background: var(--primary); color: black; }
     </style>
 </head>
 <body>
 
-    <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
-    <input type="file" id="setupAvatarUpload" accept="image/*" style="display: none;">
-
-    <div id="intro-screen">
-        <h1 class="intro-brand">mehdi<span>.co</span></h1>
-        <div class="intro-quote" id="intro-quote"></div>
-        <button class="intro-btn" onclick="goToSetup()">Kom i gang</button>
-    </div>
-
-    <div id="setup-screen">
-        <div class="setup-card">
-            <h2 style="font-size:2rem; font-weight:900; margin-bottom:40px; color:white;">DIN PROFIL</h2>
-            <div class="avatar-upload-wrapper" onclick="document.getElementById('setupAvatarUpload').click()">
-                <img id="setupAvPreview" class="setup-avatar" src="https://api.dicebear.com/7.x/notionists/svg?seed=student">
-                <div class="camera-badge"><i class="ph ph-camera"></i></div>
+    <div id="ui-layer">
+        <div class="hud-top">
+            <div class="score-box">
+                <div class="hud-label">SCORE</div>
+                <div class="score-val" id="scoreDisplay">0</div>
             </div>
-            <input type="text" id="setupName" class="setup-input" placeholder="NAVN" autocomplete="off">
-            <button class="primary-btn" onclick="finalizeLogin()">ÅPNE DASHBOARD</button>
+            
+            <div class="currency-box">
+                <span class="coin-icon"></span> <span id="coinDisplay" style="font-weight:800; font-size:1.2rem;">0</span>
+            </div>
+
+            <div class="hp-container">
+                <div class="hud-label">SHIELD MATRIX</div>
+                <div class="hp-bar-frame" id="hpBar">
+                    </div>
+            </div>
         </div>
     </div>
 
-    <div id="game-overlay">
-        <div class="game-ui">SCORE: <span id="scoreVal">0</span></div>
-        <button class="close-game" onclick="stopGame()">AVSLUTT</button>
-        <canvas id="game-canvas" width="600" height="400"></canvas>
+    <div id="menu-screen" class="screen boot-sequence">
+        <h1>NEON DRIFT<br>2.0</h1>
+        <p>SYSTEM READY</p>
+        <div class="btn-group">
+            <button class="neon-btn" onclick="startGame()">START MISSION</button>
+            <button class="neon-btn secondary" onclick="openShop()">GARASJE</button>
+        </div>
     </div>
 
-    <div class="app-shell" id="app-shell">
-        <aside class="sidebar">
-            <div class="logo-area">mehdi<span style="color:var(--primary);">.co</span></div>
-            <button class="nav-btn active" onclick="nav('dashboard')"><i class="ph ph-squares-four"></i> Oversikt</button>
-            <button class="nav-btn" onclick="nav('schedule')"><i class="ph ph-calendar"></i> Timeplan</button>
-            <button class="nav-btn" onclick="nav('tools')"><i class="ph ph-calculator"></i> Verktøy</button>
-            <button class="nav-btn" onclick="nav('tasks')"><i class="ph ph-check-square"></i> Oppgaver</button>
-            <button class="nav-btn" onclick="startGame()"><i class="ph ph-game-controller"></i> Spill</button>
-            <button class="nav-btn" onclick="nav('settings')"><i class="ph ph-gear"></i> Innstillinger</button>
-            <div class="profile-mini">
-                <img id="miniAv" src="">
-                <div><div id="miniName" style="font-weight:700; color:white;">Navn</div><div style="font-size:0.8rem; color:var(--text-muted);">Student</div></div>
-            </div>
-        </aside>
-
-        <main class="main-view">
-            <section id="dashboard" class="section active">
-                <div class="page-header">
-                    <h1 class="greeting" id="greet">Hei</h1>
-                    <p style="color:var(--text-muted); font-weight:500;" id="dateSub">Klar for å jobbe?</p>
-                </div>
-
-                <div class="grid-layout">
-                    <div class="app-card" style="text-align:center;">
-                        <div class="card-header"><span class="card-title">Fokus</span><i class="ph ph-timer" style="color:var(--primary);"></i></div>
-                        <div class="timer-display" id="timer">25:00</div>
-                        <div class="time-controls">
-                            <div class="chip" onclick="setDuration(10)">10m</div>
-                            <div class="chip active" onclick="setDuration(25)">25m</div>
-                            <div class="chip" onclick="setDuration(45)">45m</div>
-                        </div>
-                        <button class="primary-btn" id="timerBtn" onclick="toggleTimer()">START ØKT</button>
-                        
-                        <button class="breath-btn-big" onclick="startBreathing()">
-                            <i class="ph ph-wind"></i> Ta en Pustepause
-                        </button>
-                    </div>
-
-                    <div class="app-card">
-                        <div class="card-header"><span class="card-title">Aktivitet</span></div>
-                        <div style="height:200px;"><canvas id="chart"></canvas></div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="schedule" class="section">
-                <div class="page-header"><h1 class="greeting">Ukeplan</h1></div>
-                <div class="app-card">
-                    <div style="overflow-x:auto; padding-bottom:10px;">
-                        <div class="schedule-grid" id="schGrid"></div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="tools" class="section">
-                <div class="page-header"><h1 class="greeting">Verktøy</h1></div>
-                <div class="grid-layout">
-                    <div class="app-card" style="max-width:350px;">
-                        <input type="text" id="calcDisp" style="width:100%; font-size:2.5rem; text-align:right; border:none; outline:none; margin-bottom:20px; background:transparent; color:white;" readonly value="0">
-                        <div class="calc-grid">
-                            <button class="calc-key" onclick="add('7')">7</button><button class="calc-key" onclick="add('8')">8</button><button class="calc-key" onclick="add('9')">9</button><button class="calc-key op" onclick="add('/')">÷</button>
-                            <button class="calc-key" onclick="add('4')">4</button><button class="calc-key" onclick="add('5')">5</button><button class="calc-key" onclick="add('6')">6</button><button class="calc-key op" onclick="add('*')">×</button>
-                            <button class="calc-key" onclick="add('1')">1</button><button class="calc-key" onclick="add('2')">2</button><button class="calc-key" onclick="add('3')">3</button><button class="calc-key op" onclick="add('-')">-</button>
-                            <button class="calc-key" style="color:var(--text-muted);" onclick="cls()">C</button><button class="calc-key" onclick="add('0')">0</button><button class="calc-key" onclick="add('.')">.</button><button class="calc-key op" onclick="solve()">=</button>
-                        </div>
-                    </div>
-                    <div class="app-card">
-                        <textarea id="notes" style="width:100%; height:300px; border:none; outline:none; resize:none; background:transparent; font-size:1.1rem; color:var(--text-main); font-family:var(--font-stack);" placeholder="Skriv notater her..."></textarea>
-                    </div>
-                </div>
-            </section>
-
-            <section id="tasks" class="section">
-                <div class="page-header"><h1 class="greeting">Gjøremål</h1></div>
-                <div class="app-card" style="max-width:700px;">
-                    <div style="display:flex; gap:10px; margin-bottom:30px;">
-                        <input type="text" class="setup-input" id="taskInput" placeholder="Ny oppgave..." style="text-align:left; margin-bottom:0;">
-                        <button class="primary-btn" style="width:auto; padding:0 30px;" onclick="addTask()">Legg til</button>
-                    </div>
-                    <div id="taskList"></div>
-                </div>
-            </section>
-
-            <section id="settings" class="section">
-                <div class="page-header"><h1 class="greeting">Profil</h1></div>
-                <div class="app-card" style="text-align:center; padding:50px;">
-                    <div class="avatar-upload-wrapper" onclick="document.getElementById('avatarUpload').click()" style="margin:0 auto 20px auto;">
-                        <img id="bigAv" class="setup-avatar" src="">
-                    </div>
-                    <h2 id="bigName" style="margin-bottom:5px; color:white;">Navn</h2>
-                    <button class="chip" onclick="editName()" style="margin-top:20px;">Endre Navn</button>
-                </div>
-            </section>
-        </main>
+    <div id="shop-screen" class="screen hidden">
+        <button class="back-btn" onclick="closeShop()">❮ TILBAKE</button>
+        <h2 style="font-family:'Orbitron'; font-size:2rem; color:var(--blue); margin-bottom:10px;">HANGAR</h2>
+        <div style="color:var(--yellow); margin-bottom:30px;">CREDITS: <span id="shopCoins">0</span></div>
         
-        <nav class="mobile-nav">
-            <button class="mob-btn active" onclick="nav('dashboard')"><i class="ph ph-squares-four"></i></button>
-            <button class="mob-btn" onclick="nav('schedule')"><i class="ph ph-calendar"></i></button>
-            <button class="mob-btn" onclick="nav('tools')"><i class="ph ph-calculator"></i></button>
-            <button class="mob-btn" onclick="nav('tasks')"><i class="ph ph-check-square"></i></button>
-            <button class="mob-btn" onclick="nav('settings')"><i class="ph ph-user"></i></button>
-        </nav>
+        <div class="shop-grid" id="shopGrid">
+            </div>
     </div>
 
-    <div id="breath-overlay">
-        <div class="breath-circle-container">
-            <div class="breath-circle" id="breath-circle"></div>
-            <div class="breath-text" id="breath-text">PUST INN</div>
-        </div>
-        <button class="close-breath-btn" onclick="stopBreathing()" style="margin-top:50px; background:transparent; border:1px solid #555; color:white; padding:10px 20px; border-radius:30px; cursor:pointer;">AVSLUTT</button>
+    <div id="game-over-screen" class="screen hidden">
+        <h1 class="death-title">CRITICAL FAILURE</h1>
+        <p style="font-size:1.5rem; margin-bottom:30px;">SCORE: <span id="finalScore">0</span> | EARNED: <span id="earnedCoins">0</span></p>
+        <button class="neon-btn" onclick="resetGame()">REBOOT SYSTEM</button>
     </div>
 
-    <div id="success-overlay">
-        <div class="success-modal">
-            <i class="ph ph-check-circle" style="font-size:7rem; color:var(--primary); margin-bottom:20px;"></i>
-            <div class="success-text">FANTASTISK</div>
-            <div class="xp-gain">+25 XP</div>
-        </div>
-    </div>
+    <canvas id="gameCanvas"></canvas>
 
 <script>
-    // --- 1. AUDIO & HAPTICS (Sound Logic) ---
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // --- 1. SETUP & CONFIG ---
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
     
-    function playClick() {
-        if(audioCtx.state === 'suspended') return;
-        const t = audioCtx.currentTime;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.frequency.setValueAtTime(600, t);
-        osc.frequency.exponentialRampToValueAtTime(100, t + 0.03);
-        gain.gain.setValueAtTime(0.05, t);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.start(t); osc.stop(t + 0.03);
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
     }
-    
-    // Play sound on ALL button clicks
-    document.addEventListener('click', (e) => {
-        if(e.target.tagName === 'BUTTON' || e.target.closest('button') || e.target.classList.contains('nav-btn')) {
-            playClick();
-        }
-    });
+    window.addEventListener('resize', resize);
+    resize();
 
-    // --- 2. GAME ENGINE (Touch Support Added) ---
-    const gameCanvas = document.getElementById('game-canvas');
-    const gCtx = gameCanvas.getContext('2d');
-    let gameLoop, player = {x:300, y:350, r:15}, items = [], score = 0;
-    
-    function startGame() {
-        if(audioCtx.state === 'suspended') audioCtx.resume();
-        document.getElementById('game-overlay').classList.add('active');
-        score = 0; items = [];
-        document.getElementById('scoreVal').innerText = score;
-        
-        // Touch & Mouse Listeners
-        gameCanvas.addEventListener('mousemove', movePlayer);
-        gameCanvas.addEventListener('touchmove', movePlayerTouch, {passive: false});
-        
-        gameLoop = requestAnimationFrame(updateGame);
-    }
+    // Game Variables
+    let gameRunning = false;
+    let score = 0;
+    let frames = 0;
+    let difficulty = 1;
+    let coins = 0;
+    let gameSpeed = 1; // Used for slow-mo death
 
-    function stopGame() {
-        cancelAnimationFrame(gameLoop);
-        document.getElementById('game-overlay').classList.remove('active');
-        gameCanvas.removeEventListener('mousemove', movePlayer);
-        gameCanvas.removeEventListener('touchmove', movePlayerTouch);
-    }
-
-    function movePlayer(e) {
-        const rect = gameCanvas.getBoundingClientRect();
-        player.x = e.clientX - rect.left;
-        player.y = e.clientY - rect.top;
-    }
-    
-    function movePlayerTouch(e) {
-        e.preventDefault(); // Stop scrolling
-        const rect = gameCanvas.getBoundingClientRect();
-        const touch = e.touches[0];
-        player.x = touch.clientX - rect.left;
-        player.y = touch.clientY - rect.top;
-    }
-
-    function updateGame() {
-        gCtx.clearRect(0,0,600,400);
-        if(Math.random() < 0.05) items.push({ x: Math.random()*600, y: -20, type: Math.random()>0.3?'good':'bad', r: Math.random()*10+5, s: Math.random()*3+2 });
-
-        gCtx.shadowBlur = 20; gCtx.shadowColor = '#1db954';
-        gCtx.fillStyle = '#1db954'; gCtx.beginPath();
-        gCtx.arc(player.x, player.y, player.r, 0, Math.PI*2); gCtx.fill();
-        gCtx.shadowBlur = 0;
-
-        items.forEach((it, i) => {
-            it.y += it.s;
-            gCtx.fillStyle = it.type === 'good' ? '#3b82f6' : '#ef4444';
-            gCtx.beginPath(); gCtx.arc(it.x, it.y, it.r, 0, Math.PI*2); gCtx.fill();
-            const dist = Math.hypot(player.x - it.x, player.y - it.y);
-            if(dist < player.r + it.r) {
-                if(it.type === 'good') { score += 10; playClick(); } else { score -= 20; }
-                document.getElementById('scoreVal').innerText = score;
-                items.splice(i, 1);
-            }
-            if(it.y > 420) items.splice(i, 1);
-        });
-        gameLoop = requestAnimationFrame(updateGame);
-    }
-
-    // --- 3. APP LOGIC & INTRO ---
-    const quotes = [
-        { t: "Gjør det nå. Noen ganger blir 'senere' til 'aldri'.", a: "Ukjent" },
-        { t: "Fremtiden tilhører de som tror på drømmene sine.", a: "Eleanor Roosevelt" }
-    ];
-
-    window.onload = function() {
-        const q = quotes[Math.floor(Math.random() * quotes.length)];
-        document.getElementById('intro-quote').innerText = `"${q.t}"`;
-        // Setup Logic
-        if(localStorage.getItem('SpotifyOS')) {
-            state = JSON.parse(localStorage.getItem('SpotifyOS'));
-            if(state.name !== "Student") {
-                document.getElementById('setupName').value = state.name;
-                document.getElementById('setupAvPreview').src = state.avatar;
-            }
-        }
-        updateGlobalUI();
+    // SAVE DATA
+    let saveData = JSON.parse(localStorage.getItem('NeonDriftSave')) || {
+        totalCoins: 0,
+        ownedShips: [0], // IDs of owned ships
+        equippedShip: 0
     };
 
-    function goToSetup() {
-        if(audioCtx.state === 'suspended') audioCtx.resume();
-        document.getElementById('intro-screen').classList.add('hidden');
-        document.getElementById('setup-screen').classList.add('visible');
+    // SHIP DEFINITIONS
+    const SHIPS = [
+        { id: 0, name: "INTERCEPTOR", price: 0, speed: 7, width: 40, color: '#00f3ff', desc: "Standard Fighter" },
+        { id: 1, name: "VANGUARD", price: 200, speed: 5, width: 55, color: '#ff003c', desc: "Heavy Armor" },
+        { id: 2, name: "PHANTOM", price: 500, speed: 10, width: 30, color: '#ffd700', desc: "High Speed" }
+    ];
+
+    // PLAYER OBJECT
+    let player = {
+        x: canvas.width / 2, y: canvas.height - 100,
+        hp: 100, maxHp: 100,
+        w: 40, h: 50, speed: 7, color: '#00f3ff',
+        type: 0
+    };
+
+    let bullets = [];
+    let enemies = [];
+    let loot = []; // Floating coins
+    let particles = [];
+    let stars = [];
+
+    // --- 2. AUDIO (SYNTH) ---
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    const actx = new AudioCtx();
+
+    function playSound(type) {
+        if(actx.state === 'suspended') actx.resume();
+        const osc = actx.createOscillator();
+        const gain = actx.createGain();
+        osc.connect(gain); gain.connect(actx.destination);
+        const t = actx.currentTime;
+
+        if (type === 'shoot') {
+            osc.type = 'square'; osc.frequency.setValueAtTime(400, t);
+            osc.frequency.exponentialRampToValueAtTime(100, t + 0.1);
+            gain.gain.setValueAtTime(0.05, t); gain.gain.linearRampToValueAtTime(0, t + 0.1);
+            osc.start(t); osc.stop(t + 0.1);
+        } else if (type === 'coin') {
+            osc.type = 'sine'; osc.frequency.setValueAtTime(1000, t);
+            osc.frequency.linearRampToValueAtTime(1500, t + 0.1);
+            gain.gain.setValueAtTime(0.05, t); gain.gain.linearRampToValueAtTime(0, t + 0.1);
+            osc.start(t); osc.stop(t + 0.1);
+        } else if (type === 'explode') {
+            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(100, t);
+            osc.frequency.exponentialRampToValueAtTime(10, t + 0.4);
+            gain.gain.setValueAtTime(0.2, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
+            osc.start(t); osc.stop(t + 0.4);
+        } else if (type === 'death') {
+            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(200, t);
+            osc.frequency.exponentialRampToValueAtTime(10, t + 2);
+            gain.gain.setValueAtTime(0.5, t); gain.gain.linearRampToValueAtTime(0, t + 2);
+            osc.start(t); osc.stop(t + 2);
+        }
     }
 
-    function finalizeLogin() {
-        const n = document.getElementById('setupName').value;
-        if(n) state.name = n;
-        save(); updateGlobalUI();
-        document.getElementById('setup-screen').classList.remove('visible');
-        document.getElementById('app-shell').classList.add('visible');
+    // --- 3. GRAPHICS HELPERS (THE SHIP) ---
+    function drawSpaceship(ctx, x, y, size, color, type) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.shadowBlur = 15; ctx.shadowColor = color;
+        ctx.fillStyle = '#000'; ctx.strokeStyle = color; ctx.lineWidth = 2;
+
+        ctx.beginPath();
+        if (type === 0) { // Interceptor
+            ctx.moveTo(0, -size); 
+            ctx.lineTo(size/1.5, size); 
+            ctx.lineTo(0, size*0.7); 
+            ctx.lineTo(-size/1.5, size);
+        } else if (type === 1) { // Vanguard (Tank)
+            ctx.moveTo(-size/2, -size*0.8);
+            ctx.lineTo(size/2, -size*0.8);
+            ctx.lineTo(size, size);
+            ctx.lineTo(0, size*0.8);
+            ctx.lineTo(-size, size);
+        } else if (type === 2) { // Phantom (Speed)
+            ctx.moveTo(0, -size*1.2);
+            ctx.lineTo(size/3, size);
+            ctx.lineTo(0, size*0.5);
+            ctx.lineTo(-size/3, size);
+        }
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+
+        // Engine Fire
+        ctx.fillStyle = `rgba(0, 243, 255, ${Math.random()})`;
+        ctx.beginPath();
+        ctx.moveTo(-size/4, size*0.8);
+        ctx.lineTo(size/4, size*0.8);
+        ctx.lineTo(0, size*1.5 + Math.random()*10);
+        ctx.fill();
+        ctx.restore();
     }
 
-    // --- CORE & TASKS ---
-    let state = { name: "Student", avatar: "https://api.dicebear.com/7.x/notionists/svg?seed=student", xp: 0, tasks: [], notes: "", schedule: {} };
-    function save() { localStorage.setItem('SpotifyOS', JSON.stringify(state)); }
+    // --- 4. GAME LOGIC ---
 
-    function updateGlobalUI() {
-        const hr = new Date().getHours();
-        let gt = hr < 12 ? "God morgen" : hr < 18 ? "God ettermiddag" : "God kveld";
-        document.getElementById('greet').innerText = `${gt}, ${state.name}`;
-        document.getElementById('miniName').innerText = state.name;
-        document.getElementById('miniAv').src = state.avatar;
-        document.getElementById('bigAv').src = state.avatar;
-        document.getElementById('notes').value = state.notes;
-        const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('dateSub').innerText = new Date().toLocaleDateString('no-NO', dateOptions);
-        renderTasks(); renderSchedule();
+    function init() {
+        // Init Background Stars
+        for(let i=0; i<80; i++) stars.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, s:Math.random()*2, v:Math.random()*2+0.5});
+        updateUI();
+        updateShopUI();
     }
 
-    function nav(id) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        if(event) event.currentTarget.classList.add('active');
+    function startGame() {
+        document.getElementById('menu-screen').classList.add('hidden');
+        document.getElementById('game-over-screen').classList.add('hidden');
+        document.body.classList.remove('slow-mo');
+        
+        // Reset
+        let shipStats = SHIPS[saveData.equippedShip];
+        player.hp = 100; player.maxHp = 100;
+        player.speed = shipStats.speed; player.w = shipStats.width;
+        player.color = shipStats.color; player.type = shipStats.id;
+        player.x = canvas.width/2; player.y = canvas.height - 100;
+        
+        score = 0; coins = 0; difficulty = 1; gameSpeed = 1;
+        bullets = []; enemies = []; particles = []; loot = [];
+        
+        gameRunning = true;
+        gameLoop();
     }
 
-    function addTask() {
-        const v = document.getElementById('taskInput').value;
-        if(!v) return;
-        state.tasks.unshift({ id: Date.now(), txt: v });
-        save(); renderTasks();
-        document.getElementById('taskInput').value = "";
-    }
-    function removeTask(id) { state.tasks = state.tasks.filter(t => t.id !== id); save(); renderTasks(); }
-    function completeTask(id) {
-        state.xp += 25; state.tasks = state.tasks.filter(t => t.id !== id); save(); renderTasks();
-        const ov = document.getElementById('success-overlay');
-        ov.classList.add('active');
-        // Play success sound
-        const osc = audioCtx.createOscillator(); const g = audioCtx.createGain();
-        osc.connect(g); g.connect(audioCtx.destination);
-        osc.type = 'sine'; osc.frequency.setValueAtTime(400, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime+0.2);
-        g.gain.setValueAtTime(0.2, audioCtx.currentTime); g.gain.linearRampToValueAtTime(0, audioCtx.currentTime+0.5);
-        osc.start(); osc.stop(audioCtx.currentTime+0.5);
-        setTimeout(() => ov.classList.remove('active'), 2000);
-    }
-    function renderTasks() {
-        const l = document.getElementById('taskList'); l.innerHTML = "";
-        state.tasks.forEach(t => {
-            l.innerHTML += `
-            <div class="task-list-item">
-                <span class="task-text">${t.txt}</span>
-                <div class="task-actions">
-                    <button class="btn-icon btn-del" onclick="removeTask(${t.id})"><i class="ph ph-x"></i></button>
-                    <button class="btn-icon btn-done" onclick="completeTask(${t.id})">Ferdig</button>
-                </div>
-            </div>`;
+    function spawnEnemy() {
+        let size = Math.random() * 30 + 20;
+        enemies.push({
+            x: Math.random() * (canvas.width - size),
+            y: -50,
+            size: size,
+            speed: (Math.random() * 2 + 2) * difficulty,
+            hp: Math.floor(difficulty),
+            color: '#ff003c'
         });
     }
 
-    // --- BREATHING & PARTICLES ---
-    let breathInt;
-    const bCircle = document.getElementById('breath-circle');
-    const tIn = document.getElementById('txt-in');
-    function startBreathing() {
-        document.getElementById('breath-overlay').classList.add('active');
-        runCycle();
-        breathInt = setInterval(runCycle, 12000);
-    }
-    function runCycle() {
-        document.getElementById('breath-text').innerText = "PUST INN";
-        bCircle.style.animation = "inhale 4s ease-in-out forwards";
-        setTimeout(() => { document.getElementById('breath-text').innerText = "HOLD"; }, 4000);
-        setTimeout(() => { document.getElementById('breath-text').innerText = "PUST UT"; bCircle.style.animation = "exhale 4s ease-in-out forwards"; }, 8000);
-    }
-    function stopBreathing() {
-        document.getElementById('breath-overlay').classList.remove('active');
-        clearInterval(breathInt); bCircle.style.animation = "none";
+    function spawnCoin(x, y) {
+        loot.push({ x: x, y: y, size: 8, speed: 3 });
     }
 
-    const canvas = document.getElementById('neural-canvas');
-    const ctx = canvas.getContext('2d');
-    let w, h, particles = [];
-    function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
-    window.addEventListener('resize', resize); resize();
-    class Particle { constructor(){this.x=Math.random()*w;this.y=Math.random()*h;this.s=Math.random()*2;this.vx=(Math.random()-0.5)*0.5;this.vy=(Math.random()-0.5)*0.5;} update(){this.x+=this.vx;this.y+=this.vy;if(this.x<0||this.x>w)this.vx*=-1;if(this.y<0||this.y>h)this.vy*=-1;} draw(){ctx.fillStyle='white';ctx.beginPath();ctx.arc(this.x,this.y,this.s,0,Math.PI*2);ctx.fill();}}
-    for(let i=0; i<50; i++) particles.push(new Particle());
-    function animate() { ctx.clearRect(0,0,w,h); particles.forEach(p=>{p.update();p.draw();}); requestAnimationFrame(animate); }
-    animate();
+    function createExplosion(x, y, color, count, speed=1) {
+        for(let i=0; i<count; i++) {
+            particles.push({
+                x: x, y: y,
+                vx: (Math.random()-0.5) * 10 * speed,
+                vy: (Math.random()-0.5) * 10 * speed,
+                life: 1.0, color: color, size: Math.random()*3
+            });
+        }
+    }
 
-    // Standard Logic
-    function renderSchedule(){const g=document.getElementById('schGrid');g.innerHTML='<div class="sch-header">Tid</div><div class="sch-header">Man</div><div class="sch-header">Tir</div><div class="sch-header">Ons</div><div class="sch-header">Tor</div><div class="sch-header">Fre</div>';const ts=["08:00","09:00","10:00","11:00","12:00","13:00","14:00"];const ds=["Mon","Tue","Wed","Thu","Fri"];const now=new Date();const dIdx=now.getDay();const h=now.getHours();ts.forEach(t=>{g.innerHTML+=`<div class="sch-time">${t}</div>`;ds.forEach((d,i)=>{const k=`${d}-${t}`;const v=state.schedule[k]||"";let ac="";if(i+1===dIdx&&t.startsWith(h.toString().padStart(2,'0')))ac="sch-active";g.innerHTML+=`<div class="sch-cell ${ac}" onclick="editSch('${k}')">${v}</div>`;});});}
-    function editSch(k){const v=prompt("Fag:");if(v!==null){state.schedule[k]=v;save();renderSchedule();}}
-    let ex="";function add(v){ex+=v;document.getElementById('calcDisp').value=ex;}function cls(){ex="";document.getElementById('calcDisp').value="0";}function solve(){try{document.getElementById('calcDisp').value=eval(ex);ex=eval(ex).toString();}catch{document.getElementById('calcDisp').value="Error";}}
-    document.getElementById('notes').addEventListener('input',(e)=>{state.notes=e.target.value;save();});
-    function editName(){const n=prompt("Nytt navn:");if(n){state.name=n;save();updateGlobalUI();}}
-    document.getElementById('setupAvatarUpload').addEventListener('change',hAv);document.getElementById('avatarUpload').addEventListener('change',hAv);
-    function hAv(e){if(e.target.files[0]){const r=new FileReader();r.onload=(evt)=>{state.avatar=evt.target.result;if(document.getElementById('setupAvPreview'))document.getElementById('setupAvPreview').src=state.avatar;save();updateGlobalUI();};r.readAsDataURL(e.target.files[0]);}}
-    let tTime=1500;let tInt;function setDuration(m){tTime=m*60;document.getElementById('timer').innerText=`${m}:00`;}
-    function toggleTimer(){const b=document.getElementById('timerBtn');if(tInt){clearInterval(tInt);tInt=null;b.innerText="Start Fokusøkt";}else{b.innerText="Pause";tInt=setInterval(()=>{tTime--;let m=Math.floor(tTime/60);let s=tTime%60;document.getElementById('timer').innerText=`${m}:${s<10?'0':''}${s}`;if(tTime<=0)clearInterval(tInt);},1000);}}
-    new Chart(document.getElementById('chart'),{type:'line',data:{labels:['Man','Tir','Ons','Tor','Fre'],datasets:[{label:'XP',data:[50,100,75,125,200],borderColor:'#1db954',tension:0.4,fill:true,backgroundColor:'rgba(29, 185, 84, 0.1)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}});
+    function gameLoop() {
+        if (!gameRunning) return;
+
+        // Clear
+        ctx.fillStyle = 'rgba(5, 5, 5, 0.3)'; // Trail effect
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // --- BACKGROUND ---
+        ctx.fillStyle = 'white';
+        stars.forEach(s => {
+            s.y += s.v * (difficulty * 2) * gameSpeed;
+            if (s.y > canvas.height) s.y = 0;
+            ctx.globalAlpha = Math.random();
+            ctx.fillRect(s.x, s.y, s.s, s.s);
+        });
+        ctx.globalAlpha = 1;
+
+        // --- PLAYER ---
+        // Input Movement
+        if (keys['ArrowLeft'] && player.x > player.w) player.x -= player.speed * gameSpeed;
+        if (keys['ArrowRight'] && player.x < canvas.width - player.w) player.x += player.speed * gameSpeed;
+        
+        drawSpaceship(ctx, player.x, player.y, player.w/2, player.color, player.type);
+
+        // --- BULLETS ---
+        for (let i = bullets.length - 1; i >= 0; i--) {
+            let b = bullets[i];
+            b.y -= 15 * gameSpeed;
+            ctx.fillStyle = player.color;
+            ctx.shadowBlur = 10; ctx.shadowColor = player.color;
+            ctx.fillRect(b.x-2, b.y, 4, 15);
+            ctx.shadowBlur = 0;
+            if(b.y < 0) bullets.splice(i, 1);
+        }
+
+        // --- ENEMIES ---
+        if (frames % Math.max(20, 60 - Math.floor(difficulty*5)) === 0) spawnEnemy();
+        
+        for (let i = enemies.length - 1; i >= 0; i--) {
+            let e = enemies[i];
+            e.y += e.speed * gameSpeed;
+            
+            // Draw Enemy
+            ctx.save();
+            ctx.translate(e.x, e.y);
+            ctx.strokeStyle = e.color; ctx.lineWidth = 2; ctx.shadowBlur = 10; ctx.shadowColor = e.color;
+            ctx.strokeRect(0, 0, e.size, e.size);
+            ctx.fillStyle = 'rgba(255, 0, 60, 0.2)';
+            ctx.fillRect(2, 2, e.size-4, e.size-4);
+            ctx.restore();
+
+            // Collision Bullet
+            bullets.forEach((b, bi) => {
+                if (b.x > e.x && b.x < e.x + e.size && b.y > e.y && b.y < e.y + e.size) {
+                    bullets.splice(bi, 1);
+                    e.hp--;
+                    createExplosion(b.x, b.y, player.color, 3);
+                    if(e.hp <= 0) {
+                        createExplosion(e.x + e.size/2, e.y + e.size/2, e.color, 15);
+                        playSound('explode');
+                        if(Math.random() > 0.5) spawnCoin(e.x, e.y); // 50% chance coin
+                        enemies.splice(i, 1);
+                        score += 50;
+                        updateUI();
+                    }
+                }
+            });
+
+            // Collision Player
+            if (player.x > e.x - player.w/2 && player.x < e.x + e.size + player.w/2 &&
+                player.y > e.y - player.h/2 && player.y < e.y + e.size + player.h/2) {
+                enemies.splice(i, 1);
+                createExplosion(player.x, player.y, 'white', 20);
+                playSound('explode');
+                document.body.classList.add('screen-shake');
+                setTimeout(()=>document.body.classList.remove('screen-shake'), 400);
+                player.hp -= 20;
+                updateUI();
+                if(player.hp <= 0) startDeathSequence();
+            }
+
+            if(e.y > canvas.height) enemies.splice(i, 1);
+        }
+
+        // --- COINS ---
+        for(let i=loot.length-1; i>=0; i--) {
+            let l = loot[i];
+            l.y += l.speed * gameSpeed;
+            // Draw Coin
+            ctx.fillStyle = '#ffd700';
+            ctx.shadowBlur = 10; ctx.shadowColor = '#ffd700';
+            ctx.beginPath(); ctx.arc(l.x, l.y, 6, 0, Math.PI*2); ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Collect
+            let dx = player.x - l.x; let dy = player.y - l.y;
+            if(Math.sqrt(dx*dx + dy*dy) < 30) {
+                loot.splice(i, 1);
+                coins++;
+                score += 100;
+                playSound('coin');
+                updateUI();
+            }
+            if(l.y > canvas.height) loot.splice(i, 1);
+        }
+
+        // --- PARTICLES ---
+        for(let i=particles.length-1; i>=0; i--) {
+            let p = particles[i];
+            p.x += p.vx * gameSpeed; p.y += p.vy * gameSpeed; p.life -= 0.02;
+            ctx.globalAlpha = p.life; ctx.fillStyle = p.color;
+            ctx.fillRect(p.x, p.y, p.size, p.size);
+            if(p.life <= 0) particles.splice(i, 1);
+        }
+        ctx.globalAlpha = 1;
+
+        frames++;
+        if(frames % 600 === 0) difficulty += 0.5; // Difficulty Ramp
+
+        requestAnimationFrame(gameLoop);
+    }
+
+    // --- 5. DEATH SEQUENCE ---
+    function startDeathSequence() {
+        gameRunning = false;
+        gameSpeed = 0.1; // Slow motion
+        playSound('death');
+        
+        // Final Explosion
+        createExplosion(player.x, player.y, player.color, 100, 0.2);
+        
+        // Visual effect
+        document.body.classList.add('slow-mo');
+        
+        // Loop particles for a bit in slow mo
+        let deathFrames = 0;
+        function deathLoop() {
+            ctx.fillStyle = 'rgba(0,0,0,0.1)';
+            ctx.fillRect(0,0,canvas.width, canvas.height);
+            
+            // Draw background stars only
+            ctx.fillStyle = 'white';
+            stars.forEach(s => { ctx.fillRect(s.x, s.y, s.s, s.s); });
+
+            // Update explosion
+            for(let i=particles.length-1; i>=0; i--) {
+                let p = particles[i];
+                p.x += p.vx * 0.2; p.y += p.vy * 0.2; p.life -= 0.005;
+                ctx.globalAlpha = p.life; ctx.fillStyle = p.color;
+                ctx.fillRect(p.x, p.y, p.size, p.size);
+                if(p.life <= 0) particles.splice(i, 1);
+            }
+            ctx.globalAlpha = 1;
+
+            deathFrames++;
+            if(deathFrames < 150) {
+                requestAnimationFrame(deathLoop);
+            } else {
+                saveData.totalCoins += coins;
+                localStorage.setItem('NeonDriftSave', JSON.stringify(saveData));
+                document.getElementById('finalScore').innerText = score;
+                document.getElementById('earnedCoins').innerText = coins;
+                document.getElementById('game-over-screen').classList.remove('hidden');
+            }
+        }
+        deathLoop();
+    }
+
+    // --- 6. UI & SHOP ---
+    function updateUI() {
+        document.getElementById('scoreDisplay').innerText = score;
+        document.getElementById('coinDisplay').innerText = coins + saveData.totalCoins; // Temp + Bank
+        
+        // Update HP Bar Segments
+        const hpContainer = document.getElementById('hpBar');
+        hpContainer.innerHTML = '';
+        const segments = 10;
+        const activeSegments = Math.ceil((player.hp / player.maxHp) * segments);
+        
+        for(let i=0; i<segments; i++) {
+            let div = document.createElement('div');
+            div.className = 'hp-segment';
+            if(i < activeSegments) {
+                div.classList.add('active');
+                if(activeSegments <= 3) div.classList.add('critical');
+            }
+            hpContainer.appendChild(div);
+        }
+    }
+
+    function openShop() {
+        document.getElementById('menu-screen').classList.add('hidden');
+        document.getElementById('shop-screen').classList.remove('hidden');
+        document.getElementById('shopCoins').innerText = saveData.totalCoins;
+        renderShop();
+    }
+
+    function closeShop() {
+        document.getElementById('shop-screen').classList.add('hidden');
+        document.getElementById('menu-screen').classList.remove('hidden');
+    }
+
+    function renderShop() {
+        const grid = document.getElementById('shopGrid');
+        grid.innerHTML = '';
+        
+        SHIPS.forEach(ship => {
+            let owned = saveData.ownedShips.includes(ship.id);
+            let selected = saveData.equippedShip === ship.id;
+            
+            let btnHTML = '';
+            if (selected) {
+                btnHTML = `<button class="shop-btn btn-selected">VALGT</button>`;
+            } else if (owned) {
+                btnHTML = `<button class="shop-btn btn-select" onclick="equipShip(${ship.id})">VELG</button>`;
+            } else {
+                btnHTML = `<button class="shop-btn btn-buy" onclick="buyShip(${ship.id})">KJØP ${ship.price}</button>`;
+            }
+
+            let item = document.createElement('div');
+            item.className = `shop-item ${owned ? 'owned' : ''} ${selected ? 'selected' : ''}`;
+            item.innerHTML = `
+                <div class="shop-title" style="font-weight:900; color:${ship.color}">${ship.name}</div>
+                <div style="font-size:0.8rem; color:#888; margin-bottom:10px;">${ship.desc}</div>
+                <div class="ship-preview" id="ship-canvas-${ship.id}"></div>
+                ${btnHTML}
+            `;
+            grid.appendChild(item);
+
+            // Draw mini preview
+            setTimeout(() => {
+                let container = document.getElementById(`ship-canvas-${ship.id}`);
+                let cvs = document.createElement('canvas');
+                cvs.width = 100; cvs.height = 80;
+                let c = cvs.getContext('2d');
+                drawSpaceship(c, 50, 40, 20, ship.color, ship.id); // Mini draw
+                container.appendChild(cvs);
+            }, 0);
+        });
+    }
+
+    window.buyShip = function(id) {
+        let ship = SHIPS[id];
+        if (saveData.totalCoins >= ship.price) {
+            saveData.totalCoins -= ship.price;
+            saveData.ownedShips.push(id);
+            saveData.equippedShip = id; // Auto equip
+            saveToStorage();
+            renderShop();
+            document.getElementById('shopCoins').innerText = saveData.totalCoins;
+            playSound('coin');
+        } else {
+            alert("Ikke nok data coins!");
+        }
+    }
+
+    window.equipShip = function(id) {
+        saveData.equippedShip = id;
+        saveToStorage();
+        renderShop();
+    }
+
+    function saveToStorage() {
+        localStorage.setItem('NeonDriftSave', JSON.stringify(saveData));
+    }
+
+    // --- CONTROLS ---
+    const keys = {};
+    window.addEventListener('keydown', e => { keys[e.key] = true; if(e.code==='Space' && gameRunning) shoot(); });
+    window.addEventListener('keyup', e => keys[e.key] = false);
+    function shoot() { bullets.push({x:player.x, y:player.y-20, speed:15, color:player.color}); playSound('shoot'); }
+    
+    // Mobile Touch
+    canvas.addEventListener('touchmove', e => {
+        e.preventDefault();
+        player.x = e.touches[0].clientX;
+        player.y = e.touches[0].clientY - 50;
+    }, {passive:false});
+    canvas.addEventListener('touchstart', () => { if(gameRunning) shoot(); });
+
+    // Boot
+    init();
+
 </script>
 </body>
 </html>
